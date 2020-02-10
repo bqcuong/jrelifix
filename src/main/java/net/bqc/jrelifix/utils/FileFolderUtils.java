@@ -70,20 +70,11 @@ public class FileFolderUtils {
         }
     }
 
-    public static String relativePath(String base, String pathFull) {
-        Path pathAbsolute = Paths.get(pathFull);
+    public static String relativePath(String base, String absolutePath) {
+        Path pathAbsolute = Paths.get(absolutePath);
         Path pathBase = Paths.get(base);
         Path pathRelative = pathBase.relativize(pathAbsolute);
         return pathRelative.toString();
-    }
-
-    public static String path2Package(String path){
-        String normalize = path;
-        if(path.charAt(0) == '/')
-            normalize = path.substring(1);
-        normalize = normalize.split("\\.")[0]; // Strip extensions such as .java
-        normalize = normalize.split("\\$")[0];
-        return normalize.replace(File.separator, ".");
     }
 
     public static void writeFile(String fileName, String content) throws IOException {

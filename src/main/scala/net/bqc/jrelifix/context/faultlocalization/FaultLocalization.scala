@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.faultlocalization
+package net.bqc.jrelifix.context.faultlocalization
 
 import net.bqc.jrelifix.model.Identifier
 

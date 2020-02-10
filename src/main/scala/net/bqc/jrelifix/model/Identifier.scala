@@ -16,19 +16,9 @@ abstract class Identifier {
   def getBeginColumn(): Int
   def getEndColumn(): Int
   def getClassName(): String
+
   def getJavaNode(): ASTNode = javaNode
-
-  def transformJavaNode(globalASTs: scala.collection.mutable.HashMap[String, CompilationUnit]): ASTNode = {
-    if(triedTransform) return javaNode
-    triedTransform = true
-
-    if(javaNode == null) {
-      val desCUnit = globalASTs.getOrElse(getClassName(), null)
-      this.javaNode = ASTUtils.findNode(desCUnit, this)
-    }
-
-    this.javaNode
-  }
+  def setJavaNode(javaNode: ASTNode): Unit = this.javaNode = javaNode
 
   def sameLocation(node: ASTNode): Boolean = {
     val id = ASTUtils.createFaultIdentifierNoClassName(node)

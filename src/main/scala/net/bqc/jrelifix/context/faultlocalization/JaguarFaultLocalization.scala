@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.faultlocalization
+package net.bqc.jrelifix.context.faultlocalization
 import java.io.File
 import java.lang.reflect.Modifier
 import java.net.{URL, URLClassLoader}
