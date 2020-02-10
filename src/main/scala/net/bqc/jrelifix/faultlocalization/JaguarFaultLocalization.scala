@@ -19,7 +19,7 @@ import scala.collection.mutable.ArrayBuffer
 
 case class JaguarConfig (heuristic: Heuristic, projectDir: File, sourceDir: File, testDir: File, isDataFlow: Boolean) {}
 
-case class JaguarLocalizationStandaloneLibrary(config: JaguarConfig, classpath: Array[URL])
+case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL])
   extends FaultLocalization with Callable[ArrayBuffer[Identifier]]  {
 
   protected lazy val junit = new JUnitCore
@@ -40,7 +40,7 @@ case class JaguarLocalizationStandaloneLibrary(config: JaguarConfig, classpath: 
     client.close()
     val rankedList = jaguar.generateRank(config.heuristic)
     rankedList.forEach(e => {
-      val ej = JaguarFaultIdentifier(e.asInstanceOf[LineTestRequirement].getLineNumber, e.getClassName, e.getSuspiciousness)
+      val ej = JaguarFaultIdentifier(e.asInstanceOf[LineTestRequirement].getLineNumber, e.getClassName.replace("/", "."), e.getSuspiciousness)
       this.rankedList.append(ej)
     })
   }
@@ -51,7 +51,7 @@ case class JaguarLocalizationStandaloneLibrary(config: JaguarConfig, classpath: 
 
     try {
       this.rankedList = executor
-        .submit(new JaguarLocalizationStandaloneLibrary(this.config, this.classpath))
+        .submit(new JaguarLocalizationLibrary(this.config, this.classpath))
         .get(5, TimeUnit.MINUTES)
     }
     catch {

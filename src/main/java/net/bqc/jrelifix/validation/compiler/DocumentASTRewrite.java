@@ -5,6 +5,7 @@ package net.bqc.jrelifix.validation.compiler;
 
 import java.io.File;
 
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
@@ -22,13 +23,15 @@ public class DocumentASTRewrite {
     public ASTRewrite rewriter;
     private boolean modified;
     private boolean tainted;
+    private CompilationUnit cu;
 
-    public DocumentASTRewrite(IDocument document, File backingFile, ASTRewrite rewriter){
+    public DocumentASTRewrite(IDocument document, File backingFile, ASTRewrite rewriter, CompilationUnit cu){
         this.backingFile = backingFile;
         this.document = document;
         this.rewriter = rewriter;
         this.tainted = false;
         this.modified = false;
+        this.cu = cu;
 
         this.resetModifiedDocument();
     }

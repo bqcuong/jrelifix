@@ -1,6 +1,6 @@
 package net.bqc.jrelifix.faultlocalization
 
-import net.bqc.jrelifix.model.{PositionBasedIdentifier, PredefinedFaultIdentifier}
+import net.bqc.jrelifix.model.PredefinedFaultIdentifier
 
 case class PredefinedFaultLocalization(faultLines: String) extends FaultLocalization {
   // faultLines's format: x.y.z.ABC:1 2 7 8,3 5 7 9;m.n.p.KHG:3 4 6 5
