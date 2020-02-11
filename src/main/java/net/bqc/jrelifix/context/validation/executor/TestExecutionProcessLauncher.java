@@ -14,37 +14,42 @@ public class TestExecutionProcessLauncher {
     private Logger logger = Logger.getLogger(this.getClass());
 
     public static void main(String[] args) {
-        System.out.println(System.getProperty("java.home"));
+        String cp = "/Users/cuong/APR/samples/test/target/classes:/Users/cuong/APR/samples/test/target/test-classes:";
+
+        new TestExecutionProcessLauncher().execute(
+                cp,
+                "net.bqc.sampleapr.MainTest",
+                JUnitTestExecutor.class,
+                null,
+                100,
+                new String[]{}
+        );
     }
 
-    public TestResult execute(URL[] path, String classToExecute, String testExecutorName, String javaHome, int waitTime, String[] props) {
-        return execute(urlArrayToString(path), classToExecute, testExecutorName, javaHome, waitTime, props);
-    }
-
-    public TestResult execute(String path, String classToExecute, String testExecutorName, String javaHome, int waitTime, String[] props) {
+    public TestResult execute(String classpath, String testToExecute, Class testExecutor, String javaHome, int waitTime, String[] props) {
         Process p = null;
 
         if (javaHome == null) javaHome = System.getProperty("java.home");
+        logger.info("Test Case: " + testToExecute);
         logger.info("Java Home: " + javaHome);
-        javaHome += File.separator + "bin/java";
         String systemcp = System.getProperty("java.class.path");
 
         // Be careful when rewrite path: the ones that come first would get picked first,
         // and the picked ones would not get overwritten!
-        String fullPath = path + File.pathSeparator + systemcp;
+        classpath = classpath + File.pathSeparator + systemcp;
 
-        logger.debug("Classpath: " + fullPath);
+        logger.debug("Classpath: " + classpath.replace(systemcp, ""));
 
         try {
-            List<String> command = new ArrayList<String>();
-            command.add(javaHome);
+            List<String> command = new ArrayList<>();
+            command.add(javaHome + File.separator + "bin/java");
             for (String prop : props) {
                 command.add("-D" + prop);
             }
             command.add("-cp");
-            command.add(fullPath);
-            command.add(testExecutorName);
-            command.add(classToExecute);
+            command.add(classpath);
+            command.add(testExecutor.getCanonicalName());
+            command.add(testToExecute);
 
             ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
             pb.redirectOutput();
@@ -56,7 +61,6 @@ public class TestExecutionProcessLauncher {
             worker.start();
             worker.join(waitTime);
             long t_end = System.currentTimeMillis();
-            logger.debug("Execution time " + ((t_end - t_start) / 1000) + "seconds");
 
             if (!p.waitFor(waitTime, TimeUnit.SECONDS)) { // java 8 feature
                 logger.info("Test timed out!");
@@ -64,8 +68,10 @@ public class TestExecutionProcessLauncher {
                 return null;
             }
 
-            TestResult tr = getTestResult(p, classToExecute);
+            TestResult tr = getTestResult(p, testToExecute);
             p.destroy();
+            logger.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
+            logger.debug("-------- End of Test --------");
             return tr;
         }
         catch (Exception ex) {
@@ -86,7 +92,7 @@ public class TestExecutionProcessLauncher {
             executedTest.add(testName);
 
             while ((line = in.readLine()) != null) {
-                logger.debug("Result of running test: " + line);
+                logger.debug("Output of running test: " + line);
 
                 if (line.contains("Exception in thread \"main\"")) {
                     throw new RuntimeException("Exception when running test: " + testName + " => " + line);
@@ -111,8 +117,6 @@ public class TestExecutionProcessLauncher {
                     }
                 }
             }
-
-            logger.debug("-------- End of Test --------");
             in.close();
         }
         catch (Exception e) {

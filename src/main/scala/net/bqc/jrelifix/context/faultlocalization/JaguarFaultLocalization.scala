@@ -1,16 +1,15 @@
 package net.bqc.jrelifix.context.faultlocalization
-import java.io.File
-import java.lang.reflect.Modifier
+import java.io.{File, OutputStream, PrintStream}
 import java.net.{URL, URLClassLoader}
-import java.util
 import java.util.concurrent._
 
-import br.usp.each.saeg.jaguar.core.{JaCoCoClient, Jaguar}
 import br.usp.each.saeg.jaguar.core.heuristic.Heuristic
 import br.usp.each.saeg.jaguar.core.model.core.requirement.LineTestRequirement
 import br.usp.each.saeg.jaguar.core.runner.JaguarRunListener
-import br.usp.each.saeg.jaguar.core.utils.FileUtils
+import br.usp.each.saeg.jaguar.core.{JaCoCoClient, Jaguar}
 import ch.qos.logback.classic.Level
+import net.bqc.jrelifix.config.OptParser
+import net.bqc.jrelifix.context.validation.{CustomClassLoaderThreadFactory, TestCaseFilter, TestCaseFinderUtils}
 import net.bqc.jrelifix.model.{Identifier, JaguarFaultIdentifier}
 import org.junit.runner.JUnitCore
 import org.slf4j.LoggerFactory
@@ -26,8 +25,13 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
 
   override def call(): ArrayBuffer[Identifier] = {
     LoggerFactory.getLogger("JaguarLogger").asInstanceOf[ch.qos.logback.classic.Logger].setLevel(Level.OFF);
-    val classes = CustomJaguarFileUtils.findTestClasses(config.testDir)
+    val original = System.out
+    System.setOut(new PrintStream((_: Int) => {}))
+
+    val classes = TestCaseFinderUtils.findTestClasses(config.testDir, TestCaseFilter(OptParser.params().testsIgnored))
     execute(classes)
+
+    System.setOut(original)
     this.rankedList
   }
 
@@ -51,11 +55,11 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
 
     try {
       this.rankedList = executor
-        .submit(new JaguarLocalizationLibrary(this.config, this.classpath))
+        .submit(JaguarLocalizationLibrary(this.config, this.classpath))
         .get(5, TimeUnit.MINUTES)
     }
     catch {
-      case e: TimeoutException => {
+      case _: TimeoutException => {
         throw new TimeoutException("Fault Localization exceeds time limit!")
       }
       case e: Exception => {
@@ -65,39 +69,5 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
     finally {
       executor.shutdown()
     }
-  }
-}
-
-class CustomClassLoaderThreadFactory(val classLoader: ClassLoader) extends ThreadFactory {
-  override def newThread(r: Runnable): Thread = {
-    val thread = new Thread(r)
-    thread.setDaemon(true)
-    thread.setContextClassLoader(classLoader)
-    thread
-  }
-}
-
-object CustomJaguarFileUtils {
-  def findTestClasses(testDir: File): Array[Class[_]] = {
-    val  testClassFiles: util.List[File] = FileUtils.findFilesEndingWith(testDir, Array[String]("Test.class"))
-    val classes: util.List[Class[_]] = convertToClasses(testClassFiles, testDir)
-    val classesArr = new Array[Class[_]](classes.size)
-    for(i <- 0 until classes.size()) {
-      classesArr(i) = classes.get(i)
-    }
-    classesArr
-  }
-
-  def convertToClasses(classFiles: util.List[File], classesDir: File): util.List[Class[_]] = {
-    val classes: util.List[Class[_]] = new util.ArrayList[Class[_]]()
-    val var3: util.Iterator[java.io.File] = classFiles.iterator()
-    while (var3.hasNext) {
-      val file = var3.next()
-      val c = {
-        Class.forName(FileUtils.getClassNameFromFile(classesDir, file), false, Thread.currentThread().getContextClassLoader)
-      }
-      if (!Modifier.isAbstract(c.getModifiers)) classes.add(c)
-    }
-    classes
   }
 }

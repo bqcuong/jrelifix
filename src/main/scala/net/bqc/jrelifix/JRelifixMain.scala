@@ -3,9 +3,10 @@ package net.bqc.jrelifix
 import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
+import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.context.validation.compiler.DocumentASTRewrite
+import net.bqc.jrelifix.context.validation.TestCaseValidator
 import net.bqc.jrelifix.model.Identifier
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
 import org.apache.log4j.Logger
@@ -35,16 +36,18 @@ object JRelifixMain {
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](OptParser.params().sourceFolder)
     val sourceFilesArray: Array[String] = SourceUtils.getSourceFiles(sourcePath)
-    val sourceFileContents: scala.collection.mutable.HashMap[String, DocumentASTRewrite] =
+    val sourceFileContents: java.util.HashMap[String, DocumentASTRewrite] =
       SourceUtils.buildSourceDocumentMap(sourceFilesArray, OptParser.params().projFolder, astParser)
     logger.info("Done building source file contents!")
-    //
-    //    logger.info("Initializing Compiler/TestCases Invoker ...")
-    //    val compiler = initializeCompiler(sourceFileContents)
-    //    val testInvoker = JUnitTestInvoker(astParser);
-    //    testInvoker.loadTestsCasesFromOpts()
-    //    logger.info("Done initializing!")
-    //
+
+    logger.info("Initializing Compiler/TestCases Invoker ...")
+    val compiler = initializeCompiler(sourceFileContents)
+    val testValidator = TestCaseValidator()
+    testValidator.loadTestsCasesFromOpts()
+    logger.info("Done initializing!")
+    testValidator.validateAllTestCases(OptParser.params().classpath())
+
+
     //    logger.info("Initializing Mutation Generator ...")
     //    val mutationGenerator = new MutationGenerator(sourceFileContents)
     //    logger.info("Done initializing!")
@@ -56,22 +59,22 @@ object JRelifixMain {
     //    logger.info("Done Repair!")
   }
 
-  //  def initializeCompiler(sourceFileContents: util.HashMap[String, DocumentASTRewrite]): JavaJDKCompiler  = {
-  //    val cpArr = OptParser.params().classpathURLs().map(_.toString)
-  //    val cpArrayList = new util.ArrayList[String]()
-  //    cpArr.foreach(cpArrayList.add)
-  //    val copyIncludes: Array[String] = Array[String]{""}
-  //    val copyExcludes: Array[String] = Array[String]{""}
-  //
-  //    val compiler = new JavaJDKCompiler(
-  //      OptParser.params().sourceClassFolder,
-  //      cpArrayList,
-  //      sourceFileContents,
-  //      copyIncludes,
-  //      copyExcludes
-  //    )
-  //    compiler
-  //  }
+    def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite]): JavaJDKCompiler  = {
+      val cpArr = OptParser.params().classpathURLs().map(_.toString)
+      val srcArr = Array[String] {OptParser.params().sourceFolder}
+      val copyIncludes: Array[String] = Array[String]{""}
+      val copyExcludes: Array[String] = Array[String]{""}
+
+      val compiler = new JavaJDKCompiler(
+        OptParser.params().sourceClassFolder,
+        cpArr,
+        sourceFileContents,
+        srcArr,
+        copyIncludes,
+        copyExcludes
+      )
+      compiler
+    }
 
   def faultLocalization(): ArrayBuffer[Identifier] = {
     var rankedList: ArrayBuffer[Identifier] = null

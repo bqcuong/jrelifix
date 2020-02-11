@@ -3,8 +3,8 @@ package net.bqc.jrelifix.utils
 import java.io.File
 import java.util
 
+import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, Utilities}
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.context.validation.compiler.{DocumentASTRewrite, Utilities}
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.{SuffixFileFilter, TrueFileFilter}
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite
@@ -36,8 +36,8 @@ object SourceUtils {
   }
 
   @throws[Exception]
-  def buildSourceDocumentMap(sourceFilesArray: Array[String], projectPath: String, astParser: JavaParser): scala.collection.mutable.HashMap[String, DocumentASTRewrite] = {
-    val map = new scala.collection.mutable.HashMap[String, DocumentASTRewrite]
+  def buildSourceDocumentMap(sourceFilesArray: Array[String], projectPath: String, astParser: JavaParser): java.util.HashMap[String, DocumentASTRewrite] = {
+    val map = new java.util.HashMap[String, DocumentASTRewrite]
     for (sourceFile <- sourceFilesArray) {
       val relativeFilePath = FileFolderUtils.relativePath(projectPath, sourceFile)
       val backingFile = new File(sourceFile)

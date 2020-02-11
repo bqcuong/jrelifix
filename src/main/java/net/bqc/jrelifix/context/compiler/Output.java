@@ -1,7 +1,7 @@
 /**
  * Source: https://raw.githubusercontent.com/qhanam/Java-RSRepair/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/compiler/Output.java
  */
-package net.bqc.jrelifix.context.validation.compiler;
+package net.bqc.jrelifix.context.compiler;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;

@@ -1,7 +1,7 @@
 /**
  * Source: https://raw.githubusercontent.com/qhanam/Java-RSRepair/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/compiler/MemoryFileManager.java
  */
-package net.bqc.jrelifix.context.validation.compiler;
+package net.bqc.jrelifix.context.compiler;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;

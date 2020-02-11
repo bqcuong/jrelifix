@@ -1,7 +1,7 @@
 /**
  * Source: https://github.com/qhanam/Java-RSRepair/raw/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/Utilities.java
  */
-package net.bqc.jrelifix.context.validation.compiler;
+package net.bqc.jrelifix.context.compiler;
 
 import java.io.File;
 import java.io.FileFilter;
