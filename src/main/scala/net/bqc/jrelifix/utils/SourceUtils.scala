@@ -4,7 +4,7 @@ import java.io.File
 import java.util
 
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.validation.compiler.{DocumentASTRewrite, Utilities}
+import net.bqc.jrelifix.context.validation.compiler.{DocumentASTRewrite, Utilities}
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.{SuffixFileFilter, TrueFileFilter}
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite

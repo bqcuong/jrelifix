@@ -1,7 +1,7 @@
 /**
  * Source: https://github.com/SpoonLabs/astor/raw/master/src/main/java/fr/inria/astor/core/validation/results/TestResult.java
  */
-package net.bqc.jrelifix.validation.executor;
+package net.bqc.jrelifix.context.validation.executor;
 
 import java.util.ArrayList;
 import java.util.List;

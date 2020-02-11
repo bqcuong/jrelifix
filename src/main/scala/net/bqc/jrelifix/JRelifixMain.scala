@@ -5,9 +5,9 @@ import java.io.File
 import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
 import net.bqc.jrelifix.context.parser.JavaParser
+import net.bqc.jrelifix.context.validation.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.model.Identifier
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
-import net.bqc.jrelifix.validation.compiler.DocumentASTRewrite
 import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer

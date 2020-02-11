@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.validation.executor;
+package net.bqc.jrelifix.context.validation.executor;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;

@@ -2,7 +2,7 @@
  * The In-Memory Java Compiler
  * Source: https://raw.githubusercontent.com/qhanam/Java-RSRepair/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/compiler/JavaJDKCompiler.java
  */
-package net.bqc.jrelifix.validation.compiler;
+package net.bqc.jrelifix.context.validation.compiler;
 
 import java.io.File;
 import java.io.FileFilter;
