@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.model
+package net.bqc.jrelifix.identifier
 
 case class JaguarFaultIdentifier(lineNumber: Int,
                                  className: String,

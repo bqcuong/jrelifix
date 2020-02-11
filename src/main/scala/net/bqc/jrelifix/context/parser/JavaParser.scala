@@ -2,7 +2,7 @@ package net.bqc.jrelifix.context.parser
 
 import java.io.File
 
-import net.bqc.jrelifix.model.Identifier
+import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, ClassPathUtils, FileFolderUtils}
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.dom.{ASTNode, ASTParser, ASTVisitor, CompilationUnit, FileASTRequestor, IBinding, TypeDeclaration}
@@ -27,6 +27,10 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
   def identifier2ASTNode(identifier: Identifier): ASTNode = {
     val cu = class2CU(identifier.getClassName())
     ASTUtils.findNode(cu, identifier)
+  }
+
+  def class2Path(className: String): String = {
+    class2FilePathMap(className)
   }
 
   def batchParse(): Unit = {
@@ -57,15 +61,14 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
 
     val requester = new FileASTRequestor() {
       override def acceptAST(sourceFilePath: String, cu: CompilationUnit): Unit = {
-        val relativeFilePath = FileFolderUtils.relativePath(projectPath, sourceFilePath)
-        compilationUnitMap.put(relativeFilePath, cu)
+        compilationUnitMap.put(sourceFilePath, cu)
 
         val packageName = if (cu.getPackage != null) cu.getPackage.getName.getFullyQualifiedName else ""
 
         cu.accept(new ASTVisitor() {
           override def visit(node: TypeDeclaration): Boolean = {
             val className = node.getName.toString
-            class2FilePathMap.put("%s.%s".format(packageName, className), relativeFilePath)
+            class2FilePathMap.put("%s.%s".format(packageName, className), sourceFilePath)
             super.visit(node)
           }
         })

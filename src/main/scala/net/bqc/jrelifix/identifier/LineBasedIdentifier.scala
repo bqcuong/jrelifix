@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.model
+package net.bqc.jrelifix.identifier
 
 class LineBasedIdentifier(lineNumber: Int, className: String) extends Identifier {
 

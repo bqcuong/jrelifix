@@ -21,9 +21,9 @@ public class DocumentASTRewrite {
     public IDocument document;
     public IDocument modifiedDocument;
     public ASTRewrite rewriter;
+    public CompilationUnit cu;
     private boolean modified;
     private boolean tainted;
-    private CompilationUnit cu;
 
     public DocumentASTRewrite(IDocument document, File backingFile, ASTRewrite rewriter, CompilationUnit cu){
         this.backingFile = backingFile;

@@ -3,11 +3,15 @@ package net.bqc.jrelifix
 import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
+import net.bqc.jrelifix.context.EngineContext
 import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
+import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
+import net.bqc.jrelifix.context.mutation.MutationGenerator
 import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.validation.TestCaseValidator
-import net.bqc.jrelifix.model.Identifier
+import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
+import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
 import org.apache.log4j.Logger
 
@@ -33,11 +37,15 @@ object JRelifixMain {
     logger.info("Faults after transforming to Java Nodes:")
     topNFaults.take(OptParser.params().topNFaults).foreach(logger.info(_))
 
+    logger.debug("Initializing Diff Collector...")
+    val differ = DiffCollector()
+    logger.debug("Done Initializing Diff Collector!")
+
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](OptParser.params().sourceFolder)
     val sourceFilesArray: Array[String] = SourceUtils.getSourceFiles(sourcePath)
     val sourceFileContents: java.util.HashMap[String, DocumentASTRewrite] =
-      SourceUtils.buildSourceDocumentMap(sourceFilesArray, OptParser.params().projFolder, astParser)
+      SourceUtils.buildSourceDocumentMap(sourceFilesArray, astParser)
     logger.info("Done building source file contents!")
 
     logger.info("Initializing Compiler/TestCases Invoker ...")
@@ -45,36 +53,34 @@ object JRelifixMain {
     val testValidator = TestCaseValidator()
     testValidator.loadTestsCasesFromOpts()
     logger.info("Done initializing!")
-    testValidator.validateAllTestCases(OptParser.params().classpath())
 
+    logger.info("Initializing Mutation Generator ...")
+    val mutationGenerator = new MutationGenerator(sourceFileContents, astParser)
+    logger.info("Done initializing!")
 
-    //    logger.info("Initializing Mutation Generator ...")
-    //    val mutationGenerator = new MutationGenerator(sourceFileContents)
-    //    logger.info("Done initializing!")
-    //
-    //    logger.info("Running Repair Engine ...")
-    //    val context = new EngineContext(astParser, compiler, testInvoker, mutationGenerator)
-    //    val engine: APREngine = JRelifixEngine(topNFaults, context)
-    //    engine.repair()
-    //    logger.info("Done Repair!")
+    logger.info("Running Repair Engine ...")
+    val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)
+    val engine: APREngine = JRelifixEngine(topNFaults, context)
+    engine.repair()
+    logger.info("Done Repair!")
   }
 
-    def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite]): JavaJDKCompiler  = {
-      val cpArr = OptParser.params().classpathURLs().map(_.toString)
-      val srcArr = Array[String] {OptParser.params().sourceFolder}
-      val copyIncludes: Array[String] = Array[String]{""}
-      val copyExcludes: Array[String] = Array[String]{""}
+  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite]): JavaJDKCompiler  = {
+    val cpArr = OptParser.params().classpathURLs().map(_.toString)
+    val srcArr = Array[String] {OptParser.params().sourceFolder}
+    val copyIncludes: Array[String] = Array[String]{""}
+    val copyExcludes: Array[String] = Array[String]{""}
 
-      val compiler = new JavaJDKCompiler(
-        OptParser.params().sourceClassFolder,
-        cpArr,
-        sourceFileContents,
-        srcArr,
-        copyIncludes,
-        copyExcludes
-      )
-      compiler
-    }
+    val compiler = new JavaJDKCompiler(
+      OptParser.params().sourceClassFolder,
+      cpArr,
+      sourceFileContents,
+      srcArr,
+      copyIncludes,
+      copyExcludes
+    )
+    compiler
+  }
 
   def faultLocalization(): ArrayBuffer[Identifier] = {
     var rankedList: ArrayBuffer[Identifier] = null
@@ -103,7 +109,7 @@ object JRelifixMain {
           new File(OptParser.params().testClassFolder),
           OptParser.params().isDataFlow)
 
-        val locLib = new JaguarLocalizationLibrary(locConfig.asInstanceOf[JaguarConfig],
+        val locLib = JaguarLocalizationLibrary(locConfig.asInstanceOf[JaguarConfig],
           ClassPathUtils.parseClassPaths(OptParser.params().classpath()))
         locLib.run()
         rankedList = locLib.rankedList

@@ -36,16 +36,15 @@ object SourceUtils {
   }
 
   @throws[Exception]
-  def buildSourceDocumentMap(sourceFilesArray: Array[String], projectPath: String, astParser: JavaParser): java.util.HashMap[String, DocumentASTRewrite] = {
+  def buildSourceDocumentMap(sourceFilesArray: Array[String], astParser: JavaParser): java.util.HashMap[String, DocumentASTRewrite] = {
     val map = new java.util.HashMap[String, DocumentASTRewrite]
     for (sourceFile <- sourceFilesArray) {
-      val relativeFilePath = FileFolderUtils.relativePath(projectPath, sourceFile)
       val backingFile = new File(sourceFile)
       val encoded = Utilities.readFromFile(backingFile)
       val contents = new Document(new String(encoded))
-      val cu = astParser.filePath2CU(relativeFilePath)
+      val cu = astParser.filePath2CU(sourceFile)
       val docrw = new DocumentASTRewrite(contents, backingFile, ASTRewrite.create(cu.getAST), cu)
-      map.put(relativeFilePath, docrw)
+      map.put(sourceFile, docrw)
     }
     map
   }

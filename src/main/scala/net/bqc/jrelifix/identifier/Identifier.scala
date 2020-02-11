@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.model
+package net.bqc.jrelifix.identifier
 
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger

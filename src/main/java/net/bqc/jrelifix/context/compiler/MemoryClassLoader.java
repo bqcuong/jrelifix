@@ -28,7 +28,7 @@ public class MemoryClassLoader extends ClassLoader {
     }
 
     public MemoryClassLoader(Map<String, String> map, String[] classpath, Writer output) {
-        List<Source> list = new ArrayList<Source>();
+        List<Source> list = new ArrayList<>();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             list.add(new Source(entry.getKey(), Kind.SOURCE, entry.getValue()));
         }

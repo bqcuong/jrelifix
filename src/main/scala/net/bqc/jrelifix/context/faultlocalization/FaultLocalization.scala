@@ -1,6 +1,6 @@
 package net.bqc.jrelifix.context.faultlocalization
 
-import net.bqc.jrelifix.model.Identifier
+import net.bqc.jrelifix.identifier.Identifier
 
 import scala.collection.mutable.ArrayBuffer
 
