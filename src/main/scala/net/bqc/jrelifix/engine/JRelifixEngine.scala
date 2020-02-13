@@ -37,6 +37,17 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier], override
 
       val wholeTSValidation = this.context.testValidator.validateAllTestCases(OptParser.params().classpath())
       logger.debug("Validation result on the whole Test Suite: " + wholeTSValidation._1)
+
+      if (wholeTSValidation._1) {
+        logger.debug("==========================================")
+        logger.debug("FOUND A REPAIR")
+        logger.debug("==========================================")
+        return
+      }
     }
+
+    logger.debug("==========================================")
+    logger.debug("NOT FOUND ANY REPAIR")
+    logger.debug("==========================================")
   }
 }

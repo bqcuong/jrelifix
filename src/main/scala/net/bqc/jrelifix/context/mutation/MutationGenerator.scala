@@ -15,6 +15,6 @@ object MutationType extends Enumeration {
 class MutationGenerator(sourceFileContents: util.HashMap[String, DocumentASTRewrite], astParser: JavaParser) {
 
   def getRandomMutation(faultStatement: Identifier, modifiedExpressions: ArrayBuffer[ModifiedExpression]): Mutation = {
-    RevertMutation(sourceFileContents, faultStatement, modifiedExpressions, astParser)
+    NegateMutation(sourceFileContents, faultStatement, astParser)
   }
 }
