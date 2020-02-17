@@ -30,7 +30,6 @@ case class RevertMutation(sourceFileContents: util.HashMap[String, DocumentASTRe
       if (filePathFromDiff.endsWith(faultFile)) { // tricky line warning!!!
 
         // choose modified expressions which has LOCs contains the faults
-        logger.debug(modifiedExpr.beginLine, modifiedExpr.endLine, faultLineNumber)
         if (modifiedExpr.beginLine <= faultLineNumber && faultLineNumber <= modifiedExpr.endLine) {
           if (modifiedExpr.modifiedType == ModifiedType.CHANGED) {
             // Modify source code on ASTRewrite

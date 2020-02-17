@@ -43,11 +43,11 @@ public class JUnitTestExecutor {
     
     public static String createOutput(Result result) {
         StringBuilder res = new StringBuilder();
-        res.append("Run Count: ").append(result.getRunCount()).append("\n");
-        res.append("Failed Count: ").append(result.getFailureCount()).append("\n");
-        for (Failure f : result.getFailures()) {
-            res.append("Failure: ").append(f.getMessage()).append("\n");
-        }
+//        res.append("Run Count: ").append(result.getRunCount()).append("\n");
+//        res.append("Failed Count: ").append(result.getFailureCount()).append("\n");
+//        for (Failure f : result.getFailures()) {
+//            res.append("Failure: ").append(f.getMessage()).append("\n");
+//        }
         res.append(OUTSET).append(SEPARATOR).append(result.getFailureCount() == 0).append("\n");
         return res.toString();
     }

@@ -96,7 +96,7 @@ object JRelifixMain {
     }
     else { // using Jaguar Localization Library
       logger.info("Doing localization with Jaguar, heuristic: %s ...".format(OptParser.params().locHeuristic))
-      try {
+      try {x
         import br.usp.each.saeg.jaguar.core.heuristic.Heuristic
 
         // check existing of heuristic in classpath

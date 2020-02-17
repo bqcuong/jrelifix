@@ -9,7 +9,7 @@ import net.bqc.jrelifix.identifier.{Identifier, ModifiedExpression}
 import scala.collection.mutable.ArrayBuffer
 
 object MutationType extends Enumeration {
-  val REVERT = Value
+  val REVERT, NEGATE, DELETE = Value
 }
 
 class MutationGenerator(sourceFileContents: util.HashMap[String, DocumentASTRewrite], astParser: JavaParser) {

@@ -2,7 +2,7 @@ package net.bqc.jrelifix.identifier
 
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
-import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
+import org.eclipse.jdt.core.dom.{ASTNode, Assignment, BooleanLiteral, CharacterLiteral, CompilationUnit, ConditionalExpression, InfixExpression, Name, NullLiteral, NumberLiteral, PostfixExpression, PrefixExpression, StringLiteral, TypeLiteral}
 
 abstract class Identifier {
 
@@ -26,5 +26,30 @@ abstract class Identifier {
        this.getBeginColumn() == id.getBeginColumn() &&
        this.getEndLine() == id.getEndLine() &&
        this.getEndColumn() == id.getEndColumn()
+  }
+
+  def getAstType(): ASTType.Value = {
+    if (javaNode == null) return ASTType.NONE
+
+    javaNode match {
+      case _: Name => ASTType.NAME
+
+      case _: CharacterLiteral => ASTType.LITERAL
+      case _: BooleanLiteral => ASTType.LITERAL
+      case _: TypeLiteral => ASTType.LITERAL
+      case _: NumberLiteral => ASTType.LITERAL
+      case _: NullLiteral => ASTType.LITERAL
+      case _: StringLiteral => ASTType.LITERAL
+
+      case _: Assignment => ASTType.ASSIGNMENT
+
+      case _: InfixExpression => ASTType.STAR_FIX_EXPRESSION
+      case _: PrefixExpression => ASTType.STAR_FIX_EXPRESSION
+      case _: PostfixExpression => ASTType.STAR_FIX_EXPRESSION
+
+      case _: ConditionalExpression => ASTType.CONDITIONAL_EXPRESSION
+
+      case _ => ASTType.NONE
+    }
   }
 }

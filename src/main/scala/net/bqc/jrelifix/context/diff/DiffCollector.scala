@@ -44,11 +44,14 @@ case class DiffCollector() {
 //          logger.debug("SrcASTNode: " + (if (srcAstNode != null) srcAstNode.getClass.getName else null) + "---" + srcAstNode)
 //          logger.debug("DstASTNode: " + (if (dstAstNode != null) dstAstNode.getClass.getName else null) + "---" + dstAstNode)
 
-          val expAst = if (srcAstNode != null) srcAstNode else dstAstNode
+          var expAst = if (srcAstNode != null) srcAstNode else dstAstNode
+          if (action.getName.equals("INS")) expAst = dstAstNode
+          if (action.getName.equals("DEL")) expAst = srcAstNode
+
           val cu = if (srcAstNode != null) srcTG.getCompilationUnit else dstTG.getCompilationUnit
           // TODO: @bqcuong filter which modified node can be collect? an expression? a method invocation? etc
           if (expAst != null) {
-            val mExpression = identifier.ModifiedExpression(
+            val mExpression = ModifiedExpression(
               modifiedFile.filePath,
               action.toString,
               getModifiedType(action.getName),

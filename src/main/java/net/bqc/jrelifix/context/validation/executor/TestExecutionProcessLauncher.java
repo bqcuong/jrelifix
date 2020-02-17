@@ -31,14 +31,14 @@ public class TestExecutionProcessLauncher {
 
         if (javaHome == null) javaHome = System.getProperty("java.home");
         logger.info("Test Case: " + testToExecute);
-        logger.info("Java Home: " + javaHome);
+//        logger.info("Java Home: " + javaHome);
         String systemcp = System.getProperty("java.class.path");
 
         // Be careful when rewrite path: the ones that come first would get picked first,
         // and the picked ones would not get overwritten!
         classpath = classpath + File.pathSeparator + systemcp;
 
-        logger.debug("Classpath: " + classpath.replace(systemcp, ""));
+//        logger.debug("Classpath: " + classpath.replace(systemcp, ""));
 
         try {
             List<String> command = new ArrayList<>();
@@ -70,8 +70,8 @@ public class TestExecutionProcessLauncher {
 
             TestResult tr = getTestResult(p, testToExecute);
             p.destroy();
-            logger.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
-            logger.debug("-------- End of Test --------");
+//            logger.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
+//            logger.debug("-------- End of Test --------");
             return tr;
         }
         catch (Exception ex) {
@@ -92,7 +92,7 @@ public class TestExecutionProcessLauncher {
             executedTest.add(testName);
 
             while ((line = in.readLine()) != null) {
-                logger.debug("Output of running test: " + line);
+                logger.debug("Output: " + line);
 
                 if (line.contains("Exception in thread \"main\"")) {
                     throw new RuntimeException("Exception when running test: " + testName + " => " + line);
