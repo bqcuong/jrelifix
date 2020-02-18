@@ -1,16 +1,12 @@
 package net.bqc.jrelifix.context.mutation
 
-import java.util
-
-import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
-import net.bqc.jrelifix.context.parser.JavaParser
+import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
 import org.eclipse.text.edits.TextEdit
 
-class DeleteMutation(sourceFileContents: util.HashMap[String, DocumentASTRewrite],
-                     faultStatement: Identifier, astParser: JavaParser)
-  extends Mutation(sourceFileContents, faultStatement, astParser) {
+class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends Mutation(faultStatement, projectData) {
 
   override def mutate(): Unit = {
     // Modify source code on ASTRewrite

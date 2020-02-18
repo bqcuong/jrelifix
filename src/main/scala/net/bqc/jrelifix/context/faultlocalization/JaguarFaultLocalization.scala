@@ -1,5 +1,5 @@
 package net.bqc.jrelifix.context.faultlocalization
-import java.io.{File, OutputStream, PrintStream}
+import java.io.{File, PrintStream}
 import java.net.{URL, URLClassLoader}
 import java.util.concurrent._
 

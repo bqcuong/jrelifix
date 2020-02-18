@@ -3,18 +3,13 @@
  */
 package net.bqc.jrelifix.context.compiler;
 
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.ToolProvider;
-
-import org.apache.commons.lang3.StringUtils;
+import java.io.Writer;
+import java.util.*;
 
 /**
  * From https://weblogs.java.net/blog/malenkov/archive/2008/12/how_to_compile.html

@@ -3,12 +3,12 @@
  */
 package net.bqc.jrelifix.context.compiler;
 
-import java.io.File;
-
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+
+import java.io.File;
 
 /**
  * Stores a Document/ASTRewrite pair so that we can synchronize changes to Documents

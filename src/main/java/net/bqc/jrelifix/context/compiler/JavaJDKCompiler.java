@@ -8,11 +8,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * From https://weblogs.java.net/blog/malenkov/archive/2008/12/how_to_compile.html

@@ -3,9 +3,8 @@
  */
 package net.bqc.jrelifix.context.compiler;
 
-import java.net.URI;
-
 import javax.tools.SimpleJavaFileObject;
+import java.net.URI;
 
 /**
  * From https://weblogs.java.net/blog/malenkov/archive/2008/12/how_to_compile.html

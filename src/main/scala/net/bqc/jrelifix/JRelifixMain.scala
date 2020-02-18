@@ -3,13 +3,13 @@ package net.bqc.jrelifix
 import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
-import net.bqc.jrelifix.context.EngineContext
 import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
 import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
 import net.bqc.jrelifix.context.mutation.MutationGenerator
 import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.validation.TestCaseValidator
+import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
@@ -23,16 +23,20 @@ object JRelifixMain {
 
   def main(args: Array[String]): Unit = {
     OptParser.parseOpts(args)
+    val projectData = ProjectData()
 
     logger.info("Trying to set up fault localization ...")
     val topNFaults = faultLocalization()
     logger.info("Finished fault localization!")
     logger.info("Parsing AST ...")
     val astParser = JavaParser(OptParser.params().projFolder, OptParser.params().sourceFolder, OptParser.params().classpath())
-    astParser.batchParse()
+    val (path2CuMap, class2PathMap) = astParser.batchParse()
+    projectData.compilationUnitMap.addAll(path2CuMap)
+    projectData.class2FilePathMap.addAll(class2PathMap)
+
     logger.info("Done parsing AST!")
     logger.info("Transforming faults to Java Nodes ...")
-    topNFaults.foreach(f => f.setJavaNode(astParser.identifier2ASTNode(f)))
+    topNFaults.foreach(f => f.setJavaNode(projectData.identifier2ASTNode(f)))
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
     topNFaults.take(OptParser.params().topNFaults).foreach(logger.info(_))
@@ -43,19 +47,18 @@ object JRelifixMain {
 
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](OptParser.params().sourceFolder)
-    val sourceFilesArray: Array[String] = SourceUtils.getSourceFiles(sourcePath)
-    val sourceFileContents: java.util.HashMap[String, DocumentASTRewrite] =
-      SourceUtils.buildSourceDocumentMap(sourceFilesArray, astParser)
+    projectData.sourceFilesArray.addAll(SourceUtils.getSourceFiles(sourcePath))
+    projectData.sourceFileContents.putAll(SourceUtils.buildSourceDocumentMap(projectData.sourceFilesArray, projectData))
     logger.info("Done building source file contents!")
 
     logger.info("Initializing Compiler/TestCases Invoker ...")
-    val compiler = initializeCompiler(sourceFileContents)
+    val compiler = initializeCompiler(projectData.sourceFileContents)
     val testValidator = TestCaseValidator()
     testValidator.loadTestsCasesFromOpts()
     logger.info("Done initializing!")
 
     logger.info("Initializing Mutation Generator ...")
-    val mutationGenerator = new MutationGenerator(sourceFileContents, astParser)
+    val mutationGenerator = new MutationGenerator(projectData)
     logger.info("Done initializing!")
 
     logger.info("Running Repair Engine ...")
@@ -96,7 +99,7 @@ object JRelifixMain {
     }
     else { // using Jaguar Localization Library
       logger.info("Doing localization with Jaguar, heuristic: %s ...".format(OptParser.params().locHeuristic))
-      try {x
+      try {
         import br.usp.each.saeg.jaguar.core.heuristic.Heuristic
 
         // check existing of heuristic in classpath

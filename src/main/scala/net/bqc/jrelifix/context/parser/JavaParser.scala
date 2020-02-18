@@ -2,38 +2,17 @@ package net.bqc.jrelifix.context.parser
 
 import java.io.File
 
-import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.utils.{ASTUtils, ClassPathUtils, FileFolderUtils}
+import net.bqc.jrelifix.utils.{ClassPathUtils, FileFolderUtils}
 import org.eclipse.jdt.core.JavaCore
-import org.eclipse.jdt.core.dom.{ASTNode, ASTParser, ASTVisitor, CompilationUnit, FileASTRequestor, IBinding, TypeDeclaration}
+import org.eclipse.jdt.core.dom._
+
+import scala.collection.mutable
 
 case class JavaParser(projectPath: String, sourcePath: String, classPath: String) {
   private val API_LEVEL: Int = 8 // target Java 8
   private val COMPLIANCE_LEVEL: String = JavaCore.VERSION_1_8
 
-  /**
-   * relative file path -> CompilationUnit
-   */
-  private val compilationUnitMap: scala.collection.mutable.HashMap[String, CompilationUnit] = new scala.collection.mutable.HashMap[String, CompilationUnit]
-
-  /**
-   * fully qualified class name -> relative file path
-   */
-  private val class2FilePathMap: scala.collection.mutable.HashMap[String, String] = new scala.collection.mutable.HashMap[String, String]
-
-  def class2CU(className: String): CompilationUnit = compilationUnitMap(class2FilePathMap(className))
-  def filePath2CU(relativeFilePath: String): CompilationUnit = compilationUnitMap(relativeFilePath)
-
-  def identifier2ASTNode(identifier: Identifier): ASTNode = {
-    val cu = class2CU(identifier.getClassName())
-    ASTUtils.findNode(cu, identifier)
-  }
-
-  def class2Path(className: String): String = {
-    class2FilePathMap(className)
-  }
-
-  def batchParse(): Unit = {
+  def batchParse(): (scala.collection.mutable.HashMap[String, CompilationUnit], scala.collection.mutable.HashMap[String, String]) = {
     val files: java.util.List[File] = FileFolderUtils.walk(sourcePath, ".java", new java.util.ArrayList[File])
 
     import scala.jdk.CollectionConverters._
@@ -59,6 +38,16 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     JavaCore.setComplianceOptions(COMPLIANCE_LEVEL, options)
     astParser.setCompilerOptions(options)
 
+    /**
+     * relative file path -> CompilationUnit
+     */
+    val compilationUnitMap: mutable.HashMap[String, CompilationUnit] = new mutable.HashMap[String, CompilationUnit]
+
+    /**
+     * fully qualified class name -> relative file path
+     */
+    val class2FilePathMap: mutable.HashMap[String, String] = new mutable.HashMap[String, String]
+
     val requester = new FileASTRequestor() {
       override def acceptAST(sourceFilePath: String, cu: CompilationUnit): Unit = {
         compilationUnitMap.put(sourceFilePath, cu)
@@ -80,5 +69,6 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     }
 
     astParser.createASTs(sourceFilePaths.toArray, null, Array[String](), requester, null)
+    (compilationUnitMap, class2FilePathMap)
   }
 }

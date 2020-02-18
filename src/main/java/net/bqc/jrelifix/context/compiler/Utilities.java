@@ -3,6 +3,8 @@
  */
 package net.bqc.jrelifix.context.compiler;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.nio.file.Files;
@@ -10,8 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
-
-import org.apache.commons.io.FileUtils;
 
 public class Utilities {
 

@@ -2,7 +2,7 @@ package net.bqc.jrelifix.identifier
 
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
-import org.eclipse.jdt.core.dom.{ASTNode, Assignment, BooleanLiteral, CharacterLiteral, CompilationUnit, ConditionalExpression, InfixExpression, Name, NullLiteral, NumberLiteral, PostfixExpression, PrefixExpression, StringLiteral, TypeLiteral}
+import org.eclipse.jdt.core.dom._
 
 abstract class Identifier {
 

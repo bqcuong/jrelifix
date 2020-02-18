@@ -10,7 +10,6 @@ import com.github.gumtreediff.tree.ITree
 import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.diff.gumtree.MyJdtTreeGenerator
 import net.bqc.jrelifix.context.vcs.GitParser
-import net.bqc.jrelifix.identifier
 import net.bqc.jrelifix.identifier.{ModifiedExpression, ModifiedType}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, ASTVisitor, CompilationUnit}
