@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite
 
 abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
 
-  protected val document: DocumentASTRewrite = projectData.sourceFileContents.get(projectData.class2Path(faultStatement.getClassName()))
+  protected val document: DocumentASTRewrite = projectData.sourceFileContents.get(faultStatement.getFileName())
   protected val astRewrite: ASTRewrite = document.rewriter
 
   def mutate(): Unit

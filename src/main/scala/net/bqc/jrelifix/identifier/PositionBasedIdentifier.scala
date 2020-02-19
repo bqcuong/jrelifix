@@ -1,11 +1,9 @@
 package net.bqc.jrelifix.identifier
 
 
-class PositionBasedIdentifier(beginLine: Int,
-                              endLine: Int,
-                              beginColumn: Int,
-                              endColumn: Int,
-                              className: String) extends Identifier {
+class PositionBasedIdentifier(beginLine: Int, endLine: Int,
+                              beginColumn: Int, endColumn: Int)
+  extends Identifier {
 
   override def getBeginLine(): Int = beginLine
 
@@ -17,5 +15,5 @@ class PositionBasedIdentifier(beginLine: Int,
 
   override def getEndColumn(): Int = endColumn
 
-  override def getClassName(): String = className
+  override def getFileName(): String = ???
 }

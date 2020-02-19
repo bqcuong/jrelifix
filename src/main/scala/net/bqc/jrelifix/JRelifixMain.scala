@@ -11,7 +11,7 @@ import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.validation.TestCaseValidator
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
-import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.{Faulty, Identifier}
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
 import org.apache.log4j.Logger
 
@@ -36,7 +36,11 @@ object JRelifixMain {
 
     logger.info("Done parsing AST!")
     logger.info("Transforming faults to Java Nodes ...")
-    topNFaults.foreach(f => f.setJavaNode(projectData.identifier2ASTNode(f)))
+    topNFaults.foreach {
+      case f@(fault: Faulty) =>
+        fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
+        f.setJavaNode(projectData.identifier2ASTNode(f))
+    }
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
     topNFaults.take(OptParser.params().topNFaults).foreach(logger.info(_))

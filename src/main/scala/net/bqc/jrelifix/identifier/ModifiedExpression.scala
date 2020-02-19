@@ -12,5 +12,6 @@ case class ModifiedExpression(filePath: String,
                               beginColumn: Int,
                               endColumn: Int)
 
-  extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn, null){
+  extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn){
+  override def getFileName(): String = filePath
 }

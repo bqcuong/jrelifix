@@ -8,14 +8,13 @@ abstract class Identifier {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
   protected var javaNode: ASTNode = _
-  private var triedTransform: Boolean = false
 
   def getBeginLine(): Int
   def getEndLine(): Int
   def getLine(): Int
   def getBeginColumn(): Int
   def getEndColumn(): Int
-  def getClassName(): String
+  def getFileName(): String
 
   def getJavaNode(): ASTNode = javaNode
   def setJavaNode(javaNode: ASTNode): Unit = this.javaNode = javaNode

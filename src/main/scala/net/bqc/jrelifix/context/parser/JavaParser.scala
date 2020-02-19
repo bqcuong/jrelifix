@@ -39,12 +39,12 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     astParser.setCompilerOptions(options)
 
     /**
-     * relative file path -> CompilationUnit
+     * file path -> CompilationUnit
      */
     val compilationUnitMap: mutable.HashMap[String, CompilationUnit] = new mutable.HashMap[String, CompilationUnit]
 
     /**
-     * fully qualified class name -> relative file path
+     * fully qualified class name -> file path
      */
     val class2FilePathMap: mutable.HashMap[String, String] = new mutable.HashMap[String, String]
 

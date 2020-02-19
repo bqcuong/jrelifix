@@ -39,8 +39,7 @@ object ASTUtils {
         modifiedExpr.beginLine,
         modifiedExpr.endLine,
         modifiedExpr.beginColumn,
-        modifiedExpr.endColumn,
-        null)
+        modifiedExpr.endColumn)
     )
   }
 

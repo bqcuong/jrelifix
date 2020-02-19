@@ -18,7 +18,7 @@ case class RevertMutation(faultStatement: Identifier,
 
   override def mutate(): Unit = {
     // try to revert modified expressions which are faulty lines
-    val faultFile = projectData.class2Path(faultStatement.getClassName())
+    val faultFile = faultStatement.getFileName()
     val faultLineNumber = faultStatement.getLine()
 
     for (modifiedExpr <- modifiedExpressions) {

@@ -19,7 +19,7 @@ case class ProjectData() {
   def filePath2CU(relativeFilePath: String): CompilationUnit = compilationUnitMap(relativeFilePath)
 
   def identifier2ASTNode(identifier: Identifier): ASTNode = {
-    val cu = class2CU(identifier.getClassName())
+    val cu = filePath2CU(identifier.getFileName())
     ASTUtils.findNode(cu, identifier)
   }
 
