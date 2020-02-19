@@ -5,7 +5,7 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
 import org.eclipse.text.edits.TextEdit
 
-class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
+case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
   override def mutate(): Unit = {

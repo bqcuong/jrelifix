@@ -30,6 +30,8 @@ case class ProjectData() {
   }
 
   def initChangedSourcesMap(changedSources: ArrayBuffer[ChangedFile]): Unit = {
-
+    for (changedSource <- changedSources) {
+      changedSourcesMap.put(changedSource.filePath, changedSource)
+    }
   }
 }

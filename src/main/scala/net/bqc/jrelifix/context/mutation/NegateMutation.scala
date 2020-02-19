@@ -6,9 +6,7 @@ import net.bqc.jrelifix.identifier.Identifier
 
 import scala.collection.mutable.ArrayBuffer
 
-case class NegateMutation(faultStatement: Identifier,
-                          modifiedExpressions: ArrayBuffer[ChangedSnippet],
-                          projectData: ProjectData)
+case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
 
   extends Mutation(faultStatement, projectData) {
 

@@ -47,6 +47,8 @@ object JRelifixMain {
 
     logger.debug("Initializing Diff Collector...")
     val differ = DiffCollector()
+    val changedSources = differ.collectChangedSources()
+    projectData.initChangedSourcesMap(changedSources)
     logger.debug("Done Initializing Diff Collector!")
 
     logger.info("Building source file contents (ASTRewriter) ...")

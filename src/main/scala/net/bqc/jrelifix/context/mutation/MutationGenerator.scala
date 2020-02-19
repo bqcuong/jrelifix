@@ -12,7 +12,7 @@ object MutationType extends Enumeration {
 
 class MutationGenerator(projectData: ProjectData) {
 
-  def getRandomMutation(faultStatement: Identifier, modifiedExpressions: ArrayBuffer[ChangedSnippet]): Mutation = {
-    NegateMutation(faultStatement, modifiedExpressions, projectData)
+  def getRandomMutation(faultStatement: Identifier): Mutation = {
+    DeleteMutation(faultStatement, projectData)
   }
 }

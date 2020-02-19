@@ -2,6 +2,7 @@ package net.bqc.jrelifix.engine
 
 import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.EngineContext
+import net.bqc.jrelifix.context.compiler.JavaJDKCompiler
 import net.bqc.jrelifix.context.diff.ChangedSnippet
 import net.bqc.jrelifix.identifier.Identifier
 import org.apache.log4j.Logger
@@ -29,17 +30,19 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier], override
       val compileStatus = this.context.compiler.compile()
       logger.debug("Compile status: " + compileStatus)
 
-      val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, OptParser.params().classpath())
-      logger.debug("Validation result on the reduced Test Suite: " + reducedTSValidation._1)
+      if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
+        val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, OptParser.params().classpath())
+        logger.debug("Validation result on the reduced Test Suite: " + reducedTSValidation._1)
 
-      val wholeTSValidation = this.context.testValidator.validateAllTestCases(OptParser.params().classpath())
-      logger.debug("Validation result on the whole Test Suite: " + wholeTSValidation._1)
+        val wholeTSValidation = this.context.testValidator.validateAllTestCases(OptParser.params().classpath())
+        logger.debug("Validation result on the whole Test Suite: " + wholeTSValidation._1)
 
-      if (wholeTSValidation._1) {
-        logger.debug("==========================================")
-        logger.debug("FOUND A REPAIR")
-        logger.debug("==========================================")
-        return
+        if (wholeTSValidation._1) {
+          logger.debug("==========================================")
+          logger.debug("FOUND A REPAIR")
+          logger.debug("==========================================")
+          return
+        }
       }
     }
 
