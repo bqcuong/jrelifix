@@ -7,17 +7,23 @@ import com.github.gumtreediff.actions.model.Action
 import com.github.gumtreediff.client.Run
 import com.github.gumtreediff.matchers.Matchers
 import com.github.gumtreediff.tree.ITree
+import gumtree.spoon.AstComparator
 import net.bqc.jrelifix.config.OptParser
-import net.bqc.jrelifix.context.diff.gumtree.MyJdtTreeGenerator
+import net.bqc.jrelifix.context.diff.gt.MyJdtTreeGenerator
+import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.vcs.GitParser
-import net.bqc.jrelifix.identifier.{ModifiedExpression, ModifiedType}
+import net.bqc.jrelifix.identifier.{Identifier, SimpleIdentifier}
+import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, ASTVisitor, CompilationUnit}
+import spoon.reflect.cu.position.NoSourcePosition
+import spoon.reflect.declaration.CtElement
 
 import scala.collection.mutable.ArrayBuffer
 
 case class DiffCollector() {
 
+  val PREVIOUS_VERSION_PREFIX = "^"
   private val gitParser = new GitParser
   private val logger: Logger = Logger.getLogger(this.getClass)
 
@@ -25,57 +31,27 @@ case class DiffCollector() {
    * Default supporting VCS is Git
    * @return
    */
-  def collectModifiedExpressions(): ArrayBuffer[ModifiedExpression] = {
-    val modifiedExpressions = ArrayBuffer[ModifiedExpression]()
+  def collectChangedSources(): ArrayBuffer[ChangedFile] = {
+    val changedSources = ArrayBuffer[ChangedFile]()
     val bugInducingCommits = OptParser.params().bugInducingCommits
     this.initializeGumTree()
 
     for (commit <- bugInducingCommits) {
-      val modifiedFiles = gitParser.getModifiedFiles(commit)
-      for (modifiedFile <- modifiedFiles) {
-//        logger.debug("File: " + modifiedFile.filePath)
-        val (actions, srcTG, dstTG) = collectDiffActions(modifiedFile)
-        import scala.jdk.CollectionConverters._
-        for (action <- actions.asScala) {
-          val srcAstNode = getAstNode(action.getNode, srcTG.getCompilationUnit)
-          val dstAstNode = getAstNode(action.getNode, dstTG.getCompilationUnit)
-//          logger.debug("Action: " + action)
-//          logger.debug("SrcASTNode: " + (if (srcAstNode != null) srcAstNode.getClass.getName else null) + "---" + srcAstNode)
-//          logger.debug("DstASTNode: " + (if (dstAstNode != null) dstAstNode.getClass.getName else null) + "---" + dstAstNode)
-
-          var expAst = if (srcAstNode != null) srcAstNode else dstAstNode
-          if (action.getName.equals("INS")) expAst = dstAstNode
-          if (action.getName.equals("DEL")) expAst = srcAstNode
-
-          val cu = if (srcAstNode != null) srcTG.getCompilationUnit else dstTG.getCompilationUnit
-          // TODO: @bqcuong filter which modified node can be collect? an expression? a method invocation? etc
-          if (expAst != null) {
-            val mExpression = ModifiedExpression(
-              modifiedFile.filePath,
-              action.toString,
-              getModifiedType(action.getName),
-              cu.getLineNumber(expAst.getStartPosition),
-              cu.getLineNumber(expAst.getStartPosition + expAst.getLength),
-              cu.getColumnNumber(expAst.getStartPosition) + 1,
-              cu.getColumnNumber(expAst.getStartPosition + expAst.getLength) + 1
-            )
-            mExpression.setJavaNode(expAst)
-            modifiedExpressions.append(mExpression)
-          }
-        }
+      val changedFiles = gitParser.getModifiedFiles(commit)
+      for (changedFile <- changedFiles) {
+        changedSources.addOne(diffAST(changedFile))
       }
     }
-
-    modifiedExpressions
+    changedSources
   }
 
-  private def getModifiedType(actionName: String): ModifiedType.Value = {
+  private def getModifiedType(actionName: String): ChangedType.Value = {
     actionName match {
-      case "UPD" => ModifiedType.CHANGED
-      case "INS" => ModifiedType.ADDED
-      case "DEL" => ModifiedType.REMOVED
-      case "MOV" => ModifiedType.MOVED
-      case _ => ModifiedType.CHANGED
+      case "UPD" => ChangedType.MODIFIED
+      case "INS" => ChangedType.ADDED
+      case "DEL" => ChangedType.REMOVED
+      case "MOV" => ChangedType.MOVED
+      case _ => ChangedType.MODIFIED
     }
   }
 
@@ -97,7 +73,62 @@ case class DiffCollector() {
     Run.initGenerators()
   }
 
-  private def collectDiffActions(modifiedFile: ModifiedFile)
+  private def diffAST(changedFile: ChangedFile) : ChangedFile = {
+    val comparator: AstComparator = new AstComparator()
+    val differ = comparator.compare(changedFile.oldVersion, changedFile.newVersion)
+    val diffs = differ.getRootOperations
+
+    import scala.jdk.CollectionConverters._
+    for (diff <- diffs.asScala) {
+      val changeType = getModifiedType(diff.getAction.getName)
+      var srcNode: CtElement = null
+      var dstNode: CtElement = null
+      changeType match {
+        case ChangedType.ADDED =>
+          dstNode = diff.getSrcNode
+        case ChangedType.REMOVED =>
+          srcNode = diff.getSrcNode
+        case ChangedType.MOVED =>
+          srcNode = diff.getSrcNode
+          dstNode = diff.getDstNode
+        case ChangedType.MODIFIED =>
+          srcNode = diff.getSrcNode
+          dstNode = diff.getDstNode
+        case _ =>
+      }
+
+      val sources: ArrayBuffer[Identifier] = ArrayBuffer[Identifier]()
+      val (srcRange, srcCodeIdentifier) = getSources(srcNode, changedFile, oldVersion = true)
+      val (dstRange, dstCodeIdentifier) = getSources(dstNode, changedFile, oldVersion = false)
+      if (srcCodeIdentifier != null) sources.addOne(srcCodeIdentifier)
+      if (dstCodeIdentifier != null) sources.addOne(dstCodeIdentifier)
+      val changedSnippet = ChangedSnippet(srcRange, dstRange, sources, changeType)
+      changedFile.changedSnippets.addOne(changedSnippet)
+    }
+    changedFile
+  }
+
+  private def getSources(node: CtElement, containerFile: ChangedFile, oldVersion: Boolean): (SourceRange, Identifier) = {
+    if (node != null) {
+      val srcPos = node.getPosition
+      if (!srcPos.isInstanceOf[NoSourcePosition]) {
+        val srcRange = new SourceRange(srcPos.getLine, srcPos.getEndLine, srcPos.getColumn, srcPos.getEndColumn + 1)
+        val codeIdentifier = SimpleIdentifier(
+          srcRange.beginLine, srcRange.endLine,
+          srcRange.beginColumn, srcRange.endColumn,
+          if (oldVersion) PREVIOUS_VERSION_PREFIX + containerFile.filePath else containerFile.filePath)
+
+        val astNode = ASTUtils.findNode(if (oldVersion) containerFile.oldCUnit else containerFile.newCUnit, codeIdentifier)
+        codeIdentifier.setJavaNode(astNode)
+
+        if (astNode == null) logger.debug("Not found ast node for changed node: " + node)
+        return (srcRange, codeIdentifier)
+      }
+    }
+    (null, null)
+  }
+
+  private def collectDiffActions(modifiedFile: ChangedFile)
     : (util.List[Action], MyJdtTreeGenerator, MyJdtTreeGenerator) = {
     val srcTG = new MyJdtTreeGenerator()
     val dstTG = new MyJdtTreeGenerator()

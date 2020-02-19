@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>org.eclipse.jdt.core</artifactId>
-            <version>3.19.0</version>
+            <version>3.16.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -70,6 +70,12 @@
             <groupId>com.github.gumtreediff</groupId>
             <artifactId>gen.jdt</artifactId>
             <version>2.1.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/fr.inria.gforge.spoon.labs/gumtree-spoon-ast-diff -->
+        <dependency>
+            <groupId>fr.inria.gforge.spoon.labs</groupId>
+            <artifactId>gumtree-spoon-ast-diff</artifactId>
+            <version>1.23</version>
         </dependency>
 
         <dependency>

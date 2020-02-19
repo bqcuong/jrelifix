@@ -2,7 +2,8 @@ package net.bqc.jrelifix.engine
 
 import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.EngineContext
-import net.bqc.jrelifix.identifier.{Identifier, ModifiedExpression}
+import net.bqc.jrelifix.context.diff.ChangedSnippet
+import net.bqc.jrelifix.identifier.Identifier
 import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer
@@ -12,11 +13,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier], override
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  var modifiedExpressions: ArrayBuffer[ModifiedExpression] = _
-
   override def repair(): Unit = {
-    modifiedExpressions = this.context.differ.collectModifiedExpressions()
-
     var faultIdx = 0
     while (faultIdx < faults.size) {
       val faultLine = faults(faultIdx)
@@ -24,7 +21,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier], override
       faultIdx = faultIdx + 1
 
       // Mutating
-      val mutation = this.context.mutationGenerator.getRandomMutation(faultLine, this.modifiedExpressions)
+      val mutation = this.context.mutationGenerator.getRandomMutation(faultLine)
       mutation.mutate()
       logger.debug("Try mutating with operator [%s]".format(mutation.getClass.getName))
 

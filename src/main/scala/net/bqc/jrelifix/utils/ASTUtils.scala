@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.utils
 
-import net.bqc.jrelifix.identifier.{Identifier, ModifiedExpression, PositionBasedIdentifier, PredefinedFaultIdentifier}
+import net.bqc.jrelifix.context.diff.ChangedSnippet
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
@@ -29,18 +30,7 @@ object ASTUtils {
     val bl: Block = parent.getParent.asInstanceOf[Block]
     val rewrite: ListRewrite = rewriter.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
     rewrite.insertAfter(to_add, parent, null)
-    return rewrite.getASTRewrite
-  }
-
-  def findModifiedNode(cu: CompilationUnit, modifiedExpr: ModifiedExpression): ASTNode = {
-    this.findNode(
-      cu,
-      new PositionBasedIdentifier(
-        modifiedExpr.beginLine,
-        modifiedExpr.endLine,
-        modifiedExpr.beginColumn,
-        modifiedExpr.endColumn)
-    )
+    rewrite.getASTRewrite
   }
 
   def findNode(cu: CompilationUnit, to_find: Identifier): ASTNode = {

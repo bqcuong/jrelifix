@@ -1,12 +1,13 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.identifier.{Identifier, ModifiedExpression}
+import net.bqc.jrelifix.context.diff.ChangedSnippet
+import net.bqc.jrelifix.identifier.Identifier
 
 import scala.collection.mutable.ArrayBuffer
 
 case class NegateMutation(faultStatement: Identifier,
-                          modifiedExpressions: ArrayBuffer[ModifiedExpression],
+                          modifiedExpressions: ArrayBuffer[ChangedSnippet],
                           projectData: ProjectData)
 
   extends Mutation(faultStatement, projectData) {

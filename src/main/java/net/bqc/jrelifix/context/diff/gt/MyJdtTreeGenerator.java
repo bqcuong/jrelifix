@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.context.diff.gumtree;
+package net.bqc.jrelifix.context.diff.gt;
 
 import com.github.gumtreediff.gen.Register;
 import com.github.gumtreediff.gen.Registry;
