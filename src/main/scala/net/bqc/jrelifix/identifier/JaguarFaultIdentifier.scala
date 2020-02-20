@@ -1,4 +1,6 @@
 package net.bqc.jrelifix.identifier
+import net.bqc.jrelifix.utils.ASTUtils
+import org.eclipse.jdt.core.dom.ASTNode
 
 case class JaguarFaultIdentifier(lineNumber: Int,
                                  className: String,
@@ -25,4 +27,9 @@ case class JaguarFaultIdentifier(lineNumber: Int,
   override def getClassName(): String = className
 
   override def setFileName(fileName: String): Unit = this.fileName = fileName
+
+  override def sameLocation(node: ASTNode): Boolean = {
+    val id = ASTUtils.createFaultIdentifierNoClassName(node)
+    this.getLine() == id.getBeginLine()
+  }
 }
