@@ -144,7 +144,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>net.bqc.jrelifix.driver.Main</mainClass>
+                            <mainClass>net.bqc.jrelifix.JRelifixMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -65,7 +65,6 @@ class GitParser extends VCSParser {
         modifiedFiles.add(filePath)
       }
     }
-//    println(out.toString)
     modifiedFiles
   }
 
@@ -108,12 +107,12 @@ class GitParser extends VCSParser {
 
     val currentCommit = getCommit(commit)
     val parentCommit = getCommit(commit + "^")
-    val modifiedFilePaths = listModifiedFiles(parentCommit, currentCommit)
+    val modifiedRelativeFilePaths = listModifiedFiles(parentCommit, currentCommit)
     val modifiedFiles = ArrayBuffer[ChangedFile]()
-    for (f <- modifiedFilePaths) {
+    for (f <- modifiedRelativeFilePaths) {
       val v1 = getFileContent(f, parentCommit)
       val v2 = getFileContent(f, currentCommit)
-      modifiedFiles.append(new ChangedFile(f, v1, v2))
+      modifiedFiles.append(ChangedFile(OptParser.params().projFolder + File.separator + f, v1, v2))
     }
 
     closeRepository()
