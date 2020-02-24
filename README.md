@@ -6,6 +6,7 @@
 	* Diff Collector (Git)
 	* Java In-Memory Compiler
 	* Test Case Invoker
+	
 ## Implementing
 Reference tool models:
 * [GitHub - qhanam/Java-RSRepair: A Java version of the automatic program repair described by RSRepair and GenProg.](https://github.com/qhanam/Java-RSRepair)
@@ -19,7 +20,8 @@ Reference tool models:
 ![](doc/relifix_operators.png)
 
 * More specific operators for Java can be proposed (from Defects4J, InduceBenchmark)
-### Patch Generation & Validation
+
+### Patch Generation & Validation Approach
 * Follow the proposed algorithm of Relifix
 ## Packaging (Useable for end users)
 * Maven/Gradle Plugin
