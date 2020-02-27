@@ -26,25 +26,12 @@ object JRelifixMain {
     val projectData = ProjectData()
     projectData.setConfig(cfg)
 
-    logger.info("Trying to set up fault localization ...")
-    val topNFaults = faultLocalization(projectData)
-    logger.info("Finished fault localization!")
     logger.info("Parsing AST ...")
     val astParser = JavaParser(projectData.config().projFolder, projectData.config().sourceFolder, projectData.config().classpath())
     val (path2CuMap, class2PathMap) = astParser.batchParse()
     projectData.compilationUnitMap.addAll(path2CuMap)
     projectData.class2FilePathMap.addAll(class2PathMap)
-
     logger.info("Done parsing AST!")
-    logger.info("Transforming faults to Java Nodes ...")
-    topNFaults.foreach {
-      case f@(fault: Faulty) =>
-        fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
-        f.setJavaNode(projectData.identifier2ASTNode(f))
-    }
-    logger.info("Done Transforming!")
-    logger.info("Faults after transforming to Java Nodes:")
-    topNFaults.take(projectData.config().topNFaults).foreach(logger.info(_))
 
     logger.debug("Initializing Diff Collector...")
     val differ = DiffCollector(projectData)
@@ -67,6 +54,19 @@ object JRelifixMain {
     logger.info("Initializing Mutation Generator ...")
     val mutationGenerator = new MutationGenerator(projectData)
     logger.info("Done initializing!")
+
+    logger.info("Trying to set up fault localization ...")
+    val topNFaults = faultLocalization(projectData)
+    logger.info("Finished fault localization!")
+    logger.info("Transforming faults to Java Nodes ...")
+    topNFaults.foreach {
+      case f@(fault: Faulty) =>
+        fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
+        f.setJavaNode(projectData.identifier2ASTNode(f))
+    }
+    logger.info("Done Transforming!")
+    logger.info("Faults after transforming to Java Nodes:")
+    topNFaults.take(projectData.config().topNFaults).foreach(logger.info(_))
 
     logger.info("Running Repair Engine ...")
     val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)

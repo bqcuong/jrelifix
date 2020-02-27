@@ -1,27 +1,24 @@
-//package net.bqc.jrelifix.context.mutation
-//
-//import net.bqc.jrelifix.context.ProjectData
-//import net.bqc.jrelifix.context.diff.{ChangedSnippet, ChangedType}
-//import net.bqc.jrelifix.identifier.{Identifier, ModifiedType}
-//import net.bqc.jrelifix.utils.ASTUtils
-//import org.apache.log4j.Logger
-//import org.eclipse.text.edits.TextEdit
-//
-//import scala.collection.mutable.ArrayBuffer
-//
-//case class RevertMutation(faultStatement: Identifier,
-//                          modifiedExpressions: ArrayBuffer[ChangedSnippet],
-//                          projectData: ProjectData)
-//
-//  extends Mutation(faultStatement, projectData) {
-//
-//  private val logger: Logger = Logger.getLogger(this.getClass)
-//
-//  override def mutate(): Unit = {
-//    // try to revert modified expressions which are faulty lines
-//    val faultFile = faultStatement.getFileName()
-//    val faultLineNumber = faultStatement.getLine()
-//
+package net.bqc.jrelifix.context.mutation
+
+import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.diff.{ChangedSnippet, ChangedType}
+import net.bqc.jrelifix.identifier.{Identifier, ModifiedType}
+import net.bqc.jrelifix.utils.ASTUtils
+import org.apache.log4j.Logger
+import org.eclipse.text.edits.TextEdit
+
+import scala.collection.mutable.ArrayBuffer
+
+case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends Mutation(faultStatement, projectData) {
+
+  private val logger: Logger = Logger.getLogger(this.getClass)
+
+  override def mutate(): Unit = {
+    // try to revert modified expressions which are faulty lines
+    val faultFile = faultStatement.getFileName()
+    val faultLineNumber = faultStatement.getLine()
+
 //    for (modifiedExpr <- modifiedExpressions) {
 //      val filePathFromDiff = modifiedExpr.filePath
 //      if (filePathFromDiff.endsWith(faultFile)) { // tricky line warning!!!
@@ -47,9 +44,9 @@
 //        }
 //      }
 //    }
-//  }
-//
-//  override def unmutate(): Unit = ???
-//
-//  override def applicable(): Boolean = ???
-//}
+  }
+
+  override def unmutate(): Unit = ???
+
+  override def applicable(): Boolean = ???
+}

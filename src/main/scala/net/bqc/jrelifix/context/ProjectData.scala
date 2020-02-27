@@ -1,5 +1,6 @@
 package net.bqc.jrelifix.context
 
+import java.io.{File, FileNotFoundException}
 import java.util
 
 import net.bqc.jrelifix.config.Config
@@ -7,12 +8,15 @@ import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangedFile
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
+import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 case class ProjectData() {
+  private val ORIGINAL = "_original"
+
   private var configData: Config = _
   val compilationUnitMap: mutable.HashMap[String, CompilationUnit] = new mutable.HashMap[String, CompilationUnit]
   val class2FilePathMap: mutable.HashMap[String, String] = new mutable.HashMap[String, String]
@@ -39,10 +43,5 @@ case class ProjectData() {
   }
 
   def setConfig(cfg: Config): Unit = this.configData = cfg
-
   def config(): Config = configData
-
-  def backup(): Unit = {
-//    String srcFolder =
-  }
 }
