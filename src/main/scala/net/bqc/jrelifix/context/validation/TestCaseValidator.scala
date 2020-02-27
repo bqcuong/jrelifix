@@ -1,6 +1,6 @@
 package net.bqc.jrelifix.context.validation
 
-import net.bqc.jrelifix.config.OptParser
+import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.validation.executor.{JUnitTestExecutor, TestExecutionProcessLauncher}
 import net.bqc.jrelifix.utils.ClassPathUtils
 import org.apache.log4j.Logger
@@ -8,7 +8,7 @@ import org.apache.log4j.Logger
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
-case class TestCaseValidator() {
+case class TestCaseValidator(projectData: ProjectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
@@ -25,7 +25,7 @@ case class TestCaseValidator() {
   }
 
   def loadNegativeTestCases(): ArrayBuffer[TestCase] = {
-    val failingTests = OptParser.params().failingTests
+    val failingTests = projectData.config().failingTests
     failingTests.foldLeft(new ArrayBuffer[TestCase]){
       (res, testName) => {
         val tc = new TestCase(testName)
@@ -37,13 +37,13 @@ case class TestCaseValidator() {
 
   def loadPositiveTestCases(negTests: ArrayBuffer[TestCase]): ArrayBuffer[TestCase] = {
     // only validate with failed tests
-    if(OptParser.params().onlyFailTests)
+    if(projectData.config().onlyFailTests)
       return new ArrayBuffer[TestCase]()
 
     val allTestCases = TestCaseFinder(
-      ClassPathUtils.parseClassPaths(OptParser.params().classpath()),
-      OptParser.params().testClassFolder,
-      TestCaseFilter(OptParser.params().testsIgnored)).find()
+      ClassPathUtils.parseClassPaths(projectData.config().classpath()),
+      projectData.config().testClassFolder,
+      TestCaseFilter(projectData.config().testsIgnored)).find()
 
     var positiveTestCases = ArrayBuffer[TestCase]()
     for (tc <- allTestCases) {
@@ -90,8 +90,8 @@ case class TestCaseValidator() {
       classpath,
       testCase.getFullName,
       classOf[JUnitTestExecutor],
-      OptParser.params().javaHome,
-      OptParser.params().testTimeout,
+      projectData.config().javaHome,
+      projectData.config().testTimeout,
       Array[String]{""}
     )
     testResult.wasSuccessful()

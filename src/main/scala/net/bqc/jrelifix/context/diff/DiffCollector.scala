@@ -8,9 +8,8 @@ import com.github.gumtreediff.client.Run
 import com.github.gumtreediff.matchers.Matchers
 import com.github.gumtreediff.tree.ITree
 import gumtree.spoon.AstComparator
-import net.bqc.jrelifix.config.OptParser
+import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.gt.MyJdtTreeGenerator
-import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.vcs.GitParser
 import net.bqc.jrelifix.identifier.{Identifier, SimpleIdentifier}
 import net.bqc.jrelifix.utils.ASTUtils
@@ -21,7 +20,7 @@ import spoon.reflect.declaration.CtElement
 
 import scala.collection.mutable.ArrayBuffer
 
-case class DiffCollector() {
+case class DiffCollector(projectData: ProjectData) {
 
   val PREVIOUS_VERSION_PREFIX = "^"
   private val gitParser = new GitParser
@@ -33,11 +32,11 @@ case class DiffCollector() {
    */
   def collectChangedSources(): ArrayBuffer[ChangedFile] = {
     val changedSources = ArrayBuffer[ChangedFile]()
-    val bugInducingCommits = OptParser.params().bugInducingCommits
+    val bugInducingCommits = projectData.config().bugInducingCommits
     this.initializeGumTree()
 
     for (commit <- bugInducingCommits) {
-      val changedFiles = gitParser.getModifiedFiles(commit)
+      val changedFiles = gitParser.getModifiedFiles(projectData.config().projFolder, commit)
       for (changedFile <- changedFiles) {
         changedSources.addOne(diffAST(changedFile))
       }

@@ -8,7 +8,6 @@ import br.usp.each.saeg.jaguar.core.model.core.requirement.LineTestRequirement
 import br.usp.each.saeg.jaguar.core.runner.JaguarRunListener
 import br.usp.each.saeg.jaguar.core.{JaCoCoClient, Jaguar}
 import ch.qos.logback.classic.Level
-import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.validation.{CustomClassLoaderThreadFactory, TestCaseFilter, TestCaseFinderUtils}
 import net.bqc.jrelifix.identifier.{Identifier, JaguarFaultIdentifier}
 import org.junit.runner.JUnitCore
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ArrayBuffer
 
-case class JaguarConfig (heuristic: Heuristic, projectDir: File, sourceDir: File, testDir: File, isDataFlow: Boolean) {}
+case class JaguarConfig (heuristic: Heuristic, projectDir: File, sourceDir: File, testDir: File, testsIgnored: Seq[String], isDataFlow: Boolean) {}
 
 case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL])
   extends FaultLocalization with Callable[ArrayBuffer[Identifier]]  {
@@ -28,7 +27,7 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
     val original = System.out
     System.setOut(new PrintStream((_: Int) => {}))
 
-    val classes = TestCaseFinderUtils.findTestClasses(config.testDir, TestCaseFilter(OptParser.params().testsIgnored))
+    val classes = TestCaseFinderUtils.findTestClasses(config.testDir, TestCaseFilter(config.testsIgnored))
     execute(classes)
 
     System.setOut(original)

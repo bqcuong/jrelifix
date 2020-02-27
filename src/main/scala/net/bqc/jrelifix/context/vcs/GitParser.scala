@@ -3,7 +3,6 @@ package net.bqc.jrelifix.context.vcs
 import java.io.{ByteArrayOutputStream, File}
 
 import ch.qos.logback.classic.Level
-import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.diff.ChangedFile
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.lib.{ObjectLoader, Repository}
@@ -102,8 +101,8 @@ class GitParser extends VCSParser {
     repository.close()
   }
 
-  def getModifiedFiles(commit: String): ArrayBuffer[ChangedFile] = {
-    loadRepository(OptParser.params().projFolder)
+  def getModifiedFiles(projectPath: String, commit: String): ArrayBuffer[ChangedFile] = {
+    loadRepository(projectPath)
 
     val currentCommit = getCommit(commit)
     val parentCommit = getCommit(commit + "^")
@@ -112,7 +111,7 @@ class GitParser extends VCSParser {
     for (f <- modifiedRelativeFilePaths) {
       val v1 = getFileContent(f, parentCommit)
       val v2 = getFileContent(f, currentCommit)
-      modifiedFiles.append(ChangedFile(OptParser.params().projFolder + File.separator + f, v1, v2))
+      modifiedFiles.append(ChangedFile(projectPath + File.separator + f, v1, v2))
     }
 
     closeRepository()

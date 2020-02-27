@@ -1,6 +1,5 @@
 package net.bqc.jrelifix.utils
 
-import net.bqc.jrelifix.context.diff.ChangedSnippet
 import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._

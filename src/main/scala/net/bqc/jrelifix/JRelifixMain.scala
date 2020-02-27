@@ -22,14 +22,15 @@ object JRelifixMain {
   val logger: Logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
-    OptParser.parseOpts(args)
+    val cfg = OptParser.parseOpts(args)
     val projectData = ProjectData()
+    projectData.setConfig(cfg)
 
     logger.info("Trying to set up fault localization ...")
-    val topNFaults = faultLocalization()
+    val topNFaults = faultLocalization(projectData)
     logger.info("Finished fault localization!")
     logger.info("Parsing AST ...")
-    val astParser = JavaParser(OptParser.params().projFolder, OptParser.params().sourceFolder, OptParser.params().classpath())
+    val astParser = JavaParser(projectData.config().projFolder, projectData.config().sourceFolder, projectData.config().classpath())
     val (path2CuMap, class2PathMap) = astParser.batchParse()
     projectData.compilationUnitMap.addAll(path2CuMap)
     projectData.class2FilePathMap.addAll(class2PathMap)
@@ -43,23 +44,23 @@ object JRelifixMain {
     }
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
-    topNFaults.take(OptParser.params().topNFaults).foreach(logger.info(_))
+    topNFaults.take(projectData.config().topNFaults).foreach(logger.info(_))
 
     logger.debug("Initializing Diff Collector...")
-    val differ = DiffCollector()
+    val differ = DiffCollector(projectData)
     val changedSources = differ.collectChangedSources()
     projectData.initChangedSourcesMap(changedSources)
     logger.debug("Done Initializing Diff Collector!")
 
     logger.info("Building source file contents (ASTRewriter) ...")
-    val sourcePath: Array[String] = Array[String](OptParser.params().sourceFolder)
+    val sourcePath: Array[String] = Array[String](projectData.config().sourceFolder)
     projectData.sourceFilesArray.addAll(SourceUtils.getSourceFiles(sourcePath))
     projectData.sourceFileContents.putAll(SourceUtils.buildSourceDocumentMap(projectData.sourceFilesArray, projectData))
     logger.info("Done building source file contents!")
 
     logger.info("Initializing Compiler/TestCases Invoker ...")
-    val compiler = initializeCompiler(projectData.sourceFileContents)
-    val testValidator = TestCaseValidator()
+    val compiler = initializeCompiler(projectData.sourceFileContents, projectData)
+    val testValidator = TestCaseValidator(projectData)
     testValidator.loadTestsCasesFromOpts()
     logger.info("Done initializing!")
 
@@ -69,19 +70,19 @@ object JRelifixMain {
 
     logger.info("Running Repair Engine ...")
     val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)
-    val engine: APREngine = JRelifixEngine(topNFaults, context)
+    val engine: APREngine = JRelifixEngine(topNFaults, projectData, context)
     engine.repair()
     logger.info("Done Repair!")
   }
 
-  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite]): JavaJDKCompiler  = {
-    val cpArr = OptParser.params().classpathURLs().map(_.toString)
-    val srcArr = Array[String] {OptParser.params().sourceFolder}
+  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): JavaJDKCompiler  = {
+    val cpArr = projectData.config().classpathURLs().map(_.toString)
+    val srcArr = Array[String] {projectData.config().sourceFolder}
     val copyIncludes: Array[String] = Array[String]{""}
     val copyExcludes: Array[String] = Array[String]{""}
 
     val compiler = new JavaJDKCompiler(
-      OptParser.params().sourceClassFolder,
+      projectData.config().sourceClassFolder,
       cpArr,
       sourceFileContents,
       srcArr,
@@ -91,35 +92,35 @@ object JRelifixMain {
     compiler
   }
 
-  def faultLocalization(): ArrayBuffer[Identifier] = {
+  def faultLocalization(projectData: ProjectData): ArrayBuffer[Identifier] = {
     var rankedList: ArrayBuffer[Identifier] = null
 
-    if (OptParser.params().faultLines != null) { // Fault information is given manually
+    if (projectData.config().faultLines != null) { // Fault information is given manually
       // Note: fault lines are not provided with suspiciousness score
       // but with exact location of fault components (startLine, endLine, startColumn, endColumn)
       // because the given fault lines are the absolute correct ones, the repair engine needs only focus on these lines
       logger.info("Doing localization with predefined faults...")
-      val locLib = PredefinedFaultLocalization(OptParser.params().faultLines)
+      val locLib = PredefinedFaultLocalization(projectData.config().faultLines)
       locLib.run()
       rankedList = locLib.rankedList
     }
     else { // using Jaguar Localization Library
-      logger.info("Doing localization with Jaguar, heuristic: %s ...".format(OptParser.params().locHeuristic))
+      logger.info("Doing localization with Jaguar, heuristic: %s ...".format(projectData.config().locHeuristic))
       try {
         import br.usp.each.saeg.jaguar.core.heuristic.Heuristic
 
         // check existing of heuristic in classpath
-        val locHeuristic = Class.forName("br.usp.each.saeg.jaguar.core.heuristic.%sHeuristic".format(OptParser.params().locHeuristic))
+        val locHeuristic = Class.forName("br.usp.each.saeg.jaguar.core.heuristic.%sHeuristic".format(projectData.config().locHeuristic))
           .newInstance.asInstanceOf[Heuristic]
 
-        val locConfig = JaguarConfig(locHeuristic,
-          new File(OptParser.params().projFolder),
-          new File(OptParser.params().sourceClassFolder),
-          new File(OptParser.params().testClassFolder),
-          OptParser.params().isDataFlow)
+        val locConfig: JaguarConfig = JaguarConfig(locHeuristic,
+          new File(projectData.config().projFolder),
+          new File(projectData.config().sourceClassFolder),
+          new File(projectData.config().testClassFolder),
+          projectData.config().testsIgnored,
+          projectData.config().isDataFlow)
 
-        val locLib = JaguarLocalizationLibrary(locConfig.asInstanceOf[JaguarConfig],
-          ClassPathUtils.parseClassPaths(OptParser.params().classpath()))
+        val locLib = JaguarLocalizationLibrary(locConfig, ClassPathUtils.parseClassPaths(projectData.config().classpath()))
         locLib.run()
         rankedList = locLib.rankedList
       }
@@ -138,8 +139,8 @@ object JRelifixMain {
     logger.info("Done localization!")
 
     // Warning: can be a lot of fault Files if the topNFaultLoc from rankedList is large enough. May need improvement later ...
-    logger.info("Considering top %d fault locations".format(OptParser.params().topNFaults))
-    val topNFaults = rankedList.take(OptParser.params().topNFaults)
+    logger.info("Considering top %d fault locations".format(projectData.config().topNFaults))
+    val topNFaults = rankedList.take(projectData.config().topNFaults)
 
     topNFaults
   }

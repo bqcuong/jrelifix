@@ -81,10 +81,8 @@ object OptParser {
       .text("The hash of bug inducing commits. If not being set, it'll be the current commit.")
   }
 
-  private var p: Config = _
-
-  def parseOpts(args: Array[String]): Unit = {
-    p = builder.parse(args, Config()) match {
+  def parseOpts(args: Array[String]): Config = {
+    builder.parse(args, Config()) match {
       case Some(config) =>
         config.sourceFolder = config.projFolder + File.separator + config.sourceFolder
         config.testFolder = config.projFolder + File.separator + config.testFolder
@@ -94,11 +92,5 @@ object OptParser {
       case _ => throw new RuntimeException("Parsing arguments error!")
       // arguments are bad, error message will have been displayed
     }
-  }
-
-  def params(): Config = p
-
-  def main(args: Array[String]): Unit = {
-    parseOpts(Array())
   }
 }
