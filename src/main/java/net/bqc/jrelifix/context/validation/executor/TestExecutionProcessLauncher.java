@@ -30,7 +30,6 @@ public class TestExecutionProcessLauncher {
         Process p = null;
 
         if (javaHome == null) javaHome = System.getProperty("java.home");
-        logger.info("Test Case: " + testToExecute);
 //        logger.info("Java Home: " + javaHome);
         String systemcp = System.getProperty("java.class.path");
 
@@ -55,12 +54,10 @@ public class TestExecutionProcessLauncher {
             pb.redirectOutput();
             pb.redirectErrorStream(true);
 
-            long t_start = System.currentTimeMillis();
             p = pb.start();
             Worker worker = new Worker(p);
             worker.start();
             worker.join(waitTime);
-            long t_end = System.currentTimeMillis();
 
             if (!p.waitFor(waitTime, TimeUnit.SECONDS)) { // java 8 feature
                 logger.info("Test timed out!");
@@ -69,9 +66,8 @@ public class TestExecutionProcessLauncher {
             }
 
             TestResult tr = getTestResult(p, testToExecute);
+            logger.info(String.format("Test Case: %s %s", testToExecute, tr.wasSuccessful() ? "\u2713" : "\u00D7"));
             p.destroy();
-//            logger.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
-//            logger.debug("-------- End of Test --------");
             return tr;
         }
         catch (Exception ex) {
@@ -80,57 +76,12 @@ public class TestExecutionProcessLauncher {
                 p.destroy();
             throw new RuntimeException("Validation return null");
         }
-
     }
 
-    private TestResult getTestResult(Process p, String testName) {
+    private TestResult getTestResult(Process p, String testToExecute) {
         TestResult tr = new TestResult();
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            ArrayList<String> executedTest = new ArrayList<>();
-            executedTest.add(testName);
-
-            while ((line = in.readLine()) != null) {
-                logger.debug("Output: " + line);
-
-                if (line.contains("Exception in thread \"main\"")) {
-                    throw new RuntimeException("Exception when running test: " + testName + " => " + line);
-                }
-
-                if (line.contains(JUnitTestExecutor.SEPARATOR) && line.contains(JUnitTestExecutor.OUTSET)) {
-                    String[] sp = line.split(JUnitTestExecutor.SEPARATOR);
-                    if (sp[1].equals(JUnitTestExecutor.SUCCESS)) {
-                        if (sp[0].contains(JUnitTestExecutor.OUTSET)) {
-                            tr.setSuccessTest(executedTest);
-                            break;
-                        }
-                    }
-                    else if (sp[1].equals(JUnitTestExecutor.FAILURE)) {
-                        if (sp[0].contains(JUnitTestExecutor.OUTSET)) {
-                            tr.setFailTest(executedTest);
-                            break;
-                        }
-                    }
-                    else {
-                        throw new RuntimeException("Invalid Test Execution Output");
-                    }
-                }
-            }
-            in.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (p.exitValue() != 0) tr.failTest.add(testToExecute);
         return tr;
-    }
-
-    protected String urlArrayToString(URL[] urls) {
-        StringBuilder s = new StringBuilder();
-        for (URL url : urls) {
-            s.append(url.getPath()).append(File.pathSeparator);
-        }
-        return s.toString();
     }
 
     private static class Worker extends Thread {

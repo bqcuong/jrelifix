@@ -32,16 +32,18 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
       if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
         val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, projectData.config().classpath())
-        logger.debug("Validation result on the reduced Test Suite: " + reducedTSValidation._1)
+        logger.debug(" ==> REDUCED TEST SUITE VALIDATION: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
 
-        val wholeTSValidation = this.context.testValidator.validateAllTestCases(projectData.config().classpath())
-        logger.debug("Validation result on the whole Test Suite: " + wholeTSValidation._1)
+        if (reducedTSValidation._1) {
+          val wholeTSValidation = this.context.testValidator.validateAllTestCases(projectData.config().classpath())
+          logger.debug("==> WHOLE TEST SUITE VALIDATION: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
 
-        if (wholeTSValidation._1) {
-          logger.debug("==========================================")
-          logger.debug("FOUND A REPAIR")
-          logger.debug("==========================================")
-          return
+          if (wholeTSValidation._1) {
+            logger.debug("==========================================")
+            logger.debug("FOUND A REPAIR")
+            logger.debug("==========================================")
+            return
+          }
         }
       }
     }

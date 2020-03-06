@@ -36,7 +36,7 @@ public class JUnitTestExecutor {
         Result result = new JUnitCore().run(request);
         System.setOut(original);
 
-        System.out.println(createOutput(result));
+//        System.out.println(createOutput(result));
         System.exit(result.wasSuccessful() ? 0 : 1);
     }
     
