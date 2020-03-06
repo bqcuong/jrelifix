@@ -15,7 +15,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 case class ProjectData() {
-  private val ORIGINAL = "_original"
+  private val TEMP_POSTFIX = "_temp"
 
   private var configData: Config = _
   val compilationUnitMap: mutable.HashMap[String, CompilationUnit] = new mutable.HashMap[String, CompilationUnit]
@@ -44,4 +44,24 @@ case class ProjectData() {
 
   def setConfig(cfg: Config): Unit = this.configData = cfg
   def config(): Config = configData
+
+  /**
+   * Clone a new temporary classes folder for the repair process
+   */
+  def makeTemp(): Unit = {
+    val srcClass = new File(config().sourceClassFolder)
+    if (!srcClass.exists()) throw new FileNotFoundException("Source Classes: %s not found!".format(config().sourceClassFolder))
+    val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
+    if (srcClassTemp.exists()) FileUtils.deleteDirectory(srcClassTemp)
+    FileUtils.copyDirectory(srcClass, srcClassTemp)
+    this.configData.sourceClassFolder = srcClassTemp.getAbsolutePath
+  }
+
+  /**
+   * clean temp folder after repair
+   */
+  def cleanTemp(): Unit = {
+    val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
+    FileUtils.deleteDirectory(srcClassTemp)
+  }
 }

@@ -25,6 +25,7 @@ object JRelifixMain {
     val cfg = OptParser.parseOpts(args)
     val projectData = ProjectData()
     projectData.setConfig(cfg)
+    projectData.makeTemp()
 
     logger.info("Parsing AST ...")
     val astParser = JavaParser(projectData.config().projFolder, projectData.config().sourceFolder, projectData.config().classpath())
@@ -73,6 +74,7 @@ object JRelifixMain {
     val engine: APREngine = JRelifixEngine(topNFaults, projectData, context)
     engine.repair()
     logger.info("Done Repair!")
+    projectData.cleanTemp()
   }
 
   def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): JavaJDKCompiler  = {

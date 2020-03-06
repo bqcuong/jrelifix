@@ -1,13 +1,8 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.context.diff.{ChangedSnippet, ChangedType}
-import net.bqc.jrelifix.identifier.{Identifier, ModifiedType}
-import net.bqc.jrelifix.utils.ASTUtils
+import net.bqc.jrelifix.identifier.Identifier
 import org.apache.log4j.Logger
-import org.eclipse.text.edits.TextEdit
-
-import scala.collection.mutable.ArrayBuffer
 
 case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
