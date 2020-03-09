@@ -6,7 +6,7 @@ import java.util
 import net.bqc.jrelifix.config.Config
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangedFile
-import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.{Faulty, Identifier}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
@@ -20,9 +20,10 @@ case class ProjectData() {
   private var configData: Config = _
   val compilationUnitMap: mutable.HashMap[String, CompilationUnit] = new mutable.HashMap[String, CompilationUnit]
   val class2FilePathMap: mutable.HashMap[String, String] = new mutable.HashMap[String, String]
-  val sourceFilesArray: ArrayBuffer[String] = ArrayBuffer[String]()
-  val sourceFileContents: java.util.HashMap[String, DocumentASTRewrite] = new util.HashMap[String, DocumentASTRewrite]()
+  val sourceFilesArray: ArrayBuffer[String] = new ArrayBuffer[String]
+  val sourceFileContents: java.util.HashMap[String, DocumentASTRewrite] = new util.HashMap[String, DocumentASTRewrite]
   val changedSourcesMap: mutable.HashMap[String, ChangedFile] = new mutable.HashMap[String, ChangedFile]
+  val originalFaultFiles: mutable.HashSet[String] = new mutable.HashSet[String]
 
   def class2CU(className: String): CompilationUnit = compilationUnitMap(class2FilePathMap(className))
   def filePath2CU(relativeFilePath: String): CompilationUnit = compilationUnitMap(relativeFilePath)
@@ -63,5 +64,19 @@ case class ProjectData() {
   def cleanTemp(): Unit = {
     val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
     FileUtils.deleteDirectory(srcClassTemp)
+  }
+
+  def backupFaultFileSource(faults: ArrayBuffer[Identifier]): Unit = {
+    val faultFiles = faults.foldLeft(mutable.HashSet[String]()) {
+      (faultFs, f) => {
+        f match {
+          case faulty: Faulty =>
+            faultFs.addOne(class2Path(faulty.getClassName()))
+          case _ =>
+        }
+      }
+      faultFs
+    }
+    originalFaultFiles.addAll(faultFiles)
   }
 }

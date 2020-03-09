@@ -68,6 +68,7 @@ object JRelifixMain {
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
     topNFaults.take(projectData.config().topNFaults).foreach(logger.info(_))
+    projectData.backupFaultFileSource(topNFaults)
 
     logger.info("Running Repair Engine ...")
     val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)

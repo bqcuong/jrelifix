@@ -3,6 +3,7 @@ package net.bqc.jrelifix.engine
 import net.bqc.jrelifix.context.compiler.JavaJDKCompiler
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.utils.DiffUtils
 import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer
@@ -40,7 +41,17 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
           if (wholeTSValidation._1) {
             logger.debug("==========================================")
-            logger.debug("FOUND A REPAIR")
+            logger.debug("FOUND A REPAIR (See below patch):")
+            for (faultFile <- projectData.originalFaultFiles) {
+              val changedDocument = projectData.sourceFileContents.get(faultFile)
+              val originalSourceContent = changedDocument.document.get()
+              val patchedSourceContent = changedDocument.modifiedDocument.get()
+              val diff = DiffUtils.getDiff(originalSourceContent, patchedSourceContent, faultFile)
+              if (!diff.trim.isEmpty) {
+                logger.debug("------------------------------------------\n" + diff)
+              }
+
+            }
             logger.debug("==========================================")
             return
           }

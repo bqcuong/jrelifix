@@ -78,7 +78,7 @@ class GitParser extends VCSParser {
         treeWalk.setRecursive(true)
         treeWalk.setFilter(PathFilter.create(filePath))
         if (!treeWalk.next) {
-          throw new IllegalStateException("Did not find expected file 'README.md'")
+          throw new IllegalStateException("Git Parser Error!")
         }
         val objectId = treeWalk.getObjectId(0)
         val loader: ObjectLoader = repository.open(objectId)
