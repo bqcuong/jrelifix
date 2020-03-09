@@ -21,6 +21,12 @@ Reference tool models:
 
 * More specific operators for Java can be proposed (from Defects4J, InduceBenchmark)
 
+* Three types of regressions bugs (by relifix) and the important operators:
+  * **Local**: can be fixed by *Revert to previous statement*
+  * **Unmask**: can be fixed by *Add condition*
+  * **Remote**
+
+
 ### Patch Generation & Validation Approach
 * Follow the proposed algorithm of Relifix
 ## Packaging (Useable for end users)
