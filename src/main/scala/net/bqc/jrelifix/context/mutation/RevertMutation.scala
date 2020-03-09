@@ -1,9 +1,22 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.diff.ChangedType
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
+import org.eclipse.text.edits.TextEdit
 
+/**
+ * To revert the modified statement/expression to old ones in previous version:
+ * Change actions covered:
+ * - remove ADDED (already supported by Delete Mutation)
+ * - add REMOVED
+ * - revert MODIFIED
+ * - re-swap MOVED
+ * @param faultStatement
+ * @param projectData
+ */
 case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
@@ -13,32 +26,36 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     // try to revert modified expressions which are faulty lines
     val faultFile = faultStatement.getFileName()
     val faultLineNumber = faultStatement.getLine()
+    var applied = false
 
-//    for (modifiedExpr <- modifiedExpressions) {
-//      val filePathFromDiff = modifiedExpr.filePath
-//      if (filePathFromDiff.endsWith(faultFile)) { // tricky line warning!!!
-//
-//        // choose modified expressions which has LOCs contains the faults
-//        if (modifiedExpr.beginLine <= faultLineNumber && faultLineNumber <= modifiedExpr.endLine) {
-//          if (modifiedExpr.modifiedType == ChangedType.MODIFIED) {
-//            // Modify source code on ASTRewrite
-//            ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), modifiedExpr.getJavaNode())
-//          }
-//          else if (modifiedExpr.modifiedType == ChangedType.ADDED) {
-//            val toRemovedNode = ASTUtils.findModifiedNode(document.cu, modifiedExpr)
-//
-//            // Modify source code on ASTRewrite
-//            ASTUtils.removeNode(this.astRewrite, toRemovedNode)
-//          }
-//          // TODO: support REMOVED, MOVED
-//
-//          // Apply changes to the document object
-//          val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
-//          edits.apply(this.document.modifiedDocument, TextEdit.NONE)
-//          return
-//        }
-//      }
-//    }
+    val changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement)
+    if (changedSnippet != null) {
+      if (changedSnippet.changedType == ChangedType.REMOVED) {
+
+        applied = true
+      }
+
+      if (changedSnippet.changedType == ChangedType.MODIFIED) {
+        val prevCode = changedSnippet.srcSource
+        val currCode = changedSnippet.dstSource
+        assert(prevCode != null)
+        assert(currCode != null)
+        val currASTNodeOnDocument = ASTUtils.findNode(document.cu, currCode)
+        ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
+        applied = true
+      }
+
+      if (changedSnippet.changedType == ChangedType.MOVED) {
+        applied = true
+      }
+
+      if (applied) {
+        // Apply changes to the document object
+        val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
+        edits.apply(this.document.modifiedDocument, TextEdit.NONE)
+      }
+      return
+    }
   }
 
   override def unmutate(): Unit = ???

@@ -12,7 +12,8 @@ class SourceRange(val beginLine: Int, val endLine: Int, val beginColumn: Int, va
 
 case class ChangedSnippet(srcRange: SourceRange,
                           dstRange: SourceRange,
-                          sources: ArrayBuffer[Identifier],
+                          srcSource: Identifier,
+                          dstSource: Identifier,
                           changedType: ChangedType.Value) {
 
 }

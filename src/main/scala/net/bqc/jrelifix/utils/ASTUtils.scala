@@ -11,7 +11,11 @@ import org.eclipse.jface.text.Document
 object ASTUtils {
   private val logger: Logger = Logger.getLogger(ASTUtils.getClass)
 
-  // Replace node by replacement
+  /**
+   * ============================
+   * AST Manipulation
+   * ============================
+   */
   def replaceNode(rew: ASTRewrite, node: ASTNode, replacement: ASTNode): ASTRewrite = {
     var rep: ASTNode = null
     rep = ASTNode.copySubtree(node.getAST(), replacement)
@@ -32,13 +36,11 @@ object ASTUtils {
     rewrite.getASTRewrite
   }
 
-  def findNode(cu: CompilationUnit, to_find: Identifier): ASTNode = {
-    if (cu == null) return null
-    val find = new FindASTNodeForIdentifier(cu, to_find)
-    cu.accept(find)
-    find.found
-  }
-
+  /**
+   * ============================
+   * AST Creators
+   * ============================
+   */
   def createFaultIdentifierNoClassName(node: ASTNode): PositionBasedIdentifier = {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
     val nodeLength: Int = node.getLength
@@ -68,9 +70,15 @@ object ASTUtils {
     visitor.toRepNode
   }
 
-  def main(args: Array[String]) : Unit = {
-    val ast = createNodeFromString("(a + b - c) * d < e")
-    print(ast)
+//  def getExpansionParentNode(astNode: ASTNode): ASTNode = {
+//    while (astNode.isInstanceOf[Statement])
+//  }
+
+  def findNode(cu: CompilationUnit, to_find: Identifier): ASTNode = {
+    if (cu == null) return null
+    val find = new FindASTNodeForIdentifier(cu, to_find)
+    cu.accept(find)
+    find.found
   }
 
   private class FindASTNodeForIdentifier(cu: CompilationUnit, to_find: Identifier) extends ASTVisitor {
@@ -89,4 +97,14 @@ object ASTUtils {
     }
   }
 
+  /**
+   * ============================
+   * AST Filters
+   * ============================
+   */
+  def isConditionalStatement(astNode: ASTNode): Boolean = {
+    astNode.isInstanceOf[IfStatement] ||
+    astNode.isInstanceOf[WhileStatement] ||
+    astNode.isInstanceOf[ForStatement]
+  }
 }

@@ -5,6 +5,11 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.eclipse.text.edits.TextEdit
 
+/**
+ * To delete incorrectly added statement/expression in previous version
+ * @param faultStatement
+ * @param projectData
+ */
 case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 

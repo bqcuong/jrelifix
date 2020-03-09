@@ -96,12 +96,9 @@ case class DiffCollector(projectData: ProjectData) {
         case _ =>
       }
 
-      val sources: ArrayBuffer[Identifier] = ArrayBuffer[Identifier]()
       val (srcRange, srcCodeIdentifier) = getSources(srcNode, changedFile, oldVersion = true)
       val (dstRange, dstCodeIdentifier) = getSources(dstNode, changedFile, oldVersion = false)
-      if (srcCodeIdentifier != null) sources.addOne(srcCodeIdentifier)
-      if (dstCodeIdentifier != null) sources.addOne(dstCodeIdentifier)
-      val changedSnippet = ChangedSnippet(srcRange, dstRange, sources, changeType)
+      val changedSnippet = ChangedSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
       changedFile.changedSnippets.addOne(changedSnippet)
     }
     changedFile
