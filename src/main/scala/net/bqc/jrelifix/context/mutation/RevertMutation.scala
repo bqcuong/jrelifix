@@ -20,6 +20,10 @@ import org.eclipse.text.edits.TextEdit
 case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
+  /**
+   * Line Margin for Fault Localization (±2)
+   */
+  private val MAX_LINE_DISTANCE: Int = 2
   private val logger: Logger = Logger.getLogger(this.getClass)
 
   override def mutate(): Unit = {
@@ -28,33 +32,37 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     val faultLineNumber = faultStatement.getLine()
     var applied = false
 
-    val changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement)
-    if (changedSnippet != null) {
-      if (changedSnippet.changedType == ChangedType.REMOVED) {
+    var changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement)
+    if (changedSnippet != null && changedSnippet.changedType == ChangedType.MODIFIED) {
+      val prevCode = changedSnippet.srcSource
+      val currCode = changedSnippet.dstSource
+      assert(prevCode != null)
+      assert(currCode != null)
+      val currASTNodeOnDocument = ASTUtils.findNode(document.cu, currCode)
+      ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
+      applied = true
+    }
 
-        applied = true
-      }
+    changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
+    if (changedSnippet != null && changedSnippet.changedType == ChangedType.REMOVED) {
+      val prevCode = changedSnippet.srcSource
+      assert(prevCode != null)
 
-      if (changedSnippet.changedType == ChangedType.MODIFIED) {
-        val prevCode = changedSnippet.srcSource
-        val currCode = changedSnippet.dstSource
-        assert(prevCode != null)
-        assert(currCode != null)
-        val currASTNodeOnDocument = ASTUtils.findNode(document.cu, currCode)
-        ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
-        applied = true
+      if (changedSnippet.srcRange.beginLine > faultStatement.getBeginLine()) {
+        // insert after fault statement
+        ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
       }
+      else {
+        // insert before fault statement
+        ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
+      }
+      applied = true
+    }
 
-      if (changedSnippet.changedType == ChangedType.MOVED) {
-        applied = true
-      }
-
-      if (applied) {
-        // Apply changes to the document object
-        val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
-        edits.apply(this.document.modifiedDocument, TextEdit.NONE)
-      }
-      return
+    if (applied) {
+      // Apply changes to the document object
+      val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
+      edits.apply(this.document.modifiedDocument, TextEdit.NONE)
     }
   }
 

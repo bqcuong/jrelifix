@@ -1,5 +1,7 @@
 package net.bqc.jrelifix.engine
 
+import java.io.File
+
 import net.bqc.jrelifix.context.compiler.JavaJDKCompiler
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
@@ -46,11 +48,13 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               val changedDocument = projectData.sourceFileContents.get(faultFile)
               val originalSourceContent = changedDocument.document.get()
               val patchedSourceContent = changedDocument.modifiedDocument.get()
-              val diff = DiffUtils.getDiff(originalSourceContent, patchedSourceContent, faultFile)
+              val diff = DiffUtils.getDiff(
+                originalSourceContent,
+                patchedSourceContent,
+                faultFile.replace(projectData.config().projFolder + File.separator, ""))
               if (!diff.trim.isEmpty) {
                 logger.debug("------------------------------------------\n" + diff)
               }
-
             }
             logger.debug("==========================================")
             return

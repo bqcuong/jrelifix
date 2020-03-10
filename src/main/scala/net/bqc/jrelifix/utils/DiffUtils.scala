@@ -17,6 +17,12 @@ object DiffUtils {
 
   def getChangedSnippet(changedSourcesMap: mutable.HashMap[String, ChangedFile],
                 toCheck: Identifier): ChangedSnippet = {
+    getChangedSnippet(changedSourcesMap, toCheck, 0)
+  }
+
+  def getChangedSnippet(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                        toCheck: Identifier,
+                        distance: Int): ChangedSnippet = {
 
     val fileName = toCheck.getFileName()
     val changedFile: ChangedFile = changedSourcesMap.get(fileName).orNull
@@ -30,13 +36,13 @@ object DiffUtils {
     for (cs <- changedSnippets) {
       cs.changedType match {
         case ChangedType.ADDED =>
-          changed = isInRange(toCheck, cs.dstRange)
+          changed = isInRange(toCheck, cs.dstRange, distance)
         case ChangedType.REMOVED =>
-          changed = isInRange(toCheck, cs.srcRange)
+          changed = isInRange(toCheck, cs.srcRange, distance)
         case ChangedType.MODIFIED =>
-          changed = isInRange(toCheck, cs.srcRange) || isInRange(toCheck, cs.dstRange)
+          changed = isInRange(toCheck, cs.srcRange, distance) || isInRange(toCheck, cs.dstRange, distance)
         case ChangedType.MOVED =>
-          changed = isInRange(toCheck, cs.srcRange) || isInRange(toCheck, cs.dstRange)
+          changed = isInRange(toCheck, cs.srcRange, distance) || isInRange(toCheck, cs.dstRange, distance)
       }
 
       if (changed) return cs
@@ -46,35 +52,11 @@ object DiffUtils {
 
   def isChanged(changedSourcesMap: mutable.HashMap[String, ChangedFile],
                 toCheck: Identifier): Boolean = {
-
-    val fileName = toCheck.getFileName()
-    val changedFile: ChangedFile = changedSourcesMap.get(fileName).orNull
-    if (changedFile == null) {
-      logger.debug("Not found modified file for " + fileName)
-      return false
-    }
-
-    var changed = false
-    val changedSnippets = changedFile.changedSnippets
-    for (cs <- changedSnippets) {
-      cs.changedType match {
-        case ChangedType.ADDED =>
-          changed = isInRange(toCheck, cs.dstRange)
-        case ChangedType.REMOVED =>
-          changed = isInRange(toCheck, cs.srcRange)
-        case ChangedType.MODIFIED =>
-          changed = isInRange(toCheck, cs.srcRange) || isInRange(toCheck, cs.dstRange)
-        case ChangedType.MOVED =>
-          changed = isInRange(toCheck, cs.srcRange) || isInRange(toCheck, cs.dstRange)
-      }
-
-      if (changed) return changed
-    }
-    changed
+    getChangedSnippet(changedSourcesMap, toCheck) != null
   }
 
-  def isInRange(toCheck: Identifier, range: SourceRange) : Boolean = {
-    val c1 = toCheck.getBeginLine() >= range.beginLine && toCheck.getEndLine() <= range.endLine
+  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int) : Boolean = {
+    val c1 = toCheck.getBeginLine() >= (range.beginLine - lineDistance) && toCheck.getEndLine() <= (range.endLine + lineDistance)
     val c2 = toCheck.getBeginColumn() == -1 ||
       (toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
     c1 && c2

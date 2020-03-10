@@ -27,13 +27,14 @@ object ASTUtils {
     this.replaceNode(rewriter, toRemoved, rewriter.getAST.createInstance(classOf[Block]))
   }
 
-  def appendNode(rewriter: ASTRewrite, parent: ASTNode, child: ASTNode): ASTRewrite = {
-    if (child == null) throw new Exception("This should never happen")
-    val to_add: ASTNode = ASTNode.copySubtree(parent.getAST(), child)
-    val bl: Block = parent.getParent.asInstanceOf[Block]
+  def insertNode(rewriter: ASTRewrite, currentNode: ASTNode, newNode: ASTNode, insertAfter: Boolean = true): ASTRewrite = {
+    if (newNode == null) throw new Exception("This should never happen")
+    val to_add: ASTNode = ASTNode.copySubtree(currentNode.getAST, newNode)
+    val bl: Block = currentNode.getParent.asInstanceOf[Block]
     val rewrite: ListRewrite = rewriter.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
-    rewrite.insertAfter(to_add, parent, null)
-    rewrite.getASTRewrite
+    if (insertAfter) rewrite.insertAfter(to_add, currentNode, null)
+    else rewrite.insertBefore(to_add, currentNode, null)
+    rewriter
   }
 
   /**
