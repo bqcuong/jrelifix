@@ -18,23 +18,30 @@ object ASTUtils {
    */
   def replaceNode(rew: ASTRewrite, node: ASTNode, replacement: ASTNode): ASTRewrite = {
     var rep: ASTNode = null
-    rep = ASTNode.copySubtree(node.getAST(), replacement)
+    rep = ASTNode.copySubtree(node.getAST, replacement)
     rew.replace(node, rep, null)
     rew
   }
 
-  def removeNode(rewriter: ASTRewrite, toRemoved: ASTNode): ASTRewrite = {
-    this.replaceNode(rewriter, toRemoved, rewriter.getAST.createInstance(classOf[Block]))
+  def swapNodes(rew: ASTRewrite, firstNode: ASTNode, secondNode: ASTNode): ASTRewrite = {
+    val temp: ASTNode = ASTNode.copySubtree(firstNode.getAST, firstNode)
+    replaceNode(rew, firstNode, secondNode)
+    replaceNode(rew, secondNode, temp)
+    rew
   }
 
-  def insertNode(rewriter: ASTRewrite, currentNode: ASTNode, newNode: ASTNode, insertAfter: Boolean = true): ASTRewrite = {
+  def removeNode(rew: ASTRewrite, toRemoved: ASTNode): ASTRewrite = {
+    this.replaceNode(rew, toRemoved, rew.getAST.createInstance(classOf[Block]))
+  }
+
+  def insertNode(rew: ASTRewrite, currentNode: ASTNode, newNode: ASTNode, insertAfter: Boolean = true): ASTRewrite = {
     if (newNode == null) throw new Exception("This should never happen")
     val to_add: ASTNode = ASTNode.copySubtree(currentNode.getAST, newNode)
     val bl: Block = currentNode.getParent.asInstanceOf[Block]
-    val rewrite: ListRewrite = rewriter.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
+    val rewrite: ListRewrite = rew.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
     if (insertAfter) rewrite.insertAfter(to_add, currentNode, null)
     else rewrite.insertBefore(to_add, currentNode, null)
-    rewriter
+    rew
   }
 
   /**
@@ -71,22 +78,42 @@ object ASTUtils {
     visitor.toRepNode
   }
 
-//  def getExpansionParentNode(astNode: ASTNode): ASTNode = {
-//    while (astNode.isInstanceOf[Statement])
-//  }
-
-  def findNode(cu: CompilationUnit, to_find: Identifier): ASTNode = {
+  def searchNodeByIdentifier(cu: CompilationUnit, identifier: Identifier): ASTNode = {
     if (cu == null) return null
-    val find = new FindASTNodeForIdentifier(cu, to_find)
+    val find = new SearchASTNodeByIdentifier(cu, identifier)
     cu.accept(find)
     find.found
   }
 
-  private class FindASTNodeForIdentifier(cu: CompilationUnit, to_find: Identifier) extends ASTVisitor {
+  def searchNodeByLineNumber(cu: CompilationUnit, lineNumber: Int): ASTNode = {
+    if (cu == null) return null
+    val find = new SearchASTNodeByLineNumber(cu, lineNumber)
+    cu.accept(find)
+    find.found
+  }
+
+  private class SearchASTNodeByLineNumber(cu: CompilationUnit, toFind: Int) extends ASTVisitor {
     var found: ASTNode = _
 
     override def preVisit2(node: ASTNode): Boolean = {
-      if (to_find.sameLocation(node)) {
+      val id = ASTUtils.createFaultIdentifierNoClassName(node)
+      if (id.getBeginLine() == toFind) {
+        found = node
+        return false
+      }
+      true
+    }
+
+    def getCompilationUnit: CompilationUnit = {
+      this.cu
+    }
+  }
+
+  private class SearchASTNodeByIdentifier(cu: CompilationUnit, toFind: Identifier) extends ASTVisitor {
+    var found: ASTNode = _
+
+    override def preVisit2(node: ASTNode): Boolean = {
+      if (toFind.sameLocation(node)) {
         found = node
         return false
       }

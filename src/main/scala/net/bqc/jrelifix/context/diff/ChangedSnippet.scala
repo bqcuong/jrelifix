@@ -2,8 +2,6 @@ package net.bqc.jrelifix.context.diff
 
 import net.bqc.jrelifix.identifier.Identifier
 
-import scala.collection.mutable.ArrayBuffer
-
 object ChangedType extends Enumeration {
   val ADDED, REMOVED, MODIFIED, MOVED = Value
 }

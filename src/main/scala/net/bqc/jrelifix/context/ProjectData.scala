@@ -30,7 +30,7 @@ case class ProjectData() {
 
   def identifier2ASTNode(identifier: Identifier): ASTNode = {
     val cu = filePath2CU(identifier.getFileName())
-    ASTUtils.findNode(cu, identifier)
+    ASTUtils.searchNodeByIdentifier(cu, identifier)
   }
 
   def class2Path(className: String): String = {

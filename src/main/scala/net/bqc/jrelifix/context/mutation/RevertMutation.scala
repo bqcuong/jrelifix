@@ -33,17 +33,38 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     var applied = false
 
     var changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement)
-    if (changedSnippet != null && changedSnippet.changedType == ChangedType.MODIFIED) {
+    if (changedSnippet != null) {
       val prevCode = changedSnippet.srcSource
       val currCode = changedSnippet.dstSource
       assert(prevCode != null)
       assert(currCode != null)
-      val currASTNodeOnDocument = ASTUtils.findNode(document.cu, currCode)
-      ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
-      applied = true
+      if (changedSnippet.changedType == ChangedType.MODIFIED) {
+        val currASTNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
+        ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
+        applied = true
+      }
+      else if (changedSnippet.changedType == ChangedType.MOVED && currCode.getBeginLine() == faultLineNumber) {
+        val prevLine = prevCode.getBeginLine()
+        val currentNodeAtPrevLine = ASTUtils.searchNodeByLineNumber(document.cu, prevLine)
+        val currentNode = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
+
+        // Step 1: Remove the current block of code
+        ASTUtils.removeNode(document.rewriter, currentNode)
+
+        // Step 2: Put it again at the previous line number
+        if (prevLine < currCode.getBeginLine()) { // move down
+          ASTUtils.insertNode(document.rewriter, currentNodeAtPrevLine, currCode.getJavaNode(), insertAfter = false)
+        }
+        else { // move up
+          ASTUtils.insertNode(document.rewriter, currentNodeAtPrevLine, currCode.getJavaNode())
+        }
+
+        applied = true
+      }
     }
 
     changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
+    // TODO: Support removed minor expression in a statement
     if (changedSnippet != null && changedSnippet.changedType == ChangedType.REMOVED) {
       val prevCode = changedSnippet.srcSource
       assert(prevCode != null)

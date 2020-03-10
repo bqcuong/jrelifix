@@ -114,7 +114,7 @@ case class DiffCollector(projectData: ProjectData) {
           srcRange.beginColumn, srcRange.endColumn,
           if (oldVersion) PREVIOUS_VERSION_PREFIX + containerFile.filePath else containerFile.filePath)
 
-        val astNode = ASTUtils.findNode(if (oldVersion) containerFile.oldCUnit else containerFile.newCUnit, codeIdentifier)
+        val astNode = ASTUtils.searchNodeByIdentifier(if (oldVersion) containerFile.oldCUnit else containerFile.newCUnit, codeIdentifier)
         codeIdentifier.setJavaNode(astNode)
 
         if (astNode == null) logger.debug("Not found ast node for changed node: " + node)
