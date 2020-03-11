@@ -23,13 +23,6 @@ object ASTUtils {
     rew
   }
 
-  def swapNodes(rew: ASTRewrite, firstNode: ASTNode, secondNode: ASTNode): ASTRewrite = {
-    val temp: ASTNode = ASTNode.copySubtree(firstNode.getAST, firstNode)
-    replaceNode(rew, firstNode, secondNode)
-    replaceNode(rew, secondNode, temp)
-    rew
-  }
-
   def removeNode(rew: ASTRewrite, toRemoved: ASTNode): ASTRewrite = {
     this.replaceNode(rew, toRemoved, rew.getAST.createInstance(classOf[Block]))
   }
