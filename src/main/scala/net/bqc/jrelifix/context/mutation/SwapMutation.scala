@@ -1,5 +1,21 @@
 package net.bqc.jrelifix.context.mutation
 
-class SwapMutation {
+import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.identifier.Identifier
 
+/**
+ * Swap changed statement with siblings
+ * @param faultStatement
+ * @param projectData
+ */
+class SwapMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends Mutation(faultStatement, projectData) {
+
+  override def mutate(): Unit = {
+
+  }
+
+  override def unmutate(): Unit = ???
+
+  override def applicable(): Boolean = ???
 }
