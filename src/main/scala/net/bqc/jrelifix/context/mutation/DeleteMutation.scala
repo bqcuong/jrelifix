@@ -18,10 +18,7 @@ case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
     if (DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) {
       // Modify source code on ASTRewrite
       ASTUtils.removeNode(this.astRewrite, faultStatement.getJavaNode())
-
-      // Apply changes to the document object
-      val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
-      edits.apply(this.document.modifiedDocument, TextEdit.NONE)
+      doMutating()
     }
   }
 

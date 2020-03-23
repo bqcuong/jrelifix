@@ -20,15 +20,9 @@ import org.eclipse.text.edits.TextEdit
 case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
-  /**
-   * Line Margin for Fault Localization (±2)
-   */
-  private val MAX_LINE_DISTANCE: Int = 2
   private val logger: Logger = Logger.getLogger(this.getClass)
 
   override def mutate(): Unit = {
-    // try to revert modified expressions which are faulty lines
-    val faultFile = faultStatement.getFileName()
     val faultLineNumber = faultStatement.getLine()
     var applied = false
 
@@ -62,28 +56,27 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
         applied = true
       }
     }
+    else {
+      changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
+      // TODO: Support removed minor expression in a statement
+      if (changedSnippet != null && changedSnippet.changedType == ChangedType.REMOVED) {
+        val prevCode = changedSnippet.srcSource
+        assert(prevCode != null)
 
-    changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
-    // TODO: Support removed minor expression in a statement
-    if (changedSnippet != null && changedSnippet.changedType == ChangedType.REMOVED) {
-      val prevCode = changedSnippet.srcSource
-      assert(prevCode != null)
-
-      if (changedSnippet.srcRange.beginLine > faultStatement.getBeginLine()) {
-        // insert after fault statement
-        ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
+        if (changedSnippet.srcRange.beginLine > faultStatement.getBeginLine()) {
+          // insert after fault statement
+          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
+        }
+        else {
+          // insert before fault statement
+          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
+        }
+        applied = true
       }
-      else {
-        // insert before fault statement
-        ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
-      }
-      applied = true
     }
 
     if (applied) {
-      // Apply changes to the document object
-      val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
-      edits.apply(this.document.modifiedDocument, TextEdit.NONE)
+      doMutating()
     }
   }
 

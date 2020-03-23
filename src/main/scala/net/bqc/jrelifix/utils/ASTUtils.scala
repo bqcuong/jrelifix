@@ -71,6 +71,39 @@ object ASTUtils {
     visitor.toRepNode
   }
 
+  /**
+   * Get sibling statements (only applicable inside a block of code {})
+   * @param currentNode
+   * @param after
+   * @return
+   */
+  def getSiblingNode(currentNode: ASTNode, after: Boolean): ASTNode = {
+    val parent = currentNode.getParent()
+    if (!parent.isInstanceOf[Block]) return null
+    val block = parent.asInstanceOf[Block]
+    val children = block.statements()
+    var prev: ASTNode = null
+    var currentNodeIndex = -1
+    for (i <- 0 until children.size()) {
+      val child = children.get(i)
+      child match {
+        case childAST: ASTNode =>
+          if (childAST.getStartPosition == currentNode.getStartPosition) {
+            if (!after) return prev
+            currentNodeIndex = i
+          }
+          else if (currentNodeIndex > -1 && after) {
+            return childAST
+          }
+          else {
+            prev = childAST
+          }
+        case _ =>
+      }
+    }
+    null
+  }
+
   def searchNodeByIdentifier(cu: CompilationUnit, identifier: Identifier): ASTNode = {
     if (cu == null) return null
     val find = new SearchASTNodeByIdentifier(cu, identifier)

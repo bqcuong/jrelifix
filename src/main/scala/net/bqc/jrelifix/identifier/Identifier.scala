@@ -27,28 +27,18 @@ abstract class Identifier {
        this.getEndColumn() == id.getEndColumn()
   }
 
-  def getAstType(): ASTType.Value = {
-    if (javaNode == null) return ASTType.NONE
-
+  def isConditionalStatement(): Boolean = {
     javaNode match {
-      case _: Name => ASTType.NAME
-
-      case _: CharacterLiteral => ASTType.LITERAL
-      case _: BooleanLiteral => ASTType.LITERAL
-      case _: TypeLiteral => ASTType.LITERAL
-      case _: NumberLiteral => ASTType.LITERAL
-      case _: NullLiteral => ASTType.LITERAL
-      case _: StringLiteral => ASTType.LITERAL
-
-      case _: Assignment => ASTType.ASSIGNMENT
-
-      case _: InfixExpression => ASTType.STAR_FIX_EXPRESSION
-      case _: PrefixExpression => ASTType.STAR_FIX_EXPRESSION
-      case _: PostfixExpression => ASTType.STAR_FIX_EXPRESSION
-
-      case _: ConditionalExpression => ASTType.CONDITIONAL_EXPRESSION
-
-      case _ => ASTType.NONE
+      case _: ForStatement => true
+      case _: EnhancedForStatement => true
+      case _: WhileStatement => true
+      case _: IfStatement => true
+      case _ => false
     }
+  }
+
+  def isSwappableStatement(): Boolean = {
+    !isConditionalStatement() && !javaNode.isInstanceOf[ConstructorInvocation] &&
+      !javaNode.isInstanceOf[ReturnStatement] && !javaNode.isInstanceOf[VariableDeclaration]
   }
 }
