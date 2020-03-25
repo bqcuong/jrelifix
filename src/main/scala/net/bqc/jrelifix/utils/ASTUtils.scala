@@ -1,10 +1,12 @@
 package net.bqc.jrelifix.utils
 
-import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier}
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
 import org.eclipse.jface.text.Document
+
+import scala.collection.mutable.ArrayBuffer
 
 
 
@@ -51,6 +53,19 @@ object ASTUtils {
     val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
     val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
     PredefinedFaultIdentifier(bl, el, bc, ec, null)
+  }
+
+  def createIdentifierNoFileName(node: ASTNode): PositionBasedIdentifier = {
+    val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
+    val nodeLength: Int = node.getLength
+
+    val bl: Int = cu.getLineNumber(node.getStartPosition)
+    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
+    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
+    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val p = SimpleIdentifier(bl, el, bc, ec, null)
+    p.setJavaNode(searchNodeByIdentifier(cu, p))
+    p
   }
 
   def createNodeFromString(toRep: String): ASTNode = {
@@ -152,13 +167,44 @@ object ASTUtils {
   }
 
   /**
-   * ============================
-   * AST Filters
-   * ============================
+   * Extract the conditional expression from a conditional statement
+   * @param conditionalStatement
+   * @return
    */
-  def isConditionalStatement(astNode: ASTNode): Boolean = {
-    astNode.isInstanceOf[IfStatement] ||
-    astNode.isInstanceOf[WhileStatement] ||
-    astNode.isInstanceOf[ForStatement]
+  def getConditionalNode(conditionalStatement: ASTNode): ASTNode = {
+    conditionalStatement match {
+      case s: IfStatement => s.getExpression
+      case s: WhileStatement => s.getExpression
+      case s: ForStatement => s.getExpression
+      case _ => null
+    }
+  }
+
+  /**
+   * Extract atomic bool ASTNode from a condition expression
+   * @param outerNode
+   * @return
+   */
+  def getBoolNodes(outerNode: ASTNode): ArrayBuffer[ASTNode] = {
+    val result = ArrayBuffer[ASTNode]()
+    outerNode match {
+      case o: InfixExpression =>
+        val op = o.getOperator
+        if (op.equals(InfixExpression.Operator.CONDITIONAL_AND) ||
+            op.equals(InfixExpression.Operator.CONDITIONAL_OR) ||
+            op.equals(InfixExpression.Operator.AND) ||
+            op.equals(InfixExpression.Operator.OR) ||
+            op.equals(InfixExpression.Operator.XOR)) {
+
+          result.addAll(getBoolNodes(o.getLeftOperand))
+          result.addAll(getBoolNodes(o.getRightOperand))
+        }
+        else {
+          result.addOne(outerNode)
+        }
+      case o: ParenthesizedExpression => result.addAll(getBoolNodes(o.getExpression))
+      case _ => result.addOne(outerNode)
+    }
+    result
   }
 }

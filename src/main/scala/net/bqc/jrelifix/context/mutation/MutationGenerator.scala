@@ -10,6 +10,6 @@ object MutationType extends Enumeration {
 class MutationGenerator(projectData: ProjectData) {
 
   def getRandomMutation(faultStatement: Identifier): Mutation = {
-    SwapMutation(faultStatement, projectData, SwapMutation.SWAP_UP)
+    NegateMutation(faultStatement, projectData)
   }
 }

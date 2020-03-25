@@ -6,23 +6,56 @@ import java.util.concurrent.TimeUnit
 
 import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangedType, SourceRange}
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.search.{ChangedSnippetCondition, IChangedSnippetCondition}
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 object DiffUtils {
 
   val logger: Logger = Logger.getLogger(this.getClass)
 
-  def getChangedSnippet(changedSourcesMap: mutable.HashMap[String, ChangedFile],
-                toCheck: Identifier): ChangedSnippet = {
-    getChangedSnippet(changedSourcesMap, toCheck, 0)
+  /**
+   * Search changed snippets with a given condition, inside a given fileName
+   * @param changedSourcesMap
+   * @param fileName if null, search in the whole changed sources map
+   * @param condition
+   * @return
+   */
+  def searchChangedSnippets(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                            condition: IChangedSnippetCondition,
+                            fileName: String = null) : ArrayBuffer[ChangedSnippet] = {
+    val fileNames = ArrayBuffer[String]()
+    val result = ArrayBuffer[ChangedSnippet]()
+
+    if (fileName != null) fileNames.addOne(fileName)
+    else fileNames.addAll(changedSourcesMap.keys)
+
+    for (fn <- fileNames) {
+      val changedFile: ChangedFile = changedSourcesMap.get(fn).orNull
+      if (changedFile == null) {
+        logger.debug("Not found modified file for " + fileName)
+      }
+      else {
+        val changedSnippets = changedFile.changedSnippets
+        for (cs <- changedSnippets) {
+          if (condition.satisfied(cs)) result.addOne(cs)
+        }
+      }
+    }
+    result
   }
 
-  def getChangedSnippet(changedSourcesMap: mutable.HashMap[String, ChangedFile],
-                        toCheck: Identifier,
-                        distance: Int): ChangedSnippet = {
+  def searchChangedSnippetOutside(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                                  toCheck: Identifier): ChangedSnippet = {
+    searchChangedSnippetOutside(changedSourcesMap, toCheck, 0)
+  }
+
+  def searchChangedSnippetOutside(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                                  toCheck: Identifier,
+                                  distance: Int): ChangedSnippet = {
 
     val fileName = toCheck.getFileName()
     val changedFile: ChangedFile = changedSourcesMap.get(fileName).orNull
@@ -40,9 +73,9 @@ object DiffUtils {
         case ChangedType.REMOVED =>
           changed = isInRange(toCheck, cs.srcRange, distance)
         case ChangedType.MODIFIED =>
-          changed = isInRange(toCheck, cs.srcRange, distance) || isInRange(toCheck, cs.dstRange, distance)
+          changed = isInRange(toCheck, cs.dstRange, distance)
         case ChangedType.MOVED =>
-          changed = isInRange(toCheck, cs.srcRange, distance) || isInRange(toCheck, cs.dstRange, distance)
+          changed = isInRange(toCheck, cs.dstRange, distance)
       }
 
       if (changed) return cs
@@ -52,13 +85,15 @@ object DiffUtils {
 
   def isChanged(changedSourcesMap: mutable.HashMap[String, ChangedFile],
                 toCheck: Identifier): Boolean = {
-    getChangedSnippet(changedSourcesMap, toCheck) != null
+    searchChangedSnippetOutside(changedSourcesMap, toCheck) != null ||
+    searchChangedSnippets(changedSourcesMap, ChangedSnippetCondition(toCheck.toSourceRange()),
+      toCheck.getFileName()).nonEmpty
   }
 
-  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int) : Boolean = {
+  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
     val c1 = toCheck.getBeginLine() >= (range.beginLine - lineDistance) && toCheck.getEndLine() <= (range.endLine + lineDistance)
-    val c2 = toCheck.getBeginColumn() == -1 ||
-      (toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
+    val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
+      (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
     c1 && c2
   }
 

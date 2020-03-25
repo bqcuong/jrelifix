@@ -20,7 +20,7 @@ case class TestCaseValidator(projectData: ProjectData) {
     predefinedNegTests.foreach(tc => logger.debug("Initially Negative Tests(-): " + tc.getFullName))
 
     predefinedPosTests.addAll(loadPositiveTestCases(predefinedNegTests))
-    predefinedPosTests.foreach(tc => logger.debug("Initially Positive Tests(+): " + tc.getFullName))
+//    predefinedPosTests.foreach(tc => logger.debug("Initially Positive Tests(+): " + tc.getFullName))
 
   }
 

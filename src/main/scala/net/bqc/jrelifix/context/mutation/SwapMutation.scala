@@ -22,7 +22,7 @@ case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, sw
     var chosenSibNode: ASTNode = null
     var swapUp = swapDirection == SwapMutation.SWAP_UP
 
-    var changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement)
+    var changedSnippet = DiffUtils.searchChangedSnippetOutside(projectData.changedSourcesMap, faultStatement)
     // current faulty line is the changed line => try to swap with its siblings
     if (changedSnippet != null) {
       val currCode = changedSnippet.dstSource
@@ -44,13 +44,16 @@ case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, sw
       }
     }
     else {
-      changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
+      changedSnippet = DiffUtils.searchChangedSnippetOutside(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
       if (changedSnippet != null) {
         val currCode = changedSnippet.dstSource
         assert(currCode != null)
 
         chosenSibNode = ASTUtils.searchNodeByIdentifier(this.document.cu, currCode)
         swapUp = faultStatement.getLine() > currCode.getLine()
+        val actualSibNode: ASTNode = ASTUtils.getSiblingNode(faultStatement.getJavaNode(), after = !swapUp)
+        // validate if the changed statement is indeed a sibling of the faulty statement
+        if (actualSibNode == null) return
       }
     }
 

@@ -26,7 +26,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     val faultLineNumber = faultStatement.getLine()
     var applied = false
 
-    var changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement)
+    var changedSnippet = DiffUtils.searchChangedSnippetOutside(projectData.changedSourcesMap, faultStatement)
     if (changedSnippet != null) {
       val prevCode = changedSnippet.srcSource
       val currCode = changedSnippet.dstSource
@@ -57,7 +57,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
       }
     }
     else {
-      changedSnippet = DiffUtils.getChangedSnippet(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
+      changedSnippet = DiffUtils.searchChangedSnippetOutside(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
       // TODO: Support removed minor expression in a statement
       if (changedSnippet != null && changedSnippet.changedType == ChangedType.REMOVED) {
         val prevCode = changedSnippet.srcSource

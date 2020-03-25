@@ -79,6 +79,7 @@ case class DiffCollector(projectData: ProjectData) {
 
     import scala.jdk.CollectionConverters._
     for (diff <- diffs.asScala) {
+      logger.debug(diff)
       val changeType = getModifiedType(diff.getAction.getName)
       var srcNode: CtElement = null
       var dstNode: CtElement = null

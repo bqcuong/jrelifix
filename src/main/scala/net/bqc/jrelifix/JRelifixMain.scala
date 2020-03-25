@@ -34,11 +34,11 @@ object JRelifixMain {
     projectData.class2FilePathMap.addAll(class2PathMap)
     logger.info("Done parsing AST!")
 
-    logger.debug("Initializing Diff Collector...")
+    logger.info("Initializing Diff Collector...")
     val differ = DiffCollector(projectData)
     val changedSources = differ.collectChangedSources()
     projectData.initChangedSourcesMap(changedSources)
-    logger.debug("Done Initializing Diff Collector!")
+    logger.info("Done Initializing Diff Collector!")
 
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](projectData.config().sourceFolder)
@@ -48,6 +48,11 @@ object JRelifixMain {
 
     logger.info("Initializing Compiler/TestCases Invoker ...")
     val compiler = initializeCompiler(projectData.sourceFileContents, projectData)
+    val compilable = compiler.compile() == JavaJDKCompiler.Status.COMPILED
+    if (!compilable) {
+      logger.error("Please make sure your project compilable first!")
+      System.exit(1)
+    }
     val testValidator = TestCaseValidator(projectData)
     testValidator.loadTestsCasesFromOpts()
     logger.info("Done initializing!")
