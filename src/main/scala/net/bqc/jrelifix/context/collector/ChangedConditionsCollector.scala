@@ -46,7 +46,7 @@ case class ChangedConditionsCollector(projectData: ProjectData) extends Collecto
       val el: Int = cu.getLineNumber(c.getStartPosition + nodeLength)
       val bc: Int = cu.getColumnNumber(c.getStartPosition) + 1
       val ec: Int = cu.getColumnNumber(c.getStartPosition + nodeLength) + 1
-      val conditionCode = new HistoricalIdentifier(bl, el, bc, ec,
+      val conditionCode = HistoricalIdentifier(bl, el, bc, ec,
         changedFile.filePath, changedSnippet.changedType)
       conditionCode.setJavaNode(ASTUtils.searchNodeByIdentifier(cu, conditionCode))
       result.addOne(conditionCode)

@@ -8,5 +8,6 @@ case class HistoricalIdentifier(beginLine: Int,
                                 endColumn: Int,
                                 fileName: String,
                                 changeType: ChangedType.Value)
+
   extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn) {
 }
