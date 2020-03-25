@@ -28,7 +28,7 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     val atomicBools = ASTUtils.getBoolNodes(condition)
     val addedAtomicCodes = ArrayBuffer[Identifier]()
     for (atomicBool <- atomicBools) {
-      val atomicBoolCode = ASTUtils.createIdentifierNoFileName(atomicBool)
+      val atomicBoolCode = ASTUtils.createIdentifierForASTNode(atomicBool)
       val addedAtomicBool = DiffUtils.searchChangedSnippets(
         projectData.changedSourcesMap,
         AddedSnippetCondition(atomicBoolCode),

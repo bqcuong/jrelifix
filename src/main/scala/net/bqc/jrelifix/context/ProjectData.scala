@@ -23,6 +23,7 @@ case class ProjectData() {
   val sourceFilesArray: ArrayBuffer[String] = new ArrayBuffer[String]
   val sourceFileContents: java.util.HashMap[String, DocumentASTRewrite] = new util.HashMap[String, DocumentASTRewrite]
   val changedSourcesMap: mutable.HashMap[String, ChangedFile] = new mutable.HashMap[String, ChangedFile]
+  val changedConditions: mutable.HashMap[String, ArrayBuffer[Identifier]] = new mutable.HashMap[String, ArrayBuffer[Identifier]]()
   val originalFaultFiles: mutable.HashSet[String] = new mutable.HashSet[String]
 
   def class2CU(className: String): CompilationUnit = compilationUnitMap(class2FilePathMap(className))

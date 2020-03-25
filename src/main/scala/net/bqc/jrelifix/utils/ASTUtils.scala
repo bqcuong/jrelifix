@@ -55,7 +55,7 @@ object ASTUtils {
     PredefinedFaultIdentifier(bl, el, bc, ec, null)
   }
 
-  def createIdentifierNoFileName(node: ASTNode): PositionBasedIdentifier = {
+  def createIdentifierForASTNode(node: ASTNode, fileName: String = null): PositionBasedIdentifier = {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
     val nodeLength: Int = node.getLength
 
@@ -63,7 +63,7 @@ object ASTUtils {
     val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
     val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
     val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
-    val p = SimpleIdentifier(bl, el, bc, ec, null)
+    val p = SimpleIdentifier(bl, el, bc, ec, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
   }
@@ -163,6 +163,27 @@ object ASTUtils {
 
     def getCompilationUnit: CompilationUnit = {
       this.cu
+    }
+  }
+
+  /**
+   * Check if the given node is inside the condition of a conditional statement
+   * @param node
+   * @return
+   */
+  def belongsToConditionStatement(node: ASTNode): Boolean = {
+    if (node == null) false
+    else if (ASTUtils.isConditionalStatement(node)) true
+    else if (node.isInstanceOf[Statement]) false
+    else belongsToConditionStatement(node.getParent)
+  }
+
+  def isConditionalStatement(s: ASTNode): Boolean = {
+    s match {
+      case _: ForStatement => true
+      case _: WhileStatement => true
+      case _: IfStatement => true
+      case _ => false
     }
   }
 

@@ -32,12 +32,7 @@ abstract class Identifier {
   }
 
   def isConditionalStatement(): Boolean = {
-    javaNode match {
-      case _: ForStatement => true
-      case _: WhileStatement => true
-      case _: IfStatement => true
-      case _ => false
-    }
+    ASTUtils.isConditionalStatement(javaNode)
   }
 
   def isSwappableStatement(): Boolean = {
