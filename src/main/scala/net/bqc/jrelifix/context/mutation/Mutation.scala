@@ -23,4 +23,6 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
   def mutate(): Unit
   def unmutate(): Unit
   def applicable(): Boolean
+
+  def getRewriter(): ASTRewrite = this.astRewrite
 }

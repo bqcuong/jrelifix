@@ -3,7 +3,7 @@ package net.bqc.jrelifix
 import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
-import net.bqc.jrelifix.context.collector.{ChangedConditionsCollector, ChangedSeedsCollector, SeedsCollector}
+import net.bqc.jrelifix.context.collector.{ChangedSeedsCollector, SeedsCollector}
 import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
 import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
