@@ -9,7 +9,7 @@ import scala.collection.mutable
 
 case class ChangedConditionsCollector(projectData: ProjectData) extends Collector(projectData) {
 
-  override def collect(): mutable.HashMap[String, mutable.HashSet[Identifier]] = {
+  override def collect(): ProjectData = {
     val result = mutable.HashMap[String, mutable.HashSet[Identifier]]()
     for (f <- projectData.changedSourcesMap.keys) {
       val fResult = mutable.HashSet[Identifier]()
@@ -19,7 +19,7 @@ case class ChangedConditionsCollector(projectData: ProjectData) extends Collecto
       }
       result.put(f, fResult)
     }
-    result
+    projectData
   }
 
   private def collectConditions(changedFile: ChangedFile, changedSnippet: ChangedSnippet): mutable.HashSet[Identifier] = {

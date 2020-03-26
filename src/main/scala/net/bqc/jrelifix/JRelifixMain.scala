@@ -3,7 +3,7 @@ package net.bqc.jrelifix
 import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
-import net.bqc.jrelifix.context.collector.{ChangedConditionsCollector, SeedsCollector}
+import net.bqc.jrelifix.context.collector.{ChangedConditionsCollector, ChangedSeedsCollector, SeedsCollector}
 import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
 import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
@@ -40,8 +40,9 @@ object JRelifixMain {
     val changedSources = differ.collectChangedSources()
     projectData.initChangedSourcesMap(changedSources)
     val seedsCollector = SeedsCollector(projectData)
+    val changedSeedsCollector = ChangedSeedsCollector(projectData)
     seedsCollector.collect()
-//    projectData.changedConditions.addAll(conditionsCollector.collect())
+    changedSeedsCollector.collect()
     logger.info("Done Initializing Diff Collector!")
 
     logger.info("Building source file contents (ASTRewriter) ...")

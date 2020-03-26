@@ -3,10 +3,17 @@ package net.bqc.jrelifix.context.diff
 import net.bqc.jrelifix.identifier.Identifier
 
 object ChangedType extends Enumeration {
-  val ADDED, REMOVED, MODIFIED, MOVED = Value
+  val NONE, ADDED, REMOVED, MODIFIED, MOVED = Value
 }
 
-class SourceRange(val beginLine: Int, val endLine: Int, val beginColumn: Int, val endColumn: Int)
+class SourceRange(val beginLine: Int, val endLine: Int, val beginColumn: Int, val endColumn: Int) {
+  override def equals(obj: Any): Boolean =
+    obj match {
+      case that: SourceRange =>
+        that.beginLine == this.beginLine && that.endLine == this.endLine &&
+        that.beginColumn == this.beginColumn && that.endColumn == this.endColumn
+  }
+}
 
 case class ChangedSnippet(srcRange: SourceRange,
                           dstRange: SourceRange,
