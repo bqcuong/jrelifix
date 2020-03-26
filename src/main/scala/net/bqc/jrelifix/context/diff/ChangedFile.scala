@@ -9,7 +9,11 @@ case class ChangedFile(filePath: String,
                        oldVersion: String,
                        newVersion: String) {
 
-  val changedSnippets: ArrayBuffer[ChangedSnippet] = ArrayBuffer[ChangedSnippet]()
+  // Root changed snippets
+  val rootCS: ArrayBuffer[ChangedSnippet] = ArrayBuffer[ChangedSnippet]()
+  // All changed snippets
+  val allCS: ArrayBuffer[ChangedSnippet] = ArrayBuffer[ChangedSnippet]()
+
   val oldCUnit: CompilationUnit = JavaParser.parseAST(oldVersion).asInstanceOf[CompilationUnit]
   val newCUnit: CompilationUnit = JavaParser.parseAST(newVersion).asInstanceOf[CompilationUnit]
 }

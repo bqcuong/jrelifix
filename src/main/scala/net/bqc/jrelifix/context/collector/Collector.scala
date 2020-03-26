@@ -8,5 +8,5 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 abstract class Collector(projectData: ProjectData) {
-  def collect(): mutable.HashMap[String, ArrayBuffer[Identifier]]
+  def collect(): mutable.HashMap[String, mutable.HashSet[Identifier]]
 }

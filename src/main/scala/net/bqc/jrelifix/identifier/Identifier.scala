@@ -1,5 +1,7 @@
 package net.bqc.jrelifix.identifier
 
+import java.util.Objects
+
 import net.bqc.jrelifix.context.diff.SourceRange
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
@@ -29,6 +31,45 @@ abstract class Identifier {
        this.getBeginColumn() == id.getBeginColumn() &&
        this.getEndLine() == id.getEndLine() &&
        this.getEndColumn() == id.getEndColumn()
+  }
+
+  def sameLocation(id: Identifier): Boolean = {
+    this.getBeginLine() == id.getBeginLine() &&
+      this.getBeginColumn() == id.getBeginColumn() &&
+      this.getEndLine() == id.getEndLine() &&
+      this.getEndColumn() == id.getEndColumn()
+  }
+
+  /**
+   * The same source code string, AND same location
+   * @param obj
+   * @return
+   */
+  override def equals(obj: Any): Boolean =
+    obj match {
+      case that: Identifier => {
+        (that.getJavaNode() != null && this.getJavaNode() != null && that.getJavaNode().toString.equals(this.getJavaNode().toString) && that.sameLocation(this)) ||
+        that.sameLocation(this)
+      }
+      case _ => false
+    }
+
+  override def hashCode(): Int = {
+    var result = locationHashCode()
+    if (javaNode != null) {
+      result = 31 * result + javaNode.toString.hashCode
+    }
+    result
+  }
+
+  protected def locationHashCode(): Int = {
+    val prime = 31
+    var result = 1
+    result = prime * result + getBeginLine()
+    result = prime * result + getEndLine()
+    result = prime * result + getBeginColumn()
+    result = prime * result + getEndColumn()
+    result
   }
 
   def isConditionalStatement(): Boolean = {

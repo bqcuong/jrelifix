@@ -3,19 +3,18 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangedType}
 import net.bqc.jrelifix.identifier.{HistoricalIdentifier, Identifier}
 import net.bqc.jrelifix.utils.ASTUtils
-import org.eclipse.jdt.core.dom.{ASTNode, ASTVisitor, Block, CompilationUnit, ForStatement, IfStatement, WhileStatement}
+import org.eclipse.jdt.core.dom._
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 
 case class ChangedConditionsCollector(projectData: ProjectData) extends Collector(projectData) {
 
-  override def collect(): mutable.HashMap[String, ArrayBuffer[Identifier]] = {
-    val result = mutable.HashMap[String, ArrayBuffer[Identifier]]()
+  override def collect(): mutable.HashMap[String, mutable.HashSet[Identifier]] = {
+    val result = mutable.HashMap[String, mutable.HashSet[Identifier]]()
     for (f <- projectData.changedSourcesMap.keys) {
-      val fResult = ArrayBuffer[Identifier]()
+      val fResult = mutable.HashSet[Identifier]()
       val changedFile = projectData.changedSourcesMap.get(f).orNull
-      for (s <- changedFile.changedSnippets) {
+      for (s <- changedFile.rootCS) {
         fResult.addAll(collectConditions(changedFile, s))
       }
       result.put(f, fResult)
@@ -23,8 +22,8 @@ case class ChangedConditionsCollector(projectData: ProjectData) extends Collecto
     result
   }
 
-  private def collectConditions(changedFile: ChangedFile, changedSnippet: ChangedSnippet): ArrayBuffer[Identifier] = {
-    val result = ArrayBuffer[Identifier]()
+  private def collectConditions(changedFile: ChangedFile, changedSnippet: ChangedSnippet): mutable.HashSet[Identifier] = {
+    val result = mutable.HashSet[Identifier]()
     var node: Identifier = null
 
     changedSnippet.changedType match {
@@ -60,8 +59,8 @@ case class ChangedConditionsCollector(projectData: ProjectData) extends Collecto
    * @param code
    * @return
    */
-  private def collectConditionASTNodes(code: Identifier): ArrayBuffer[ASTNode] = {
-    val result = ArrayBuffer[ASTNode]()
+  private def collectConditionASTNodes(code: Identifier): mutable.HashSet[ASTNode] = {
+    val result = mutable.HashSet[ASTNode]()
     val astNode = code.getJavaNode()
     // this changed node is inside a conditional statement
     if (ASTUtils.belongsToConditionStatement(astNode)) {
@@ -76,7 +75,7 @@ case class ChangedConditionsCollector(projectData: ProjectData) extends Collecto
 }
 
 class CollectConditionStatements(root: ASTNode) extends ASTVisitor {
-  val list: ArrayBuffer[ASTNode] = ArrayBuffer[ASTNode]()
+  val list: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
 
   override def visit(node: IfStatement): Boolean = {
     list.addOne(ASTUtils.getConditionalNode(node))

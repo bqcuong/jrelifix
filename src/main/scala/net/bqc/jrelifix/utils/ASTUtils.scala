@@ -1,6 +1,6 @@
 package net.bqc.jrelifix.utils
 
-import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SimpleIdentifier}
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
@@ -64,6 +64,19 @@ object ASTUtils {
     val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
     val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
     val p = SimpleIdentifier(bl, el, bc, ec, fileName)
+    p.setJavaNode(searchNodeByIdentifier(cu, p))
+    p
+  }
+
+  def createSeedIdentifierForASTNode(node: ASTNode, fileName: String = null): SeedIdentifier = {
+    val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
+    val nodeLength: Int = node.getLength
+
+    val bl: Int = cu.getLineNumber(node.getStartPosition)
+    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
+    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
+    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val p = SeedIdentifier(bl, el, bc, ec, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
   }
@@ -197,6 +210,7 @@ object ASTUtils {
       case s: IfStatement => s.getExpression
       case s: WhileStatement => s.getExpression
       case s: ForStatement => s.getExpression
+      case s: ConditionalExpression => s.getExpression
       case _ => null
     }
   }

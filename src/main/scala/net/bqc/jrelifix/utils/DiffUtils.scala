@@ -39,7 +39,7 @@ object DiffUtils {
         logger.debug("Not found modified file for " + fileName)
       }
       else {
-        val changedSnippets = changedFile.changedSnippets
+        val changedSnippets = changedFile.rootCS
         for (cs <- changedSnippets) {
           if (condition.satisfied(cs)) result.addOne(cs)
         }
@@ -65,7 +65,7 @@ object DiffUtils {
     }
 
     var changed = false
-    val changedSnippets = changedFile.changedSnippets
+    val changedSnippets = changedFile.rootCS
     for (cs <- changedSnippets) {
       cs.changedType match {
         case ChangedType.ADDED =>

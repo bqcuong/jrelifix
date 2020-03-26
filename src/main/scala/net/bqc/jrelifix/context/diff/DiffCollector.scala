@@ -8,6 +8,7 @@ import com.github.gumtreediff.client.Run
 import com.github.gumtreediff.matchers.Matchers
 import com.github.gumtreediff.tree.ITree
 import gumtree.spoon.AstComparator
+import gumtree.spoon.diff.operations.Operation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.gt.MyJdtTreeGenerator
 import net.bqc.jrelifix.context.vcs.GitParser
@@ -35,10 +36,14 @@ case class DiffCollector(projectData: ProjectData) {
     val bugInducingCommits = projectData.config().bugInducingCommits
     this.initializeGumTree()
 
+    val sourcePath = projectData.config().sourceFolder
     for (commit <- bugInducingCommits) {
       val changedFiles = gitParser.getModifiedFiles(projectData.config().projFolder, commit)
       for (changedFile <- changedFiles) {
-        changedSources.addOne(diffAST(changedFile))
+        // only process java file in the source path
+        if (changedFile.filePath.startsWith(sourcePath)) {
+          changedSources.addOne(diffAST(changedFile))
+        }
       }
     }
     changedSources
@@ -75,34 +80,41 @@ case class DiffCollector(projectData: ProjectData) {
   private def diffAST(changedFile: ChangedFile) : ChangedFile = {
     val comparator: AstComparator = new AstComparator()
     val differ = comparator.compare(changedFile.oldVersion, changedFile.newVersion)
-    val diffs = differ.getRootOperations
+    val rootDiffs = differ.getRootOperations
+    val allDiffs = differ.getAllOperations
+    changedFile.rootCS.addAll(parseDiffOperations(rootDiffs, changedFile))
+    changedFile.allCS.addAll(parseDiffOperations(allDiffs, changedFile))
+    changedFile
+  }
 
+  private def parseDiffOperations(ops: util.List[Operation[_ <: Action]], changedFile: ChangedFile): ArrayBuffer[ChangedSnippet] = {
+    val result = ArrayBuffer[ChangedSnippet]()
     import scala.jdk.CollectionConverters._
-    for (diff <- diffs.asScala) {
-      logger.debug(diff)
-      val changeType = getModifiedType(diff.getAction.getName)
+    for (op <- ops.asScala) {
+      logger.debug(op)
+      val changeType = getModifiedType(op.getAction.getName)
       var srcNode: CtElement = null
       var dstNode: CtElement = null
       changeType match {
         case ChangedType.ADDED =>
-          dstNode = diff.getSrcNode
+          dstNode = op.getSrcNode
         case ChangedType.REMOVED =>
-          srcNode = diff.getSrcNode
+          srcNode = op.getSrcNode
         case ChangedType.MOVED =>
-          srcNode = diff.getSrcNode
-          dstNode = diff.getDstNode
+          srcNode = op.getSrcNode
+          dstNode = op.getDstNode
         case ChangedType.MODIFIED =>
-          srcNode = diff.getSrcNode
-          dstNode = diff.getDstNode
+          srcNode = op.getSrcNode
+          dstNode = op.getDstNode
         case _ =>
       }
 
       val (srcRange, srcCodeIdentifier) = getSources(srcNode, changedFile, oldVersion = true)
       val (dstRange, dstCodeIdentifier) = getSources(dstNode, changedFile, oldVersion = false)
       val changedSnippet = ChangedSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
-      changedFile.changedSnippets.addOne(changedSnippet)
+      result.addOne(changedSnippet)
     }
-    changedFile
+    result
   }
 
   private def getSources(node: CtElement, containerFile: ChangedFile, oldVersion: Boolean): (SourceRange, Identifier) = {

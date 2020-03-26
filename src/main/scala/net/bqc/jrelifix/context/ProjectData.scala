@@ -26,6 +26,10 @@ case class ProjectData() {
   val changedConditions: mutable.HashMap[String, ArrayBuffer[Identifier]] = new mutable.HashMap[String, ArrayBuffer[Identifier]]()
   val originalFaultFiles: mutable.HashSet[String] = new mutable.HashSet[String]
 
+  val conditionsMap: mutable.HashMap[String, mutable.HashSet[Identifier]] = new mutable.HashMap[String, mutable.HashSet[Identifier]]()
+  val variablesMap: mutable.HashMap[String, mutable.HashSet[Identifier]] = new mutable.HashMap[String, mutable.HashSet[Identifier]]()
+  val statementsMap: mutable.HashMap[String, mutable.HashSet[Identifier]] = new mutable.HashMap[String, mutable.HashSet[Identifier]]()
+
   def class2CU(className: String): CompilationUnit = compilationUnitMap(class2FilePathMap(className))
   def filePath2CU(relativeFilePath: String): CompilationUnit = compilationUnitMap(relativeFilePath)
 
