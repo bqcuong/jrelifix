@@ -2,10 +2,15 @@ package net.bqc.jrelifix.identifier
 
 import net.bqc.jrelifix.context.diff.ChangedType
 
+object SeedType extends Enumeration {
+  val CONDITION, VARIABLE, STATEMENT, EXPRESSION = Value
+}
+
 case class SeedIdentifier(beginLine: Int,
                           endLine: Int,
                           beginColumn: Int,
                           endColumn: Int,
+                          seedType: SeedType.Value,
                           fileName: String)
 
   extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn) {
@@ -37,7 +42,7 @@ case class SeedIdentifier(beginLine: Int,
   }
 
   override def toString: String = {
-    javaNode.toString
+    "[%s] %s".format(seedType, javaNode.toString)
   }
 
   def setChangedType(changedType: ChangedType.Value): Unit = this.changedType = changedType

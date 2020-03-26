@@ -2,12 +2,11 @@ package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.AddedSnippetCondition
+import net.bqc.jrelifix.search.{AddedConSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.ASTNode
 
-import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
@@ -21,23 +20,9 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     // check if faulty statement is changed
     if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return
 
-    val condition = ASTUtils.getConditionalNode(faultStatement.getJavaNode())
-    if (condition == null) return
-
-    // TODO: Gum tree output the wrong node for insert action, propose fix to gum tree lib
-    val atomicBools = ASTUtils.getBoolNodes(condition)
-    val addedAtomicCodes = ArrayBuffer[Identifier]()
-    for (atomicBool <- atomicBools) {
-      val atomicBoolCode = ASTUtils.createIdentifierForASTNode(atomicBool)
-      val addedAtomicBool = DiffUtils.searchChangedSnippets(
-        projectData.changedSourcesMap,
-        AddedSnippetCondition(atomicBoolCode),
-        faultStatement.getFileName())
-
-      if (addedAtomicBool.nonEmpty) {
-        addedAtomicCodes.addOne(atomicBoolCode)
-      }
-    }
+    val faultFile = faultStatement.getFileName()
+    val addedAtomicCodes = Searcher.searchSeeds(projectData.seedsMap, faultFile,
+      AddedConSeedCondition(faultStatement.toSourceRange()))
 
     if (addedAtomicCodes.isEmpty) {
       logger.error("Not found any added atomic conditions in the fault statement! Give up...")
@@ -47,8 +32,8 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
       logger.debug("List of added conditions: " + addedAtomicCodes)
     }
     // if there are many added condition, try to randomly choose one
-    val randomIndex = Random.nextInt(addedAtomicCodes.length)
-    val chosenCode = addedAtomicCodes(randomIndex)
+    val randomTaken = Random.nextInt(addedAtomicCodes.size + 1)
+    val chosenCode = addedAtomicCodes.takeRight(randomTaken).head
     val chosenNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
     logger.debug("Chosen code to negate: " + chosenCode.getJavaNode())
     val negatedCode = getNegatedNode(chosenCode)

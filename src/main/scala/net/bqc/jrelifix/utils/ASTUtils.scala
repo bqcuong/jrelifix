@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.utils
 
-import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SimpleIdentifier}
+import net.bqc.jrelifix.context.diff.SourceRange
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SeedType, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
@@ -68,7 +69,7 @@ object ASTUtils {
     p
   }
 
-  def createSeedIdentifierForASTNode(node: ASTNode, fileName: String = null): SeedIdentifier = {
+  def createSeedIdentifierForASTNode(node: ASTNode, seedType: SeedType.Value, fileName: String = null): SeedIdentifier = {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
     val nodeLength: Int = node.getLength
 
@@ -76,7 +77,7 @@ object ASTUtils {
     val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
     val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
     val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
-    val p = SeedIdentifier(bl, el, bc, ec, fileName)
+    val p = SeedIdentifier(bl, el, bc, ec, seedType, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
   }
@@ -177,6 +178,13 @@ object ASTUtils {
     def getCompilationUnit: CompilationUnit = {
       this.cu
     }
+  }
+
+  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
+    val c1 = toCheck.getBeginLine() >= (range.beginLine - lineDistance) && toCheck.getEndLine() <= (range.endLine + lineDistance)
+    val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
+      (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
+    c1 && c2
   }
 
   /**

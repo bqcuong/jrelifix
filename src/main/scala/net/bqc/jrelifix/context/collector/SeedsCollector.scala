@@ -1,7 +1,7 @@
 package net.bqc.jrelifix.context.collector
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.{Identifier, SeedType}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, ASTVisitor, ConditionalExpression, ForStatement, IfStatement, SingleVariableDeclaration, VariableDeclarationFragment, VariableDeclarationStatement, WhileStatement}
@@ -17,8 +17,7 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
     seedFiles.addAll(projectData.originalFaultFiles)
 
     for(f <- seedFiles) {
-      projectData.conditionsMap.put(f, new mutable.HashSet[Identifier]())
-      projectData.variablesMap.put(f, new mutable.HashSet[Identifier]())
+      projectData.seedsMap.put(f, new mutable.HashSet[Identifier]())
 
       val cu = projectData.filePath2CU(f)
       val seedsVisitor = new SeedsVisitor()
@@ -27,18 +26,17 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
       for(c <- seedsVisitor.clist) {
         val atomicBools = ASTUtils.getBoolNodes(c)
         for (b <- atomicBools) {
-          val atomicBoolCode = ASTUtils.createSeedIdentifierForASTNode(b)
-          projectData.conditionsMap(f).addOne(atomicBoolCode)
+          val atomicBoolCode = ASTUtils.createSeedIdentifierForASTNode(b, SeedType.CONDITION)
+          projectData.seedsMap(f).addOne(atomicBoolCode)
         }
       }
 
       for(v <- seedsVisitor.vlist) {
-        val variableCode = ASTUtils.createSeedIdentifierForASTNode(v)
-        projectData.variablesMap(f).addOne(variableCode)
+        val variableCode = ASTUtils.createSeedIdentifierForASTNode(v, SeedType.VARIABLE)
+        projectData.seedsMap(f).addOne(variableCode)
       }
 
-      logger.debug("Collected conditions: " + projectData.conditionsMap(f))
-      logger.debug("Collected variables: " + projectData.variablesMap(f))
+      logger.debug("Collected seeds: " + projectData.seedsMap(f))
     }
 
     projectData

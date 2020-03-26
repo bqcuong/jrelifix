@@ -69,13 +69,13 @@ object DiffUtils {
     for (cs <- changedSnippets) {
       cs.changedType match {
         case ChangedType.ADDED =>
-          changed = isInRange(toCheck, cs.dstRange, distance)
+          changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
         case ChangedType.REMOVED =>
-          changed = isInRange(toCheck, cs.srcRange, distance)
+          changed = ASTUtils.isInRange(toCheck, cs.srcRange, distance)
         case ChangedType.MODIFIED =>
-          changed = isInRange(toCheck, cs.dstRange, distance)
+          changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
         case ChangedType.MOVED =>
-          changed = isInRange(toCheck, cs.dstRange, distance)
+          changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
       }
 
       if (changed) return cs
@@ -88,13 +88,6 @@ object DiffUtils {
     searchChangedSnippetOutside(changedSourcesMap, toCheck) != null ||
     searchChangedSnippets(changedSourcesMap, ChangedSnippetCondition(toCheck.toSourceRange()),
       toCheck.getFileName()).nonEmpty
-  }
-
-  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
-    val c1 = toCheck.getBeginLine() >= (range.beginLine - lineDistance) && toCheck.getEndLine() <= (range.endLine + lineDistance)
-    val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
-      (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
-    c1 && c2
   }
 
   /**

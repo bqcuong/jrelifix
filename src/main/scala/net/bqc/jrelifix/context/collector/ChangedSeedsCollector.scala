@@ -12,14 +12,9 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
   private val logger: Logger = Logger.getLogger(this.getClass)
 
   override def collect(): ProjectData = {
-    val seedFiles = mutable.HashSet[String]()
-    seedFiles.addAll(projectData.conditionsMap.keys)
-    seedFiles.addAll(projectData.variablesMap.keys)
-
+    val seedFiles = projectData.seedsMap.keys
     for(f <- seedFiles) {
-      val clist = projectData.conditionsMap(f)
-      val vlist = projectData.variablesMap(f)
-      val seedCodes = clist ++ vlist
+      val seedCodes = projectData.seedsMap(f)
       val changedFile = projectData.changedSourcesMap.get(f).orNull
       if (changedFile != null) {
         for (s <- seedCodes) {
