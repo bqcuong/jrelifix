@@ -34,7 +34,7 @@ case class SeedIdentifier(beginLine: Int,
 
   override def hashCode(): Int = {
     if (javaNode != null) {
-      javaNode.toString.hashCode
+      javaNode.toString.hashCode + 31 * changedType.hashCode()
     }
     else {
       locationHashCode()
