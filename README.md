@@ -4,6 +4,7 @@
 	* Fault Localization
 	* Java Parser
 	* Diff Collector (Git)
+	* Seeds Collector (with change actions)
 	* Java In-Memory Compiler
 	* Test Case Invoker
 	
@@ -14,18 +15,12 @@ Reference tool models:
 * [GitHub - xgdsmileboy/SimFix: Automatically fix programs by leveraging existing patches from other projects and similar code snippets from the faulty project.](https://github.com/xgdsmileboy/SimFix)
 
 ### Operators
-* All are derived from CoreBench
 * Relifix implemented 8 over 14 proposed operators from CoreBench
 
 ![](doc/relifix_operators.png)
 
-* More specific operators for Java can be proposed (from Defects4J, InduceBenchmark)
-
-* Three types of regressions bugs (by relifix) and the important operators:
-  * **Local**: can be fixed by *Revert to previous statement*
-  * **Unmask**: can be fixed by *Add condition*
-  * **Remote**
-
+* Implement 8 operators of Relifix to create a baseline tool for Java
+* More specific operators (3-5) for Java can be proposed (from InduceBenchmark)
 
 ### Patch Generation & Validation Approach
 * Follow the proposed algorithm of Relifix
@@ -37,5 +32,6 @@ Reference tool models:
 
 ## Evaluation
 Compare performance with state-of-the-arts tools: SimFix, PraPR, CapGen, jGenProg, JAID 
+* Evaluate on Java bugs of BugSwarm (provided [here](https://github.com/BugSwarm/bugswarm))
 * Evaluate on 91 bugs of Defects4J (provided [here](https://github.com/justinwm/InduceBenchmark/blob/master/Defects4J.csv)). These bugs are provided with bug-inducing commits but we also need filter regression bugs.
 * Evaluate on 362 bugs of InduceBenchmark (provided [here](https://github.com/justinwm/InduceBenchmark)). These projects needs complex configuration to run.
