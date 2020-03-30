@@ -46,7 +46,7 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
   private def getNegatedNode(boolCode: Identifier): ASTNode = {
     val source = boolCode.getJavaNode().toString
     val negatedStr: String = "!(%s)".format(source)
-    ASTUtils.createNodeFromString(negatedStr)
+    ASTUtils.createExprNodeFromString(negatedStr)
   }
 
   override def unmutate(): Unit = ???

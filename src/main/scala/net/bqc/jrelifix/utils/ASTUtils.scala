@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.utils
 
 import net.bqc.jrelifix.context.diff.SourceRange
+import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SeedType, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
@@ -82,22 +83,38 @@ object ASTUtils {
     p
   }
 
-  def createNodeFromString(toRep: String): ASTNode = {
-    // Note that we need to create stub code for JDT to parse appropriately and then get back
-    // the JDT ASTNode we want to create from the return statement
-    val document = new Document("public class X{ public void replace(){return "+toRep+";}}")
-    val parser = ASTParser.newParser(8)
-    parser.setSource(document.get().toCharArray)
-    val cu = parser.createAST(null).asInstanceOf[CompilationUnit]
+  def createStmtNodeFromString(toTransform: String): ASTNode = {
+    val document = new Document("public class X{public void replace(){" + toTransform + "}}")
+    val cu = getCuFromDocument(document)
     val visitor = new ASTVisitor() {
-      var toRepNode : ASTNode = _
-      override def visit(node: ReturnStatement): Boolean = {
-        toRepNode = node.getExpression
+      var toTransNode : ASTNode = _
+      override def visit(node: MethodDeclaration): Boolean = {
+        val methodBody = node.getBody
+        toTransNode = methodBody.statements().get(0).asInstanceOf[ASTNode]
         false
       }
     }
     cu.accept(visitor)
-    visitor.toRepNode
+    visitor.toTransNode
+  }
+
+  def createExprNodeFromString(toTransform: String): ASTNode = {
+    val document = new Document("public class X{public void replace(){return " + toTransform + ";}}")
+    val cu = getCuFromDocument(document)
+    val visitor = new ASTVisitor() {
+      var toTransNode : ASTNode = _
+      override def visit(node: ReturnStatement): Boolean = {
+        toTransNode = node.getExpression
+        false
+      }
+    }
+    cu.accept(visitor)
+    visitor.toTransNode
+  }
+
+  private def getCuFromDocument(doc: Document): CompilationUnit = {
+    val astNode = JavaParser.parseAST(doc.get())
+    astNode.asInstanceOf[CompilationUnit]
   }
 
   /**

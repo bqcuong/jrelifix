@@ -21,7 +21,7 @@ case class AddIfMutation (faultStatement: Identifier, projectData: ProjectData)
       addConditionForVariableDeclaration()
     }
     else {
-      addConditionForOtherStatement()
+      applied = addConditionForOtherStatement()
     }
 
     if (applied) {
@@ -44,14 +44,25 @@ case class AddIfMutation (faultStatement: Identifier, projectData: ProjectData)
   }
 
   /**
+   * In case the faulty statement is a statement that is not neither if-statement or variable declaration
+   */
+  private def addConditionForOtherStatement(): Boolean = {
+    logger.debug("Add if condition for: " + faultStatement.getJavaNode().toString.trim)
+    val chosenCon = Searcher.search1RandomSeed(projectData.allSeeds, ConSeedCondition())
+    logger.debug("Chosen condition expression: " + chosenCon)
+
+    val wrappedNode = faultStatement.getJavaNode()
+    val newIfCode = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, wrappedNode.toString.trim)
+    val newIfNode = ASTUtils.createStmtNodeFromString(newIfCode)
+
+    ASTUtils.replaceNode(this.document.rewriter, wrappedNode, newIfNode)
+    true
+  }
+
+  /**
    * In case the faulty statement is a variable declaration statement
    */
   private def addConditionForVariableDeclaration(): Unit = ???
-
-  /**
-   * In case the faulty statement is a statement that is not neither if-statement or variable declaration
-   */
-  private def addConditionForOtherStatement(): Unit = ???
 
   override def unmutate(): Unit = ???
 
