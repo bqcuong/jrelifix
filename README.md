@@ -24,6 +24,7 @@ Reference tool models:
 
 ### Patch Generation & Validation Approach
 * Follow the proposed algorithm of Relifix
+* Additional validation with the regression test cases generation support of HyDiff
 ## Packaging (Useable for end users)
 * Maven/Gradle Plugin
 * Eclipse/IntelliJ Plugin
