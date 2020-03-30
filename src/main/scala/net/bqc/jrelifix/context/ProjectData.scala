@@ -6,7 +6,7 @@ import java.util
 import net.bqc.jrelifix.config.Config
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangedFile
-import net.bqc.jrelifix.identifier.{Faulty, Identifier}
+import net.bqc.jrelifix.identifier.{Faulty, Identifier, SeedIdentifier}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
@@ -26,6 +26,7 @@ case class ProjectData() {
   val changedConditions: mutable.HashMap[String, ArrayBuffer[Identifier]] = new mutable.HashMap[String, ArrayBuffer[Identifier]]()
   val originalFaultFiles: mutable.HashSet[String] = new mutable.HashSet[String]
   val seedsMap: mutable.HashMap[String, mutable.HashSet[Identifier]] = new mutable.HashMap[String, mutable.HashSet[Identifier]]()
+  val allSeeds: mutable.HashSet[Identifier] = new mutable.HashSet[Identifier]()
 
   def class2CU(className: String): CompilationUnit = compilationUnitMap(class2FilePathMap(className))
   def filePath2CU(relativeFilePath: String): CompilationUnit = compilationUnitMap(relativeFilePath)
@@ -37,6 +38,23 @@ case class ProjectData() {
 
   def class2Path(className: String): String = {
     class2FilePathMap(className)
+  }
+
+  def mergeSeeds(): mutable.HashSet[Identifier] = {
+    for (seedSet <- seedsMap.values) {
+      for (seed <- seedSet) {
+        if (allSeeds.contains(seed)) { // this seed code occur before
+          val seedOpt = allSeeds.find(_.equals(seed))
+          val foundSeed = seedOpt.orNull
+          assert(foundSeed != null)
+          foundSeed.asInstanceOf[SeedIdentifier].addChangedTypes(seed.asInstanceOf[SeedIdentifier].getChangedTypes())
+        }
+        else {
+          allSeeds.add(seed)
+        }
+      }
+    }
+    allSeeds
   }
 
   def initChangedSourcesMap(changedSources: ArrayBuffer[ChangedFile]): Unit = {

@@ -6,7 +6,7 @@ import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 case class AddedConSeedCondition(boundary: SourceRange) extends ISeedCondition {
 
   override def satisfied(seed: SeedIdentifier): Boolean = {
-    if (seed.changedType != ChangedType.ADDED) return false
+    if (!seed.containsChangedType(ChangedType.ADDED)) return false
     if (seed.seedType != SeedType.CONDITION) return false
     ASTUtils.isInRange(seed, boundary)
   }

@@ -76,6 +76,16 @@ abstract class Identifier {
     ASTUtils.isConditionalStatement(javaNode)
   }
 
+  def isIfStatement(): Boolean = {
+    if (javaNode == null) return false
+    javaNode.isInstanceOf[IfStatement]
+  }
+
+  def isVariableDeclarationStatement(): Boolean = {
+    if (javaNode == null) return false
+    javaNode.isInstanceOf[VariableDeclarationStatement]
+  }
+
   def isSwappableStatement(): Boolean = {
     !isConditionalStatement() && !javaNode.isInstanceOf[ConstructorInvocation] &&
       !javaNode.isInstanceOf[ReturnStatement] && !javaNode.isInstanceOf[VariableDeclaration]

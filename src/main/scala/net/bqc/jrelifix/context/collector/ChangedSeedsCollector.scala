@@ -25,14 +25,14 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
             // prioritize on update as ADDED over other change operations (if many occur on the same code)
             for (s <- changedRes) {
               if (s.changedType == ChangedType.ADDED) {
-                seed.setChangedType(s.changedType)
+                seed.addChangedType(s.changedType)
                 alreadySet = true
               }
             }
             if (!alreadySet)
             {
               val snippet = changedRes(0)
-              seed.setChangedType(snippet.changedType)
+              seed.addChangedType(snippet.changedType)
             }
             alreadySet = true
           }
@@ -40,11 +40,11 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
             // try to check if there are any changed snippets inside this seed
             changedRes = Searcher.searchChangedSnippets(changedFile, InsideSnippetCondition(seed.getJavaNode().toString))
             if (changedRes.nonEmpty) {
-              seed.setChangedType(ChangedType.MODIFIED)
+              seed.addChangedType(ChangedType.MODIFIED)
               alreadySet = true
             }
           }
-          if (alreadySet) logger.debug("Update seeds change status: [%s] %s".format(seed.changedType, seed.getJavaNode().toString))
+          if (alreadySet) logger.debug("Update seeds change status: [%s] %s".format(seed.getChangedTypes(), seed.getJavaNode().toString))
         }
       }
     }

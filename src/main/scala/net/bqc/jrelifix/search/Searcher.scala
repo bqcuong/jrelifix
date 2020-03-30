@@ -5,17 +5,22 @@ import net.bqc.jrelifix.identifier.{Identifier, SeedIdentifier}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 object Searcher {
 
-  def searchChangedSnippets(changedFile: ChangedFile, condition: IChangedSnippetCondition)
-    : ArrayBuffer[ChangedSnippet] = {
-    val result = ArrayBuffer[ChangedSnippet]()
-    val changedSnippets = changedFile.allCS
-    for (cs <- changedSnippets) {
-      if (condition.satisfied(cs)) result.addOne(cs)
+  def search1RandomSeed(allSeeds: mutable.HashSet[Identifier], condition: ISeedCondition)
+  : Identifier = {
+    val chosenSeeds = mutable.HashSet[Identifier]()
+    for (seed <- allSeeds) {
+      if (condition.satisfied(seed.asInstanceOf[SeedIdentifier]))
+        chosenSeeds.add(seed)
     }
-    result
+    if (chosenSeeds.nonEmpty) {
+      val randIndex = Random.nextInt(chosenSeeds.size)
+      chosenSeeds.iterator.drop(randIndex).next()
+    }
+    else null
   }
 
   def searchSeeds(seedMap: mutable.Map[String, mutable.HashSet[Identifier]], filePath: String, condition: ISeedCondition)
@@ -37,6 +42,16 @@ object Searcher {
         case seed: SeedIdentifier =>
           if (condition.satisfied(seed)) result.addOne(seed)
       }
+    }
+    result
+  }
+
+  def searchChangedSnippets(changedFile: ChangedFile, condition: IChangedSnippetCondition)
+    : ArrayBuffer[ChangedSnippet] = {
+    val result = ArrayBuffer[ChangedSnippet]()
+    val changedSnippets = changedFile.allCS
+    for (cs <- changedSnippets) {
+      if (condition.satisfied(cs)) result.addOne(cs)
     }
     result
   }

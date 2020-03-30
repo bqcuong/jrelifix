@@ -43,6 +43,7 @@ object JRelifixMain {
     val changedSeedsCollector = ChangedSeedsCollector(projectData)
     seedsCollector.collect()
     changedSeedsCollector.collect()
+    projectData.mergeSeeds()
     logger.info("Done Initializing Diff Collector!")
 
     logger.info("Building source file contents (ASTRewriter) ...")
