@@ -2,7 +2,7 @@ package net.bqc.jrelifix.utils
 
 import net.bqc.jrelifix.context.diff.SourceRange
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SeedType, SimpleIdentifier}
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SeedType, SimpleIdentifier, VariableIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
@@ -78,7 +78,7 @@ object ASTUtils {
     val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
     val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
     val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
-    val p = SeedIdentifier(bl, el, bc, ec, seedType, fileName)
+    val p = new SeedIdentifier(bl, el, bc, ec, seedType, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
   }
@@ -264,6 +264,22 @@ object ASTUtils {
         }
       case o: ParenthesizedExpression => result.addAll(getBoolNodes(o.getExpression))
       case _ => result.addOne(outerNode)
+    }
+    result
+  }
+
+  def getVariableNodes(varDecl: VariableDeclarationStatement): ArrayBuffer[VariableIdentifier] = {
+    val declType = varDecl.getType
+    val result = ArrayBuffer[VariableIdentifier]()
+    val frags = varDecl.fragments()
+    for(i <- 0 until frags.size()) {
+      val frag = frags.get(i)
+      frag match {
+        case f: VariableDeclarationFragment =>
+          val variable = new VariableIdentifier(0, 0, 0, 0, declType, f.getInitializer)
+          variable.setJavaNode(f.getName)
+          result.addOne(variable)
+      }
     }
     result
   }

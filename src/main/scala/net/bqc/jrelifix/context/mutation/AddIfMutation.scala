@@ -5,7 +5,7 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{ConSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
-import sun.tools.tree.IfStatement
+
 
 case class AddIfMutation (faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData){
@@ -18,7 +18,7 @@ case class AddIfMutation (faultStatement: Identifier, projectData: ProjectData)
       applied = replaceConditionForIfStatement()
     }
     else if (faultStatement.isVariableDeclarationStatement()) {
-      addConditionForVariableDeclaration()
+      applied = addConditionForVariableDeclaration()
     }
     else {
       applied = addConditionForOtherStatement()
@@ -62,7 +62,14 @@ case class AddIfMutation (faultStatement: Identifier, projectData: ProjectData)
   /**
    * In case the faulty statement is a variable declaration statement
    */
-  private def addConditionForVariableDeclaration(): Unit = ???
+  private def addConditionForVariableDeclaration(): Boolean = {
+    logger.debug("Add if condition for: " + faultStatement.getJavaNode().toString.trim)
+    val chosenCon = Searcher.search1RandomSeed(projectData.allSeeds, ConSeedCondition())
+    logger.debug("Chosen condition expression: " + chosenCon)
+
+
+    false
+  }
 
   override def unmutate(): Unit = ???
 
