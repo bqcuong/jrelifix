@@ -40,6 +40,12 @@ abstract class Identifier {
       this.getEndColumn() == id.getEndColumn()
   }
 
+  def after(id: Identifier): Boolean = {
+    val c1 = this.getBeginLine() - id.getEndLine()
+    val c2 = this.getBeginColumn() - id.getEndColumn()
+    c1 > 0 || (c1 == 0 && c2 > 0)
+  }
+
   /**
    * The same source code string, AND same location
    * @param obj

@@ -47,24 +47,13 @@ object ASTUtils {
    * ============================
    */
   def createFaultIdentifierNoClassName(node: ASTNode): PositionBasedIdentifier = {
-    val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val nodeLength: Int = node.getLength
-
-    val bl: Int = cu.getLineNumber(node.getStartPosition)
-    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
-    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
-    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val (bl, el, bc, ec) = getNodePosition(node)
     PredefinedFaultIdentifier(bl, el, bc, ec, null)
   }
 
   def createIdentifierForASTNode(node: ASTNode, fileName: String = null): PositionBasedIdentifier = {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val nodeLength: Int = node.getLength
-
-    val bl: Int = cu.getLineNumber(node.getStartPosition)
-    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
-    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
-    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val (bl, el, bc, ec) = getNodePosition(node, cu)
     val p = SimpleIdentifier(bl, el, bc, ec, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
@@ -72,12 +61,7 @@ object ASTUtils {
 
   def createSeedIdentifierForASTNode(node: ASTNode, seedType: SeedType.Value, fileName: String = null): SeedIdentifier = {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val nodeLength: Int = node.getLength
-
-    val bl: Int = cu.getLineNumber(node.getStartPosition)
-    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
-    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
-    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val (bl, el, bc, ec) = getNodePosition(node, cu)
     val p = new SeedIdentifier(bl, el, bc, ec, seedType, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
@@ -268,7 +252,13 @@ object ASTUtils {
     result
   }
 
-  def getVariableNodes(varDecl: VariableDeclarationStatement): ArrayBuffer[VariableIdentifier] = {
+  /**
+   * Parse a VariableDeclarationStatement to obtain information about variables
+   * @param varDecl
+   * @return
+   */
+  def getVariableCodes(varDecl: VariableDeclarationStatement): ArrayBuffer[VariableIdentifier] = {
+    val cu: CompilationUnit = varDecl.getRoot.asInstanceOf[CompilationUnit]
     val declType = varDecl.getType
     val result = ArrayBuffer[VariableIdentifier]()
     val frags = varDecl.fragments()
@@ -276,11 +266,29 @@ object ASTUtils {
       val frag = frags.get(i)
       frag match {
         case f: VariableDeclarationFragment =>
-          val variable = new VariableIdentifier(0, 0, 0, 0, declType, f.getInitializer)
-          variable.setJavaNode(f.getName)
+          val varNameNode = f.getName
+          val (bl, el, bc, ec) = getNodePosition(varNameNode, cu)
+          val variable = new VariableIdentifier(bl, el, bc, ec, declType, f.getInitializer)
+          variable.setJavaNode(varNameNode)
           result.addOne(variable)
       }
     }
     result
+  }
+
+  /**
+   *
+   * @param node
+   * @return (beginLine, endLine, beginCol, endCol)
+   */
+  def getNodePosition(node: ASTNode, cu: CompilationUnit = null): (Int, Int, Int, Int) = {
+    var cunit = cu;
+    if (cunit == null) cunit = node.getRoot.asInstanceOf[CompilationUnit]
+    val nodeLength: Int = node.getLength
+    val bl: Int = cunit.getLineNumber(node.getStartPosition)
+    val el: Int = cunit.getLineNumber(node.getStartPosition + nodeLength)
+    val bc: Int = cunit.getColumnNumber(node.getStartPosition) + 1
+    val ec: Int = cunit.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    (bl, el, bc, ec)
   }
 }
