@@ -8,6 +8,7 @@ import com.github.gumtreediff.client.Run
 import com.github.gumtreediff.matchers.Matchers
 import com.github.gumtreediff.tree.ITree
 import gumtree.spoon.AstComparator
+import gumtree.spoon.builder.CtVirtualElement
 import gumtree.spoon.diff.operations.Operation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.gt.MyJdtTreeGenerator
@@ -18,6 +19,7 @@ import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, ASTVisitor, CompilationUnit}
 import spoon.reflect.cu.position.NoSourcePosition
 import spoon.reflect.declaration.CtElement
+import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -91,7 +93,6 @@ case class DiffCollector(projectData: ProjectData) {
     val result = ArrayBuffer[ChangedSnippet]()
     import scala.jdk.CollectionConverters._
     for (op <- ops.asScala) {
-      logger.debug(op)
       val changeType = getModifiedType(op.getAction.getName)
       var srcNode: CtElement = null
       var dstNode: CtElement = null
@@ -111,26 +112,46 @@ case class DiffCollector(projectData: ProjectData) {
 
       val (srcRange, srcCodeIdentifier) = getSources(srcNode, changedFile, oldVersion = true)
       val (dstRange, dstCodeIdentifier) = getSources(dstNode, changedFile, oldVersion = false)
-      val changedSnippet = ChangedSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
-      result.addOne(changedSnippet)
+
+      if (srcRange != null && dstRange != null) {
+        val changedSnippet = ChangedSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
+        result.addOne(changedSnippet)
+      }
     }
     result
   }
 
   private def getSources(node: CtElement, containerFile: ChangedFile, oldVersion: Boolean): (SourceRange, Identifier) = {
     if (node != null) {
+      val cu = if (oldVersion) containerFile.oldCUnit else containerFile.newCUnit
       val srcPos = node.getPosition
       if (!srcPos.isInstanceOf[NoSourcePosition]) {
-        val srcRange = new SourceRange(srcPos.getLine, srcPos.getEndLine, srcPos.getColumn, srcPos.getEndColumn + 1)
+        var srcRange: SourceRange = null
+        srcRange = srcPos match {
+          case sp: DeclarationSourcePositionImpl =>
+            val startPos = sp.getModifierSourceStart
+            val endPos = sp.getSourceEnd
+            val bl: Int = cu.getLineNumber(startPos)
+            val el: Int = cu.getLineNumber(endPos)
+            val bc: Int = cu.getColumnNumber(startPos) + 1
+            val ec: Int = cu.getColumnNumber(endPos) + 1
+            new SourceRange(bl, el, bc, ec + 1)
+          case _ =>
+            new SourceRange(srcPos.getLine, srcPos.getEndLine, srcPos.getColumn, srcPos.getEndColumn + 1)
+        }
+
         val codeIdentifier = SimpleIdentifier(
           srcRange.beginLine, srcRange.endLine,
           srcRange.beginColumn, srcRange.endColumn,
           if (oldVersion) PREVIOUS_VERSION_PREFIX + containerFile.filePath else containerFile.filePath)
 
-        val astNode = ASTUtils.searchNodeByIdentifier(if (oldVersion) containerFile.oldCUnit else containerFile.newCUnit, codeIdentifier)
+        logger.debug(codeIdentifier)
+        val astNode = ASTUtils.searchNodeByIdentifier(cu, codeIdentifier)
         codeIdentifier.setJavaNode(astNode)
 
-        if (astNode == null) logger.debug("Not found ast node for changed node: " + node)
+        if (astNode == null) {
+          logger.debug("Not found ast node for changed node: " + node)
+        }
         return (srcRange, codeIdentifier)
       }
     }
