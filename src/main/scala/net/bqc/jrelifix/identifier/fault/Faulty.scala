@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.identifier
+package net.bqc.jrelifix.identifier.fault
 
 trait Faulty {
   def getSuspiciousness(): Double

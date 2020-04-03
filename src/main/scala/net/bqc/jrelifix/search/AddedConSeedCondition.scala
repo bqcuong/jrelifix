@@ -1,13 +1,16 @@
 package net.bqc.jrelifix.search
 import net.bqc.jrelifix.context.diff.{ChangedType, SourceRange}
-import net.bqc.jrelifix.identifier.{SeedIdentifier, SeedType}
-import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
+import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, Seedy}
+import net.bqc.jrelifix.utils.ASTUtils
 
 case class AddedConSeedCondition(boundary: SourceRange) extends ISeedCondition {
 
-  override def satisfied(seed: SeedIdentifier): Boolean = {
+  override def satisfied(seed: Seedy): Boolean = {
     if (!seed.containsChangedType(ChangedType.ADDED)) return false
-    if (seed.seedType != SeedType.CONDITION) return false
-    ASTUtils.isInRange(seed, boundary)
+    seed match {
+      case i: ExpressionSeedIdentifier =>
+        i.isBool() && ASTUtils.isInRange(i, boundary)
+      case _ => false
+    }
   }
 }

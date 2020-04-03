@@ -9,7 +9,8 @@ import br.usp.each.saeg.jaguar.core.runner.JaguarRunListener
 import br.usp.each.saeg.jaguar.core.{JaCoCoClient, Jaguar}
 import ch.qos.logback.classic.Level
 import net.bqc.jrelifix.context.validation.{CustomClassLoaderThreadFactory, TestCaseFilter, TestCaseFinderUtils}
-import net.bqc.jrelifix.identifier.{Identifier, JaguarFaultIdentifier}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.fault.JaguarFaultIdentifier
 import org.junit.runner.JUnitCore
 import org.slf4j.LoggerFactory
 

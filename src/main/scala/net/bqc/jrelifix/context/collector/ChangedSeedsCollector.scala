@@ -2,7 +2,8 @@ package net.bqc.jrelifix.context.collector
 
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.ChangedType
-import net.bqc.jrelifix.identifier.SeedIdentifier
+import net.bqc.jrelifix.identifier.PositionBasedIdentifier
+import net.bqc.jrelifix.identifier.seed.Seedy
 import net.bqc.jrelifix.search.{ExactlySnippetCondition, InsideSnippetCondition, Searcher}
 import org.apache.log4j.Logger
 
@@ -16,10 +17,11 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
       val changedFile = projectData.changedSourcesMap.get(f).orNull
       if (changedFile != null) {
         for (s <- seedCodes) {
-          val seed = s.asInstanceOf[SeedIdentifier]
+          val seed = s.asInstanceOf[Seedy]
+          val seedAsIdentifier = s.asInstanceOf[PositionBasedIdentifier]
 
           // find the changed snippet that exactly equals to seed
-          var changedRes = Searcher.searchChangedSnippets(changedFile, ExactlySnippetCondition(seed.getJavaNode().toString))
+          var changedRes = Searcher.searchChangedSnippets(changedFile, ExactlySnippetCondition(seedAsIdentifier.getJavaNode().toString))
           var alreadySet = false
           if (changedRes.nonEmpty) {
             // prioritize on update as ADDED over other change operations (if many occur on the same code)
@@ -38,13 +40,13 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
           }
           else {
             // try to check if there are any changed snippets inside this seed
-            changedRes = Searcher.searchChangedSnippets(changedFile, InsideSnippetCondition(seed.getJavaNode().toString))
+            changedRes = Searcher.searchChangedSnippets(changedFile, InsideSnippetCondition(seedAsIdentifier.getJavaNode().toString))
             if (changedRes.nonEmpty) {
               seed.addChangedType(ChangedType.MODIFIED)
               alreadySet = true
             }
           }
-          if (alreadySet) logger.debug("Update seeds change status: [%s] %s".format(seed.getChangedTypes(), seed.getJavaNode().toString))
+          if (alreadySet) logger.debug("Update seeds change status: [%s] %s".format(seed.getChangedTypes(), seedAsIdentifier.getJavaNode().toString))
         }
       }
     }

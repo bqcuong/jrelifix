@@ -1,4 +1,6 @@
-package net.bqc.jrelifix.identifier
+package net.bqc.jrelifix.identifier.fault
+
+import net.bqc.jrelifix.identifier.PositionBasedIdentifier
 
 case class PredefinedFaultIdentifier(beginLine: Int,
                                      endLine: Int,

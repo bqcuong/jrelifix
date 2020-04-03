@@ -1,7 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.identifier.{Identifier, SeedIdentifier}
+import net.bqc.jrelifix.identifier.{Identifier}
 import net.bqc.jrelifix.search.{ConSeedCondition, NotEqualingConSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger

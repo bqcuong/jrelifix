@@ -1,6 +1,7 @@
-package net.bqc.jrelifix.identifier
+package net.bqc.jrelifix.identifier.node
 
-import org.eclipse.jdt.core.dom.{ASTNode, ArrayType, ParameterizedType, PrimitiveType, SimpleType}
+import net.bqc.jrelifix.identifier.PositionBasedIdentifier
+import org.eclipse.jdt.core.dom._
 
 /**
  * Just use to store information about variable node, declaration type, and initializer

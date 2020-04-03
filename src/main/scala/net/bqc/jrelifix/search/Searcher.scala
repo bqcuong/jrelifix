@@ -1,7 +1,8 @@
 package net.bqc.jrelifix.search
 
 import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet}
-import net.bqc.jrelifix.identifier.{Identifier, SeedIdentifier}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.seed.Seedy
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -13,7 +14,7 @@ object Searcher {
   : Identifier = {
     val chosenSeeds = mutable.HashSet[Identifier]()
     for (seed <- allSeeds) {
-      if (condition.satisfied(seed.asInstanceOf[SeedIdentifier]))
+      if (condition.satisfied(seed.asInstanceOf[Seedy]))
         chosenSeeds.add(seed)
     }
     if (chosenSeeds.nonEmpty) {
@@ -24,7 +25,7 @@ object Searcher {
   }
 
   def searchSeeds(seedMap: mutable.Map[String, mutable.HashSet[Identifier]], filePath: String, condition: ISeedCondition)
-  : mutable.HashSet[SeedIdentifier] = {
+  : mutable.HashSet[Seedy] = {
     var seedSet: mutable.HashSet[Identifier] = seedMap.get(filePath).orNull
     // requested file not found in seed map, try to find seeds in all possible files of the map
     if (seedSet == null) {
@@ -36,10 +37,10 @@ object Searcher {
       }
     }
 
-    val result = mutable.HashSet[SeedIdentifier]()
+    val result = mutable.HashSet[Seedy]()
     for (s <- seedSet) {
       s match {
-        case seed: SeedIdentifier =>
+        case seed: Seedy =>
           if (condition.satisfied(seed)) result.addOne(seed)
       }
     }

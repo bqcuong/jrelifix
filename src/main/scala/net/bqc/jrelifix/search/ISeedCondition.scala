@@ -1,7 +1,7 @@
 package net.bqc.jrelifix.search
 
-import net.bqc.jrelifix.identifier.SeedIdentifier
+import net.bqc.jrelifix.identifier.seed.Seedy
 
 trait ISeedCondition {
-  def satisfied(seed: SeedIdentifier): Boolean
+  def satisfied(seed: Seedy): Boolean
 }

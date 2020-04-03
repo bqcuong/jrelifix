@@ -1,4 +1,6 @@
-package net.bqc.jrelifix.identifier
+package net.bqc.jrelifix.identifier.fault
+
+import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
 import org.eclipse.jdt.core.dom.ASTNode
 

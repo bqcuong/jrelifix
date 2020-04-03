@@ -12,7 +12,8 @@ import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.validation.TestCaseValidator
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
-import net.bqc.jrelifix.identifier.{Faulty, Identifier}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
 import org.apache.log4j.Logger
 

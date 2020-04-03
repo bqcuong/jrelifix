@@ -33,7 +33,7 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     }
     // if there are many added condition, try to randomly choose one
     val randomTaken = Random.nextInt(addedAtomicCodes.size) + 1
-    val chosenCode = addedAtomicCodes.takeRight(randomTaken).head
+    val chosenCode = addedAtomicCodes.takeRight(randomTaken).head.asInstanceOf[Identifier]
     val chosenNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
     logger.debug("Chosen code to negate: " + chosenCode.getJavaNode())
     val negatedCode = getNegatedNode(chosenCode)

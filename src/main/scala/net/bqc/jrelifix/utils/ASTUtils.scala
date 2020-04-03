@@ -2,7 +2,10 @@ package net.bqc.jrelifix.utils
 
 import net.bqc.jrelifix.context.diff.SourceRange
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SeedType, SimpleIdentifier, VariableIdentifier}
+import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
+import net.bqc.jrelifix.identifier.node.VariableIdentifier
+import net.bqc.jrelifix.identifier.seed.SeedType
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
@@ -55,14 +58,6 @@ object ASTUtils {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
     val (bl, el, bc, ec) = getNodePosition(node, cu)
     val p = SimpleIdentifier(bl, el, bc, ec, fileName)
-    p.setJavaNode(searchNodeByIdentifier(cu, p))
-    p
-  }
-
-  def createSeedIdentifierForASTNode(node: ASTNode, seedType: SeedType.Value, fileName: String = null): SeedIdentifier = {
-    val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val (bl, el, bc, ec) = getNodePosition(node, cu)
-    val p = new SeedIdentifier(bl, el, bc, ec, seedType, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
   }
@@ -234,12 +229,7 @@ object ASTUtils {
     outerNode match {
       case o: InfixExpression =>
         val op = o.getOperator
-        if (op.equals(InfixExpression.Operator.CONDITIONAL_AND) ||
-            op.equals(InfixExpression.Operator.CONDITIONAL_OR) ||
-            op.equals(InfixExpression.Operator.AND) ||
-            op.equals(InfixExpression.Operator.OR) ||
-            op.equals(InfixExpression.Operator.XOR)) {
-
+        if (isConditionalOperator(op)) {
           result.addAll(getBoolNodes(o.getLeftOperand))
           result.addAll(getBoolNodes(o.getRightOperand))
         }
@@ -250,6 +240,14 @@ object ASTUtils {
       case _ => result.addOne(outerNode)
     }
     result
+  }
+
+  def isConditionalOperator(op: InfixExpression.Operator): Boolean = {
+    op.equals(InfixExpression.Operator.CONDITIONAL_AND) ||
+      op.equals(InfixExpression.Operator.CONDITIONAL_OR) ||
+      op.equals(InfixExpression.Operator.AND) ||
+      op.equals(InfixExpression.Operator.OR) ||
+      op.equals(InfixExpression.Operator.XOR)
   }
 
   /**

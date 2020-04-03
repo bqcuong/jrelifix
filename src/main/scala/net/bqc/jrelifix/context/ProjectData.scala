@@ -6,7 +6,9 @@ import java.util
 import net.bqc.jrelifix.config.Config
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangedFile
-import net.bqc.jrelifix.identifier.{Faulty, Identifier, SeedIdentifier}
+import net.bqc.jrelifix.identifier.fault.Faulty
+import net.bqc.jrelifix.identifier.seed.Seedy
+import net.bqc.jrelifix.identifier.{Identifier}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
@@ -47,7 +49,7 @@ case class ProjectData() {
           val seedOpt = allSeeds.find(_.equals(seed))
           val foundSeed = seedOpt.orNull
           assert(foundSeed != null)
-          foundSeed.asInstanceOf[SeedIdentifier].addChangedTypes(seed.asInstanceOf[SeedIdentifier].getChangedTypes())
+          foundSeed.asInstanceOf[Seedy].addChangedTypes(seed.asInstanceOf[Seedy].getChangedTypes())
         }
         else {
           allSeeds.add(seed)
