@@ -112,7 +112,7 @@ case class DiffCollector(projectData: ProjectData) {
       val (srcRange, srcCodeIdentifier) = getSources(srcNode, changedFile, oldVersion = true)
       val (dstRange, dstCodeIdentifier) = getSources(dstNode, changedFile, oldVersion = false)
 
-      if (srcRange != null && dstRange != null) {
+      if (srcRange != null || dstRange != null) {
         val changedSnippet = ChangedSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
         result.addOne(changedSnippet)
       }
@@ -144,7 +144,6 @@ case class DiffCollector(projectData: ProjectData) {
           srcRange.beginColumn, srcRange.endColumn,
           if (oldVersion) PREVIOUS_VERSION_PREFIX + containerFile.filePath else containerFile.filePath)
 
-        logger.debug(codeIdentifier)
         val astNode = ASTUtils.searchNodeByIdentifier(cu, codeIdentifier)
         codeIdentifier.setJavaNode(astNode)
 

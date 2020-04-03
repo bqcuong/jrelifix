@@ -2,7 +2,7 @@ package net.bqc.jrelifix.context.collector
 
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, MethodInvocationSeedIdentifier, VariableSeedIdentifier}
+import net.bqc.jrelifix.identifier.seed.{AssignmentSeedIdentifier, ExpressionSeedIdentifier, MethodInvocationSeedIdentifier, VariableSeedIdentifier}
 import net.bqc.jrelifix.utils.ASTUtils
 import net.bqc.jrelifix.utils.ASTUtils.{getNodePosition, searchNodeByIdentifier}
 import org.apache.log4j.Logger
@@ -66,6 +66,14 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
         projectData.seedsMap(f).addOne(miCode)
       }
 
+      for(a <- seedsVisitor.alist) {
+        val assignment = a.asInstanceOf[Assignment]
+        val (bl, el, bc, ec) = getNodePosition(a, cu)
+        val assignmentCode = new AssignmentSeedIdentifier(bl, el, bc, ec, assignment.getLeftHandSide, assignment.getRightHandSide)
+        assignmentCode.setJavaNode(searchNodeByIdentifier(cu, assignmentCode))
+        projectData.seedsMap(f).addOne(assignmentCode)
+      }
+
       logger.debug("Collected seeds: " + projectData.seedsMap(f))
     }
 
@@ -102,6 +110,18 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
     val clist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
     val vlist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
     val mlist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
+    val alist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
+
+    /**
+     * Generate condition expression from assignment
+     * E.g: a = 0 -> a != 0
+     * @param node
+     * @return
+     */
+    override def visit(node: Assignment): Boolean = {
+      alist.addOne(node)
+      true
+    }
 
     // local variable declaration
     override def visit(node: VariableDeclarationStatement): Boolean = {
