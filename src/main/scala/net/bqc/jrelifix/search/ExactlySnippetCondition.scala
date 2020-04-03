@@ -1,5 +1,5 @@
 package net.bqc.jrelifix.search
-import net.bqc.jrelifix.context.diff.{ChangedSnippet, SourceRange}
+import net.bqc.jrelifix.context.diff.ChangedSnippet
 
 case class ExactlySnippetCondition(exactlyCode: String) extends IChangedSnippetCondition {
   override def satisfied(changedSnippet: ChangedSnippet): Boolean = {

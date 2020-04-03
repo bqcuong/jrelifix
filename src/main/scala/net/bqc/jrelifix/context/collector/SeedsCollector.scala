@@ -1,12 +1,12 @@
 package net.bqc.jrelifix.context.collector
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, SeedType, VariableSeedIdentifier}
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, MethodInvocationSeedIdentifier, VariableSeedIdentifier}
 import net.bqc.jrelifix.utils.ASTUtils
 import net.bqc.jrelifix.utils.ASTUtils.{getNodePosition, searchNodeByIdentifier}
 import org.apache.log4j.Logger
-import org.eclipse.jdt.core.dom.{ASTNode, ASTVisitor, CompilationUnit, ConditionalExpression, ForStatement, IMethodBinding, IfStatement, MethodInvocation, SingleVariableDeclaration, Type, VariableDeclarationFragment, VariableDeclarationStatement, WhileStatement}
+import org.eclipse.jdt.core.dom._
 
 import scala.collection.mutable
 
@@ -22,7 +22,9 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
       projectData.seedsMap.put(f, new mutable.HashSet[Identifier]())
 
       val cu = projectData.filePath2CU(f)
-      val seedsVisitor = new SeedsVisitor()
+      val keysCollector = new BindingKeysCollector()
+      cu.accept(keysCollector)
+      val seedsVisitor = new SeedsVisitor(keysCollector.keys)
       cu.accept(seedsVisitor)
 
       for(c <- seedsVisitor.clist) {
@@ -53,13 +55,50 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
         projectData.seedsMap(f).addOne(variableCode)
       }
 
+      for(m <- seedsVisitor.mlist) {
+        val mi = m.asInstanceOf[MethodInvocation]
+        val binding: IMethodBinding = mi.resolveMethodBinding()
+        assert(binding != null)
+        val returnType = binding.getReturnType
+        val (bl, el, bc, ec) = getNodePosition(m, cu)
+        val miCode = new MethodInvocationSeedIdentifier(bl, el, bc, ec, returnType)
+        miCode.setJavaNode(searchNodeByIdentifier(cu, miCode))
+        projectData.seedsMap(f).addOne(miCode)
+      }
+
       logger.debug("Collected seeds: " + projectData.seedsMap(f))
     }
 
     projectData
   }
 
-  class SeedsVisitor extends ASTVisitor {
+  class BindingKeysCollector extends ASTVisitor {
+    val keys: mutable.HashSet[String] = mutable.HashSet[String]()
+
+    override def visit(node: TypeDeclaration): Boolean = {
+      keys.add(node.resolveBinding().getKey)
+      true
+    }
+
+    override def visit(node: MethodDeclaration): Boolean = {
+      keys.add(node.resolveBinding().getKey)
+      true
+    }
+
+    override def visit(node: FieldDeclaration): Boolean = {
+      val frags = node.fragments()
+      for (i <- 0 until frags.size()) {
+        val frag = frags.get(i)
+        frag match {
+          case f: VariableDeclaration =>
+            keys.add(f.resolveBinding().getKey)
+        }
+      }
+      true
+    }
+  }
+
+  class SeedsVisitor(keys: mutable.HashSet[String]) extends ASTVisitor {
     val clist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
     val vlist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
     val mlist: mutable.HashSet[ASTNode] = mutable.HashSet[ASTNode]()
@@ -90,22 +129,8 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
      */
     override def visit(node: MethodInvocation): Boolean = {
       val binding: IMethodBinding = node.resolveMethodBinding()
-      assert(binding != null)
-
-      var defaultValue: String = null
-      val returnType = binding.getReturnType
-      val returnTypeStr = returnType.toString
-      if (returnType.isPrimitive) { // return type is a primitive type
-        defaultValue = returnTypeStr match {
-          case "byte" | "short" | "char" | "int" | "long" => "0"
-          case "float" | "double" => "0.0"
-          case "boolean" => "false"
-          case _ => "null"
-        }
-      }
-      else { // other type
-        defaultValue = "null"
-      }
+      if (keys.contains(binding.getKey))
+        mlist.addOne(node)
       true
     }
 

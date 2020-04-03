@@ -8,7 +8,7 @@ class ExpressionIdentifier(beginLine: Int,
                            endColumn: Int)
   extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn) {
 
-  private var bool = false
+  protected var bool = false
 
   def isBool(): Boolean = bool
   def setBool(bool: Boolean): Unit = this.bool = bool

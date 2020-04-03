@@ -5,8 +5,6 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.eclipse.jdt.core.dom.ASTNode
 
-import scala.util.Random
-
 /**
  * Swap changed statement with siblings
  * @param faultStatement

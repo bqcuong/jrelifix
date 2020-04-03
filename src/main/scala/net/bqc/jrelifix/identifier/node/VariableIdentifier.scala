@@ -44,7 +44,7 @@ class VariableIdentifier(beginLine: Int,
           case _ => "null"
         }
       case _: ArrayType =>
-        "new %s[%s]".format(typeStr, VariableIdentifier.MAX_DECLARATION_ELEMENT_SIZE)
+        "new %s[%s]".format(typeStr, 1000) // MAX_DECLARATION_ELEMENT_SIZE = 1000
       case _: ParameterizedType => // List<String> = new ArrayList<>()
         "null" // haven't supported yet
       case _ =>
@@ -53,8 +53,4 @@ class VariableIdentifier(beginLine: Int,
   }
 
   override def toString: String = "%s[%s,%s]".format(javaNode.toString, declType.toString,initializer.toString)
-}
-
-object VariableIdentifier {
-  val MAX_DECLARATION_ELEMENT_SIZE = 1000
 }

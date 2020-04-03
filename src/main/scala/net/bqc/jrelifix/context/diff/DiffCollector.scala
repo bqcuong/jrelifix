@@ -8,7 +8,6 @@ import com.github.gumtreediff.client.Run
 import com.github.gumtreediff.matchers.Matchers
 import com.github.gumtreediff.tree.ITree
 import gumtree.spoon.AstComparator
-import gumtree.spoon.builder.CtVirtualElement
 import gumtree.spoon.diff.operations.Operation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.gt.MyJdtTreeGenerator

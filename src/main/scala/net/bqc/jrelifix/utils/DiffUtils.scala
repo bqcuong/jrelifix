@@ -4,7 +4,7 @@ import java.io._
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangedType, SourceRange}
+import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangedType}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{ChangedSnippetCondition, IChangedSnippetCondition}
 import org.apache.commons.io.FileUtils

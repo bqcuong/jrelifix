@@ -5,7 +5,6 @@ import net.bqc.jrelifix.context.diff.ChangedType
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
-import org.eclipse.text.edits.TextEdit
 
 /**
  * To revert the modified statement/expression to old ones in previous version:

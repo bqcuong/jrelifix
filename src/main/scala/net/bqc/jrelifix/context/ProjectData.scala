@@ -6,9 +6,9 @@ import java.util
 import net.bqc.jrelifix.config.Config
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangedFile
+import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.identifier.seed.Seedy
-import net.bqc.jrelifix.identifier.{Identifier}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}

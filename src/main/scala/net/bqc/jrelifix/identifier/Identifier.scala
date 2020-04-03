@@ -1,7 +1,5 @@
 package net.bqc.jrelifix.identifier
 
-import java.util.Objects
-
 import net.bqc.jrelifix.context.diff.SourceRange
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
@@ -68,7 +66,7 @@ abstract class Identifier {
     result
   }
 
-  protected def locationHashCode(): Int = {
+  def locationHashCode(): Int = {
     val prime = 31
     var result = 1
     result = prime * result + getBeginLine()

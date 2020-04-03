@@ -4,7 +4,6 @@ import net.bqc.jrelifix.context.diff.SourceRange
 import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
 import net.bqc.jrelifix.identifier.node.VariableIdentifier
-import net.bqc.jrelifix.identifier.seed.SeedType
 import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._

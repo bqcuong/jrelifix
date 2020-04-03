@@ -1,11 +1,11 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.identifier.{Identifier}
+import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{ConSeedCondition, NotEqualingConSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
-import org.eclipse.jdt.core.dom.{Assignment, IfStatement, Statement, VariableDeclarationStatement}
+import org.eclipse.jdt.core.dom.{IfStatement, Statement, VariableDeclarationStatement}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
