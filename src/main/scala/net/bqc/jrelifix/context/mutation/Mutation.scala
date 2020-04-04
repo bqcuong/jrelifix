@@ -20,7 +20,14 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
     edits.apply(this.document.modifiedDocument, TextEdit.NONE)
   }
 
-  def mutate(): Unit
+  def isParameterizable: Boolean
+
+  /**
+   * Handle the mutating actions
+   * @param conditionExpr if not null, this operator is parameterizable
+   */
+  def mutate(conditionExpr: Identifier = null): Boolean
+
   def unmutate(): Unit
   def applicable(): Boolean
 

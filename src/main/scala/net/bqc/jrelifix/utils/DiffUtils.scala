@@ -4,7 +4,7 @@ import java.io._
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangedType}
+import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangeType}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{ChangedSnippetCondition, IChangedSnippetCondition}
 import org.apache.commons.io.FileUtils
@@ -67,14 +67,14 @@ object DiffUtils {
     var changed = false
     val changedSnippets = changedFile.rootCS
     for (cs <- changedSnippets) {
-      cs.changedType match {
-        case ChangedType.ADDED =>
+      cs.changeType match {
+        case ChangeType.ADDED =>
           changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
-        case ChangedType.REMOVED =>
+        case ChangeType.REMOVED =>
           changed = ASTUtils.isInRange(toCheck, cs.srcRange, distance)
-        case ChangedType.MODIFIED =>
+        case ChangeType.MODIFIED =>
           changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
-        case ChangedType.MOVED =>
+        case ChangeType.MOVED =>
           changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
       }
 

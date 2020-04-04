@@ -13,12 +13,15 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
+  private var replacedCon: ASTNode = _
+  private var negatedCon: ASTNode = _
 
-  override def mutate(): Unit = {
+  override def mutate(conditionExpr: Identifier = null): Boolean = {
+    if (isParameterizable) assert(conditionExpr != null)
     // only applicable to conditional statement
-    if (!faultStatement.isConditionalStatement()) return
+    if (!faultStatement.isConditionalStatement()) return false
     // check if faulty statement is changed
-    if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return
+    if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return false
 
     val faultFile = faultStatement.getFileName()
     val addedAtomicCodes = Searcher.searchSeeds(projectData.seedsMap, faultFile,
@@ -26,7 +29,7 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
 
     if (addedAtomicCodes.isEmpty) {
       logger.error("Not found any added atomic conditions in the fault statement! Give up...")
-      return
+      return false
     }
     else {
       logger.debug("List of added conditions: " + addedAtomicCodes)
@@ -34,13 +37,14 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     // if there are many added condition, try to randomly choose one
     val randomTaken = Random.nextInt(addedAtomicCodes.size) + 1
     val chosenCode = addedAtomicCodes.takeRight(randomTaken).head.asInstanceOf[Identifier]
-    val chosenNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
+    this.replacedCon = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
     logger.debug("Chosen code to negate: " + chosenCode.getJavaNode())
-    val negatedCode = getNegatedNode(chosenCode)
-    logger.debug("Negated code: " + negatedCode.toString)
+    this.negatedCon = getNegatedNode(chosenCode)
+    logger.debug("Negated code: " + negatedCon.toString)
 
-    ASTUtils.replaceNode(this.document.rewriter, chosenNodeOnDocument, negatedCode)
+    ASTUtils.replaceNode(this.document.rewriter, this.replacedCon, negatedCon)
     doMutating()
+    true
   }
 
   private def getNegatedNode(boolCode: Identifier): ASTNode = {
@@ -49,7 +53,12 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     ASTUtils.createExprNodeFromString(negatedStr)
   }
 
-  override def unmutate(): Unit = ???
+  override def unmutate(): Unit = {
+    ASTUtils.replaceNode(this.document.rewriter, this.negatedCon, this.replacedCon)
+    doMutating()
+  }
 
   override def applicable(): Boolean = ???
+
+  override def isParameterizable: Boolean = false
 }

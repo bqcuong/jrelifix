@@ -134,7 +134,10 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
           case f: VariableDeclarationFragment =>
             vlist.addOne(f.getName)
             if (isBoolDecl && f.getInitializer != null) {
-              clist.addOne(f.getInitializer)
+              val initStr = f.getInitializer.toString.trim
+              if (!initStr.equals("true") && !initStr.equals("false")) {
+                clist.addOne(f.getInitializer)
+              }
             }
         }
       }

@@ -42,6 +42,12 @@ case class ProjectData() {
     class2FilePathMap(className)
   }
 
+  def resetDocuments(): Unit = {
+    sourceFileContents.values().forEach(d => {
+      d.resetModifiedDocument()
+    })
+  }
+
   def mergeSeeds(): mutable.HashSet[Identifier] = {
     for (seedSet <- seedsMap.values) {
       for (seed <- seedSet) {
@@ -49,7 +55,7 @@ case class ProjectData() {
           val seedOpt = allSeeds.find(_.equals(seed))
           val foundSeed = seedOpt.orNull
           assert(foundSeed != null)
-          foundSeed.asInstanceOf[Seedy].addChangedTypes(seed.asInstanceOf[Seedy].getChangedTypes())
+          foundSeed.asInstanceOf[Seedy].addChangeTypes(seed.asInstanceOf[Seedy].getChangeTypes())
         }
         else {
           allSeeds.add(seed)

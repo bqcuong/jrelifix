@@ -20,4 +20,8 @@ case class PredefinedFaultIdentifier(beginLine: Int,
   override def getClassName(): String = className
 
   override def setFileName(fileName: String): Unit = this.fileName = fileName
+
+  override def toString: String = {
+    super.toString + " -> " + this.javaNode.toString.trim
+  }
 }

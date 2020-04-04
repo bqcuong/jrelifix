@@ -2,7 +2,6 @@ package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{ConSeedCondition, NotEqualingConSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{IfStatement, Statement, VariableDeclarationStatement}
@@ -16,32 +15,31 @@ case class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  override def mutate(): Unit = {
+  override def mutate(conditionExpr: Identifier = null): Boolean = {
+    if (isParameterizable) assert(conditionExpr != null)
     var applied = false
     val astNode = faultStatement.getJavaNode()
     if (faultStatement.isIfStatement()) {
-      applied = replaceConditionForIfStatement(astNode.asInstanceOf[IfStatement])
+      applied = replaceConditionForIfStatement(astNode.asInstanceOf[IfStatement], conditionExpr)
     }
     else if (faultStatement.isVariableDeclarationStatement()) {
-      applied = addConditionForVariableDeclaration(astNode.asInstanceOf[VariableDeclarationStatement])
+      applied = addConditionForVariableDeclaration(astNode.asInstanceOf[VariableDeclarationStatement], conditionExpr)
     }
     else {
-      applied = addConditionForOtherStatement(astNode.asInstanceOf[Statement])
+      applied = addConditionForOtherStatement(astNode.asInstanceOf[Statement], conditionExpr)
     }
 
     if (applied) {
       doMutating()
+      true
     }
+    else false
   }
 
   /**
    * In case the faulty statement is a if-statement
    */
-  private def replaceConditionForIfStatement(faultNode: IfStatement): Boolean = {
-    val chosenCon = Searcher.search1RandomSeed(projectData.allSeeds, ConSeedCondition())
-    if (chosenCon == null) return false
-    logger.debug("Chosen condition: " + chosenCon)
-
+  private def replaceConditionForIfStatement(faultNode: IfStatement, chosenCon: Identifier): Boolean = {
     val replacedCon = ASTUtils.getConditionalNode(faultNode)
     logger.debug("The current condition will be replaced: " + replacedCon)
 
@@ -52,12 +50,7 @@ case class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
   /**
    * In case the faulty statement is a statement that is not neither if-statement or variable declaration
    */
-  private def addConditionForOtherStatement(faultNode: Statement): Boolean = {
-    logger.debug("Add if condition for: " + faultNode.toString.trim)
-    val chosenCon = Searcher.search1RandomSeed(projectData.allSeeds, ConSeedCondition())
-    if (chosenCon == null) return false
-    logger.debug("Chosen condition: " + chosenCon)
-
+  private def addConditionForOtherStatement(faultNode: Statement, chosenCon: Identifier): Boolean = {
     val wrappedNode = faultNode
     val newIfCode = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, wrappedNode.toString.trim)
     val newIfNode = ASTUtils.createStmtNodeFromString(newIfCode)
@@ -69,7 +62,7 @@ case class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
   /**
    * In case the faulty statement is a variable declaration statement
    */
-  private def addConditionForVariableDeclaration(faultNode: VariableDeclarationStatement): Boolean = {
+  private def addConditionForVariableDeclaration(faultNode: VariableDeclarationStatement, chosenCon: Identifier): Boolean = {
     logger.debug("Add if condition for: " + faultNode.toString.trim)
 
     val variableCodes = ASTUtils.getVariableCodes(faultNode)
@@ -93,10 +86,6 @@ case class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
 
     if (!hasInitializer) return false
 
-    val chosenCon = Searcher.search1RandomSeed(projectData.allSeeds, NotEqualingConSeedCondition(varSet))
-    if (chosenCon == null) return false
-    logger.debug("Chosen condition: " + chosenCon)
-
     // create and insert the if-statement after the original declaration
     val assignListStr = assignList.mkString("")
     val ifStr = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, assignListStr)
@@ -115,4 +104,6 @@ case class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
   override def unmutate(): Unit = ???
 
   override def applicable(): Boolean = ???
+
+  override def isParameterizable: Boolean = true
 }

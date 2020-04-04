@@ -2,7 +2,7 @@ package net.bqc.jrelifix.context.diff
 
 import net.bqc.jrelifix.identifier.Identifier
 
-object ChangedType extends Enumeration {
+object ChangeType extends Enumeration {
   val NONE, ADDED, REMOVED, MODIFIED, MOVED = Value
 }
 
@@ -19,6 +19,6 @@ case class ChangedSnippet(srcRange: SourceRange,
                           dstRange: SourceRange,
                           srcSource: Identifier,
                           dstSource: Identifier,
-                          changedType: ChangedType.Value) {
+                          changeType: ChangeType.Value) {
 
 }

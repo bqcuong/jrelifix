@@ -4,12 +4,18 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.identifier.Identifier
 
 object MutationType extends Enumeration {
-  val REVERT, NEGATE, DELETE = Value
+  val DELETE, NEGATE, SWAP, REVERT, ADDIF = Value
 }
 
 class MutationGenerator(projectData: ProjectData) {
 
-  def getRandomMutation(faultStatement: Identifier): Mutation = {
-    AddIfMutation(faultStatement, projectData)
+  def getMutation(faultStatement: Identifier, mutationType: MutationType.Value, coinUp: Boolean = false): Mutation = {
+    mutationType match {
+      case MutationType.DELETE => DeleteMutation(faultStatement, projectData)
+      case MutationType.NEGATE => NegateMutation(faultStatement, projectData)
+      case MutationType.SWAP => SwapMutation(faultStatement, projectData, if (coinUp) SwapMutation.SWAP_UP else SwapMutation.SWAP_DOWN)
+      case MutationType.REVERT => RevertMutation(faultStatement, projectData)
+      case MutationType.ADDIF => AddIfMutation(faultStatement, projectData)
+    }
   }
 }

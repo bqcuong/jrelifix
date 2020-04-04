@@ -1,7 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.context.diff.ChangedType
+import net.bqc.jrelifix.context.diff.ChangeType
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
@@ -21,22 +21,23 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  override def mutate(): Unit = {
+  override def mutate(conditionExpr: Identifier = null): Boolean = {
+    if (isParameterizable) assert(conditionExpr != null)
     val faultLineNumber = faultStatement.getLine()
     var applied = false
 
     var changedSnippet = DiffUtils.searchChangedSnippetOutside(projectData.changedSourcesMap, faultStatement)
-    if (changedSnippet != null) {
+    if (changedSnippet != null && changedSnippet.changeType != ChangeType.ADDED) {
       val prevCode = changedSnippet.srcSource
       val currCode = changedSnippet.dstSource
       assert(prevCode != null)
       assert(currCode != null)
-      if (changedSnippet.changedType == ChangedType.MODIFIED) {
+      if (changedSnippet.changeType == ChangeType.MODIFIED) {
         val currASTNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
         ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
         applied = true
       }
-      else if (changedSnippet.changedType == ChangedType.MOVED && currCode.getBeginLine() == faultLineNumber) {
+      else if (changedSnippet.changeType == ChangeType.MOVED && currCode.getBeginLine() == faultLineNumber) {
         val prevLine = prevCode.getBeginLine()
         val currentNodeAtPrevLine = ASTUtils.searchNodeByLineNumber(document.cu, prevLine)
         val currentNode = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
@@ -58,7 +59,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     else {
       changedSnippet = DiffUtils.searchChangedSnippetOutside(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
       // TODO: Support removed minor expression in a statement
-      if (changedSnippet != null && changedSnippet.changedType == ChangedType.REMOVED) {
+      if (changedSnippet != null && changedSnippet.changeType == ChangeType.REMOVED) {
         val prevCode = changedSnippet.srcSource
         assert(prevCode != null)
 
@@ -76,10 +77,14 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
 
     if (applied) {
       doMutating()
+      true
     }
+    else false
   }
 
   override def unmutate(): Unit = ???
 
   override def applicable(): Boolean = ???
+
+  override def isParameterizable: Boolean = false
 }

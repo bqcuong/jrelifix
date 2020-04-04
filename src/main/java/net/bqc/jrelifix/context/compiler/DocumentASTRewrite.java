@@ -50,6 +50,7 @@ public class DocumentASTRewrite {
     }
 
     public void resetModifiedDocument(){
+        this.rewriter = ASTRewrite.create(cu.getAST());
         this.modifiedDocument = new Document(document.get());
     }
 

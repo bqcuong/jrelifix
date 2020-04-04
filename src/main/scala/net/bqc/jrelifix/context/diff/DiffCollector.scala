@@ -50,13 +50,13 @@ case class DiffCollector(projectData: ProjectData) {
     changedSources
   }
 
-  private def getModifiedType(actionName: String): ChangedType.Value = {
+  private def getModifiedType(actionName: String): ChangeType.Value = {
     actionName match {
-      case "UPD" => ChangedType.MODIFIED
-      case "INS" => ChangedType.ADDED
-      case "DEL" => ChangedType.REMOVED
-      case "MOV" => ChangedType.MOVED
-      case _ => ChangedType.MODIFIED
+      case "UPD" => ChangeType.MODIFIED
+      case "INS" => ChangeType.ADDED
+      case "DEL" => ChangeType.REMOVED
+      case "MOV" => ChangeType.MOVED
+      case _ => ChangeType.MODIFIED
     }
   }
 
@@ -96,14 +96,14 @@ case class DiffCollector(projectData: ProjectData) {
       var srcNode: CtElement = null
       var dstNode: CtElement = null
       changeType match {
-        case ChangedType.ADDED =>
+        case ChangeType.ADDED =>
           dstNode = op.getSrcNode
-        case ChangedType.REMOVED =>
+        case ChangeType.REMOVED =>
           srcNode = op.getSrcNode
-        case ChangedType.MOVED =>
+        case ChangeType.MOVED =>
           srcNode = op.getSrcNode
           dstNode = op.getDstNode
-        case ChangedType.MODIFIED =>
+        case ChangeType.MODIFIED =>
           srcNode = op.getSrcNode
           dstNode = op.getDstNode
         case _ =>

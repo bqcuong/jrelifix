@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.identifier.node
 
-import org.eclipse.jdt.core.dom.Expression
+import net.bqc.jrelifix.utils.ASTUtils
+import org.eclipse.jdt.core.dom.{ASTNode, Expression}
 
 class AssignmentIdentifier(beginLine: Int,
                            endLine: Int,

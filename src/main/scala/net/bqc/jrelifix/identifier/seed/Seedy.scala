@@ -1,6 +1,6 @@
 package net.bqc.jrelifix.identifier.seed
 
-import net.bqc.jrelifix.context.diff.ChangedType
+import net.bqc.jrelifix.context.diff.ChangeType
 import net.bqc.jrelifix.identifier.Identifier
 
 import scala.collection.mutable
@@ -40,20 +40,20 @@ object Seedy {
 }
 
 trait Seedy {
-  protected val changedTypes: mutable.HashSet[ChangedType.Value] = new mutable.HashSet[ChangedType.Value]()
+  protected val changeTypes: mutable.HashSet[ChangeType.Value] = new mutable.HashSet[ChangeType.Value]()
 
-  def addChangedType(changedType: ChangedType.Value): Unit = {
-    this.changedTypes.add(changedType)
+  def addChangeType(changeType: ChangeType.Value): Unit = {
+    this.changeTypes.add(changeType)
   }
 
-  def addChangedTypes(changedTypes: mutable.HashSet[ChangedType.Value]): Unit = {
-    this.changedTypes.addAll(changedTypes)
+  def addChangeTypes(changeTypes: mutable.HashSet[ChangeType.Value]): Unit = {
+    this.changeTypes.addAll(changeTypes)
   }
 
-  def getChangedTypes(): mutable.HashSet[ChangedType.Value] = this.changedTypes
+  def getChangeTypes(): mutable.HashSet[ChangeType.Value] = this.changeTypes
 
-  def containsChangedType(changedType: ChangedType.Value): Boolean = {
-    this.changedTypes.contains(changedType)
+  def containsChangeType(changeType: ChangeType.Value): Boolean = {
+    this.changeTypes.contains(changeType)
   }
 
   def equals(obj: Any): Boolean
