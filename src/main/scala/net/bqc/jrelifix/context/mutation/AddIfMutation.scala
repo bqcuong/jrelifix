@@ -10,7 +10,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-case class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
+class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)

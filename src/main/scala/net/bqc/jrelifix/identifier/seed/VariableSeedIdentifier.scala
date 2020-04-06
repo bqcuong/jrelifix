@@ -7,9 +7,10 @@ class VariableSeedIdentifier(beginLine: Int,
                             endLine: Int,
                             beginColumn: Int,
                             endColumn: Int,
+                            fileName: String,
                             declType: ASTNode,
                             initializer: ASTNode)
-  extends VariableIdentifier(beginLine, endLine, beginColumn, endColumn, declType, initializer)
+  extends VariableIdentifier(beginLine, endLine, beginColumn, endColumn, fileName, declType, initializer)
   with Seedy {
 
   override def equals(obj: Any): Boolean = Seedy._equals(this, obj)

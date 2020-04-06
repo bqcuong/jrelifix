@@ -265,7 +265,7 @@ object ASTUtils {
         case f: VariableDeclarationFragment =>
           val varNameNode = f.getName
           val (bl, el, bc, ec) = getNodePosition(varNameNode, cu)
-          val variable = new VariableIdentifier(bl, el, bc, ec, declType, f.getInitializer)
+          val variable = new VariableIdentifier(bl, el, bc, ec, null, declType, f.getInitializer)
           variable.setJavaNode(varNameNode)
           result.addOne(variable)
       }

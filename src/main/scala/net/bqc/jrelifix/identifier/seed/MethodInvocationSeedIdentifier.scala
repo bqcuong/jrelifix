@@ -7,8 +7,9 @@ class MethodInvocationSeedIdentifier(beginLine: Int,
                                      endLine: Int,
                                      beginColumn: Int,
                                      endColumn: Int,
+                                     fileName: String,
                                      returnType: ITypeBinding)
-  extends MethodInvocationIdentifier(beginLine, endLine, beginColumn, endColumn, returnType)
+  extends MethodInvocationIdentifier(beginLine, endLine, beginColumn, endColumn, fileName, returnType)
   with Seedy {
 
   override def equals(obj: Any): Boolean = Seedy._equals(this, obj)

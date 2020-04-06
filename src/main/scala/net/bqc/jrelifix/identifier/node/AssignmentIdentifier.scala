@@ -7,8 +7,9 @@ class AssignmentIdentifier(beginLine: Int,
                            endLine: Int,
                            beginColumn: Int,
                            endColumn: Int,
+                           fileName: String,
                            val lhs: Expression,
                            val rhs: Expression)
-  extends ExpressionIdentifier(beginLine, endLine, beginColumn, endColumn) {
+  extends ExpressionIdentifier(beginLine, endLine, beginColumn, endColumn, fileName) {
 
 }

@@ -8,7 +8,8 @@ import scala.collection.mutable
 
 class AssignmentDecoratorSeedIdentifier(assignment: AssignmentSeedIdentifier) 
   extends AssignmentSeedIdentifier(assignment.getBeginLine(), assignment.getEndLine(), 
-                                   assignment.getBeginColumn(), assignment.getEndColumn(), 
+                                   assignment.getBeginColumn(), assignment.getEndColumn(),
+                                   assignment.getFileName(),
                                    assignment.lhs: Expression, assignment.rhs: Expression) {
 
   // new method behaviour for this decorator

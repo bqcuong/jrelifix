@@ -10,6 +10,7 @@ class VariableIdentifier(beginLine: Int,
                          endLine: Int,
                          beginColumn: Int,
                          endColumn: Int,
+                         val fileName: String,
                          val declType: ASTNode,
                          val initializer: ASTNode)
   extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn) {
@@ -53,4 +54,6 @@ class VariableIdentifier(beginLine: Int,
   }
 
   override def toString: String = "%s[%s,%s]".format(javaNode.toString, declType.toString,initializer.toString)
+
+  override def getFileName(): String = this.fileName
 }

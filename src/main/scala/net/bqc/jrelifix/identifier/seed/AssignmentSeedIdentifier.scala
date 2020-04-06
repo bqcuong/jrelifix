@@ -8,9 +8,10 @@ class AssignmentSeedIdentifier(beginLine: Int,
                                endLine: Int,
                                beginColumn: Int,
                                endColumn: Int,
+                               fileName: String,
                                lhs: Expression,
                                rhs: Expression)
-  extends AssignmentIdentifier(beginLine, endLine, beginColumn, endColumn, lhs, rhs)
+  extends AssignmentIdentifier(beginLine, endLine, beginColumn, endColumn, fileName, lhs, rhs)
   with Seedy {
 
   def generateEqualityExpression(): ASTNode = {

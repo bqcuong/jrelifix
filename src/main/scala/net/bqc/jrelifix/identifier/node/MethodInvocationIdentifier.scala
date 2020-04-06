@@ -6,8 +6,9 @@ class MethodInvocationIdentifier(beginLine: Int,
                                  endLine: Int,
                                  beginColumn: Int,
                                  endColumn: Int,
+                                 fileName: String,
                                  val returnType: ITypeBinding)
-  extends ExpressionIdentifier(beginLine, endLine, beginColumn, endColumn) {
+  extends ExpressionIdentifier(beginLine, endLine, beginColumn, endColumn, fileName) {
 
   def getDefaultValue(): String = {
     assert(returnType != null)
@@ -29,6 +30,6 @@ class MethodInvocationIdentifier(beginLine: Int,
   override def isBool(): Boolean = {
     assert(returnType != null)
     val returnTypeStr = returnType.toString
-    returnType.isPrimitive && returnTypeStr == "boolean"
+    returnType.isPrimitive && returnTypeStr == "boolean" || returnTypeStr == "Boolean"
   }
 }

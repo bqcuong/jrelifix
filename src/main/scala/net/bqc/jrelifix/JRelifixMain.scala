@@ -36,7 +36,7 @@ object JRelifixMain {
     projectData.class2FilePathMap.addAll(class2PathMap)
     logger.info("Done parsing AST!")
 
-    logger.info("Initializing Diff Collector...")
+    logger.info("Initializing Collectors...")
     val differ = DiffCollector(projectData)
     val changedSources = differ.collectChangedSources()
     projectData.initChangedSourcesMap(changedSources)
@@ -45,7 +45,7 @@ object JRelifixMain {
     seedsCollector.collect()
     changedSeedsCollector.collect()
     projectData.mergeSeeds()
-    logger.info("Done Initializing Diff Collector!")
+    logger.info("Done Initializing Collectors!")
 
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](projectData.config().sourceFolder)

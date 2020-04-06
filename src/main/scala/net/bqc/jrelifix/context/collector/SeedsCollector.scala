@@ -31,7 +31,7 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
         val atomicBools = ASTUtils.getBoolNodes(c)
         for (b <- atomicBools) {
           val (bl, el, bc, ec) = getNodePosition(b, cu)
-          val atomicBoolCode = new ExpressionSeedIdentifier(bl, el, bc, ec)
+          val atomicBoolCode = new ExpressionSeedIdentifier(bl, el, bc, ec, f)
           atomicBoolCode.setBool(true)
           atomicBoolCode.setJavaNode(searchNodeByIdentifier(cu, atomicBoolCode))
           projectData.seedsMap(f).addOne(atomicBoolCode)
@@ -50,7 +50,7 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
         }
 
         val (bl, el, bc, ec) = getNodePosition(v, cu)
-        val variableCode = new VariableSeedIdentifier(bl, el, bc, ec, declType, initializer)
+        val variableCode = new VariableSeedIdentifier(bl, el, bc, ec, f, declType, initializer)
         variableCode.setJavaNode(searchNodeByIdentifier(cu, variableCode))
         projectData.seedsMap(f).addOne(variableCode)
       }
@@ -61,7 +61,7 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
         assert(binding != null)
         val returnType = binding.getReturnType
         val (bl, el, bc, ec) = getNodePosition(m, cu)
-        val miCode = new MethodInvocationSeedIdentifier(bl, el, bc, ec, returnType)
+        val miCode = new MethodInvocationSeedIdentifier(bl, el, bc, ec, f, returnType)
         miCode.setJavaNode(searchNodeByIdentifier(cu, miCode))
         projectData.seedsMap(f).addOne(miCode)
       }
@@ -69,7 +69,7 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
       for(a <- seedsVisitor.alist) {
         val assignment = a.asInstanceOf[Assignment]
         val (bl, el, bc, ec) = getNodePosition(a, cu)
-        val assignmentCode = new AssignmentSeedIdentifier(bl, el, bc, ec, assignment.getLeftHandSide, assignment.getRightHandSide)
+        val assignmentCode = new AssignmentSeedIdentifier(bl, el, bc, ec, f, assignment.getLeftHandSide, assignment.getRightHandSide)
         assignmentCode.setJavaNode(searchNodeByIdentifier(cu, assignmentCode))
         projectData.seedsMap(f).addOne(assignmentCode)
       }

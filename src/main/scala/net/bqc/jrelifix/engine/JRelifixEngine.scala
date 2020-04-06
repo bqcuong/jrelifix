@@ -43,11 +43,12 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     assert(conExprSet.nonEmpty)
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
-    var operators = mutable.Queue[MutationType.Value](
-      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF,
+    val initialOperators = mutable.Queue[MutationType.Value](
+      MutationType.CONVERT
+//      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF,
     )
-    operators = Random.shuffle(operators)
-    logger.debug("Initial Operators: " + operators)
+    logger.debug("Initial Operators: " + initialOperators)
+
 
     val P = 20
     val tabu = mutable.HashSet[Identifier]()
@@ -57,6 +58,9 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       logger.debug("[FAULT] Try: " + faultLine)
       var changedCount = 0
       var iter = 0
+
+      val operators = Random.shuffle(initialOperators)
+      logger.debug("[OPERATOR] Candidates: " + operators)
 
       while(iter <= P && operators.nonEmpty) {
         val nextOperator = operators.dequeue()
