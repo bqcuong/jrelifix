@@ -85,6 +85,7 @@ object JRelifixMain {
     logger.info("Running Repair Engine ...")
     val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)
     val engine: APREngine = JRelifixEngine(topNFaults, projectData, context)
+    projectData.setEngine(engine.asInstanceOf[JRelifixEngine])
     engine.repair()
     logger.info("Done Repair!")
     projectData.cleanTemp()

@@ -21,6 +21,9 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
   extends APREngine(faults, projectData, context) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
+  private val tabu = mutable.HashSet[Identifier]()
+  private val conExprSet: mutable.HashSet[Identifier] = mutable.HashSet[Identifier]()
+  private var currentChosenCon: Identifier = null
 
   private def collectConditionExpressions(): mutable.HashSet[Identifier] = {
     val result = mutable.HashSet[Identifier]()
@@ -38,20 +41,29 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     result
   }
 
+  def chooseRandomlyExpr(): Identifier = {
+    do {
+      val randDrop = Random.nextInt(conExprSet.size)
+      currentChosenCon = conExprSet.drop(randDrop).head
+    }
+    while (tabu.contains(currentChosenCon))
+    logger.debug("[OPERATOR PARAM] Chosen Condition: " + currentChosenCon)
+    currentChosenCon
+  }
+
   override def repair(): Unit = {
-    val conExprSet = collectConditionExpressions()
+    conExprSet.addAll(collectConditionExpressions())
     assert(conExprSet.nonEmpty)
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
     val initialOperators = mutable.Queue[MutationType.Value](
-      MutationType.CONVERT
+      MutationType.ADDCON
 //      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF,
     )
     logger.debug("Initial Operators: " + initialOperators)
 
-
     val P = 20
-    val tabu = mutable.HashSet[Identifier]()
+
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedNegTests.map(_.getFullName).toSet
 
     for(faultLine <- faults) {
@@ -68,16 +80,9 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
         val mutation = this.context.mutationGenerator.getMutation(faultLine, nextOperator)
         var applied: Boolean = false
-        var chosenCon: Identifier = null
         if (mutation.isParameterizable) {
-          do {
-            val randDrop = Random.nextInt(conExprSet.size)
-            chosenCon = conExprSet.drop(randDrop).head
-          }
-          while (tabu.contains(chosenCon))
-
-          logger.debug("[OPERATOR PARAM] Chosen Condition: " + chosenCon)
-          applied = mutation.mutate(chosenCon)
+          currentChosenCon = chooseRandomlyExpr()
+          applied = mutation.mutate(currentChosenCon)
         }
         else {
           applied = mutation.mutate()
@@ -129,8 +134,8 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
           }
           if (unmutated) projectData.resetDocuments()
         }
-        else if (chosenCon != null) {
-          tabu.addOne(chosenCon)
+        else if (currentChosenCon != null) {
+          tabu.addOne(currentChosenCon)
         }
       }
     }

@@ -6,6 +6,7 @@ import java.util
 import net.bqc.jrelifix.config.Config
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangedFile
+import net.bqc.jrelifix.engine.JRelifixEngine
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.identifier.seed.Seedy
@@ -20,6 +21,7 @@ case class ProjectData() {
   private val TEMP_POSTFIX = "_temp"
 
   private var configData: Config = _
+  private var engine: JRelifixEngine = _
   val compilationUnitMap: mutable.HashMap[String, CompilationUnit] = new mutable.HashMap[String, CompilationUnit]
   val class2FilePathMap: mutable.HashMap[String, String] = new mutable.HashMap[String, String]
   val sourceFilesArray: ArrayBuffer[String] = new ArrayBuffer[String]
@@ -107,4 +109,7 @@ case class ProjectData() {
     }
     originalFaultFiles.addAll(faultFiles)
   }
+
+  def setEngine(e: JRelifixEngine): Unit = this.engine = e
+  def getEngine: JRelifixEngine = this.engine
 }
