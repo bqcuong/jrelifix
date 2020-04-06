@@ -113,6 +113,11 @@ abstract class Identifier {
     javaNode.isInstanceOf[VariableDeclarationStatement]
   }
 
+  def isStatement(): Boolean = {
+    if (javaNode == null) return false
+    javaNode.isInstanceOf[Statement]
+  }
+
   def isSwappableStatement(): Boolean = {
     javaNode.isInstanceOf[Statement] &&
     !isConditionalStatement() && !javaNode.isInstanceOf[ConstructorInvocation] &&
