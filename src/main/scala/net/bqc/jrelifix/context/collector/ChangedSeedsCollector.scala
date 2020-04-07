@@ -2,15 +2,24 @@ package net.bqc.jrelifix.context.collector
 
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.ChangeType
-import net.bqc.jrelifix.identifier.PositionBasedIdentifier
-import net.bqc.jrelifix.identifier.seed.Seedy
-import net.bqc.jrelifix.search.{SameCodeSnippetCondition, ChildSnippetCondition, Searcher}
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier}
+import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, Seedy}
+import net.bqc.jrelifix.search.{ChildSnippetCondition, SameCodeSnippetCondition, Searcher}
+import net.bqc.jrelifix.utils.ASTUtils
+import net.bqc.jrelifix.utils.ASTUtils.{getNodePosition, searchNodeByIdentifier}
 import org.apache.log4j.Logger
+import org.eclipse.jdt.core.dom.{CompilationUnit, InfixExpression}
 
 case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(projectData){
   private val logger: Logger = Logger.getLogger(this.getClass)
 
   override def collect(): ProjectData = {
+    updateChangeStatus4ExistingSeeds()
+    collectAdditionalSeedsFromChangeHistory()
+    projectData
+  }
+
+  private def updateChangeStatus4ExistingSeeds(): Unit = {
     val seedFiles = projectData.seedsMap.keys
     for(f <- seedFiles) {
       val seedCodes = projectData.seedsMap(f)
@@ -46,12 +55,48 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
               alreadySet = true
             }
           }
-          if (alreadySet) logger.debug("Update seeds change status: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString))
+          if (alreadySet) logger.debug("Update seed change status: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString))
         }
       }
     }
-    projectData
   }
 
+  private def collectAdditionalSeedsFromChangeHistory(): Unit = {
+    for (f <- projectData.changedSourcesMap.keys) {
+      val changedFile = projectData.changedSourcesMap(f)
+      for (cs <- changedFile.allCS) {
+        var seed: Seedy = null
+        cs.changeType match {
+          case ChangeType.REMOVED | ChangeType.MODIFIED =>
+            seed = generateSeed(cs.srcSource, changedFile.oldCUnit)
+        }
 
+        if (seed != null) {
+          seed.addChangeType(ChangeType.REMOVED)
+          val seedAsIdentifier = seed.asInstanceOf[Identifier]
+          projectData.seedsMap(f).addOne(seedAsIdentifier)
+          logger.debug("Additional seed from change history: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString))
+        }
+      }
+    }
+  }
+
+  private def generateSeed(prevCode: Identifier, prevCu: CompilationUnit): Seedy = {
+    val javaNode = prevCode.getJavaNode()
+    javaNode match {
+      case node: InfixExpression =>
+        val op = node.getOperator
+        // expression in if-statement, for-statement, while-statement
+        if (ASTUtils.isConditionalOperator(op) && ASTUtils.belongsToConditionStatement(node)) {
+          val (bl, el, bc, ec) = getNodePosition(node, prevCu)
+          val atomicBoolCode = new ExpressionSeedIdentifier(bl, el, bc, ec, prevCode.getFileName())
+          atomicBoolCode.setBool(true)
+          atomicBoolCode.setJavaNode(searchNodeByIdentifier(prevCu, atomicBoolCode))
+          return atomicBoolCode
+        }
+
+      case _ => return null
+    }
+    null
+  }
 }
