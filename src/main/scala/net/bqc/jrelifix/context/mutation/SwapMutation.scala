@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.ChangeType
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
@@ -11,8 +12,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
  * @param faultStatement
  * @param projectData
  */
-case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, swapDirection: Int)
-  extends Mutation(faultStatement, projectData) {
+case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite, swapDirection: Int)
+  extends Mutation(faultStatement, projectData, doc) {
 
   private var emptyBlock: ASTNode = _
   private var chosenSibNode: ASTNode = _
@@ -47,9 +48,9 @@ case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, sw
     if (chosenSibNode != null) {
       // Step 1: Remove the current block of code
       this.emptyBlock = this.astRewrite.getAST.createInstance(classOf[Block])
-      ASTUtils.replaceNode(document.rewriter, faultStatement.getJavaNode(), emptyBlock)
+      ASTUtils.replaceNode(astRewrite, faultStatement.getJavaNode(), emptyBlock)
       // Step 2: Put it before/after the chosen sibling statement
-      ASTUtils.insertNode(document.rewriter, chosenSibNode, faultStatement.getJavaNode(), !swapUp)
+      ASTUtils.insertNode(astRewrite, chosenSibNode, faultStatement.getJavaNode(), !swapUp)
       doMutating()
       true
     }

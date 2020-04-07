@@ -72,7 +72,7 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     (compilationUnitMap, class2FilePathMap)
   }
 
-  def genASTFromSource(source: String): ASTNode = {
+  def genASTFromSource(source: String): CompilationUnit = {
     val astParser = ASTParser.newParser(API_LEVEL)
     val options = JavaCore.getOptions
     JavaCore.setComplianceOptions(COMPLIANCE_LEVEL, options)
@@ -80,12 +80,12 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     astParser.setSource(source.toCharArray)
     astParser.setResolveBindings(true)
     astParser.setBindingsRecovery(true)
-    astParser.createAST(null)
+    astParser.createAST(null).asInstanceOf[CompilationUnit]
   }
 }
 
 object JavaParser {
-  def parseAST(source: String): ASTNode = {
+  def parseAST(source: String): CompilationUnit = {
     JavaParser.apply(null, null, null).genASTFromSource(source)
   }
 }

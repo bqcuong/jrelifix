@@ -14,6 +14,6 @@ case class ChangedFile(filePath: String,
   // All changed snippets
   val allCS: ArrayBuffer[ChangeSnippet] = ArrayBuffer[ChangeSnippet]()
 
-  val oldCUnit: CompilationUnit = JavaParser.parseAST(oldVersion).asInstanceOf[CompilationUnit]
-  val newCUnit: CompilationUnit = JavaParser.parseAST(newVersion).asInstanceOf[CompilationUnit]
+  val oldCUnit: CompilationUnit = JavaParser.parseAST(oldVersion)
+  val newCUnit: CompilationUnit = JavaParser.parseAST(newVersion)
 }

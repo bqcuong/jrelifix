@@ -42,7 +42,7 @@ object SourceUtils {
       val encoded = Utilities.readFromFile(backingFile)
       val contents = new Document(new String(encoded))
       val cu = projectData.filePath2CU(sourceFile)
-      val docrw = new DocumentASTRewrite(contents, backingFile, ASTRewrite.create(cu.getAST), cu)
+      val docrw = new DocumentASTRewrite(contents, backingFile, cu)
       map.put(sourceFile, docrw)
     }
     map

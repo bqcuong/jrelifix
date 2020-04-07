@@ -69,6 +69,7 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
         cs.changeType match {
           case ChangeType.REMOVED | ChangeType.MODIFIED =>
             seed = generateSeed(cs.srcSource, changedFile.oldCUnit)
+          case _ =>
         }
 
         if (seed != null) {

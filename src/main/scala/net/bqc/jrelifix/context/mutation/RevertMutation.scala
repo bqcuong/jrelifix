@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{ExactlySnippetCondition, SameCodeSnippetCondition, Searcher}
@@ -18,8 +19,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
  * @param faultStatement
  * @param projectData
  */
-case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
-  extends Mutation(faultStatement, projectData) {
+case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
+  extends Mutation(faultStatement, projectData, doc) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
@@ -98,14 +99,14 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
         val currentNode = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
 
         // Step 1: Remove the current block of code
-        ASTUtils.removeNode(document.rewriter, currentNode)
+        ASTUtils.removeNode(astRewrite, currentNode)
 
         // Step 2: Put it again at the previous line number
         if (prevLine < currCode.getBeginLine()) { // move down
-          ASTUtils.insertNode(document.rewriter, currentNodeAtPrevLine, currCode.getJavaNode(), insertAfter = false)
+          ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode(), insertAfter = false)
         }
         else { // move up
-          ASTUtils.insertNode(document.rewriter, currentNodeAtPrevLine, currCode.getJavaNode())
+          ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode())
         }
 
         applied = true

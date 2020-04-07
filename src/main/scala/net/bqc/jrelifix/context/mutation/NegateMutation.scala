@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{AddedConSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
@@ -9,8 +10,8 @@ import org.eclipse.jdt.core.dom.ASTNode
 
 import scala.util.Random
 
-case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
-  extends Mutation(faultStatement, projectData) {
+case class NegateMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
+  extends Mutation(faultStatement, projectData, doc) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
   private var replacedCon: ASTNode = _
@@ -42,7 +43,7 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     this.negatedCon = getNegatedNode(chosenCode)
     logger.debug("Negated code: " + negatedCon.toString)
 
-    ASTUtils.replaceNode(this.document.rewriter, this.replacedCon, negatedCon)
+    ASTUtils.replaceNode(this.astRewrite, this.replacedCon, negatedCon)
     doMutating()
     true
   }

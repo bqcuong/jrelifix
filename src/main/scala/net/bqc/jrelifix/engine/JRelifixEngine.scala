@@ -2,13 +2,14 @@ package net.bqc.jrelifix.engine
 
 import java.io.File
 
-import net.bqc.jrelifix.context.compiler.JavaJDKCompiler
+import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
 import net.bqc.jrelifix.context.mutation.MutationType
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
 import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier}
 import net.bqc.jrelifix.search.{ConSeedForEngineCondition, Searcher}
-import net.bqc.jrelifix.utils.DiffUtils
+import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 
 import scala.collection.mutable
@@ -59,49 +60,36 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
     val initialOperators = mutable.Queue[MutationType.Value](
-//      MutationType.REVERT
-      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
+      MutationType.NEGATE
+//      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
+    )
+    val secondaryOperators = mutable.Queue[MutationType.Value](
+      MutationType.ADDCON, MutationType.ADDIF
+//      MutationType.NEGATE, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
     )
     logger.debug("Initial Operators: " + initialOperators)
+    logger.debug("Secondary Operators: " + secondaryOperators)
 
     val P = 20
 
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedNegTests.map(_.getFullName).toSet
 
-    for(faultLine <- faults) {
+    for(f <- faults) {
+      var faultLine = f
       logger.debug("[FAULT] Try: " + faultLine)
       val faultFile = faultLine.getFileName()
       var changedCount = 0
       var iter = 0
+      var secondaryDoc: DocumentASTRewrite = null
 
       var operators = Random.shuffle(initialOperators)
       logger.debug("[OPERATOR] Candidates: " + operators)
-
-/*      val mutation1 = this.context.mutationGenerator.getMutation(faultLine, MutationType.ADDIF)
-      val mutation2 = this.context.mutationGenerator.getMutation(faultLine, MutationType.ADDCON)
-      currentChosenCon = chooseRandomlyExpr()
-
-      mutation1.mutate(currentChosenCon)
-      logger.debug("==========> AFTER MUTATING 1")
-      this.context.compiler.compile()
-
-      mutation2.mutate(currentChosenCon)
-      logger.debug("==========> AFTER MUTATING 2")
-      this.context.compiler.compile()
-
-      mutation2.mutate(currentChosenCon)
-      logger.debug("==========> AFTER UN-MUTATING 2")
-      this.context.compiler.compile()
-
-      mutation1.mutate(currentChosenCon)
-      logger.debug("==========> AFTER UN-MUTATING 1")
-      this.context.compiler.compile()*/
 
       while(iter <= P && operators.nonEmpty) {
         val nextOperator = operators.dequeue()
         logger.debug("[OPERATOR] Try: " + nextOperator)
 
-        val mutation = this.context.mutationGenerator.getMutation(faultLine, nextOperator)
+        val mutation = this.context.mutationGenerator.getMutation(faultLine, nextOperator, secondaryDoc)
         var applied: Boolean = false
         if (mutation.isParameterizable) {
           currentChosenCon = chooseRandomlyExpr()
@@ -111,20 +99,23 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
         if (applied) {
           // Try to compile
+          if (secondaryDoc != null) { // update new doc for compiler
+            this.context.compiler.updateSourceFileContents(faultFile, secondaryDoc)
+          }
+          else { // set the original doc for compiler
+            this.context.compiler.updateSourceFileContents(faultFile, projectData.sourceFileContents.get(faultFile))
+          }
+
           logger.debug("==========> AFTER MUTATING")
           val compileStatus = this.context.compiler.compile()
           logger.debug("[COMPILE] Status: " + compileStatus)
 
-          var undoMutation = true
-
           if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
             val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, projectData.config().classpath())
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
-
             if (reducedTSValidation._1) {
               val wholeTSValidation = this.context.testValidator.validateAllTestCases(projectData.config().classpath())
               logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
-
               if (wholeTSValidation._1) {
                 logger.debug("==========================================")
                 logger.debug("FOUND A REPAIR (See below patch):")
@@ -143,9 +134,22 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
                 logger.debug("==========================================")
                 return
               }
-              else { // introduce new regression
-//                operators = Random.shuffle(initialOperators)
-//                undoMutation = false
+              else if (secondaryDoc == null) { // introduce new regression, allow maximum 2 operators to be applied
+                // start using current variant as a faulty program to be repaired
+                // this secondary document will be used to be applied for secondary operators
+                secondaryDoc = projectData.sourceFileContents.get(faultFile).generateModifiedDocument()
+                // update new location, new java node for fault statement
+                val astNode = ASTUtils.searchNodeByLineNumber(secondaryDoc.cu, faultLine.getLine())
+                if (astNode != null) { // new faulty node is able to be identified in new variant
+                  logger.debug("[FAULT] Update to: " + faultLine)
+                  val (bl, el, bc, ec) = ASTUtils.getNodePosition(astNode, secondaryDoc.cu)
+                  faultLine = PredefinedFaultIdentifier(bl, el, bc, ec, null)
+                  faultLine.asInstanceOf[PredefinedFaultIdentifier].setFileName(faultFile)
+                  faultLine.setJavaNode(astNode)
+                  // construct secondary operator set
+                  operators = Random.shuffle(secondaryOperators)
+                }
+                else secondaryDoc = null // could not identify new fault statement, ignore
               }
             }
             else {
@@ -159,9 +163,8 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               }
             }
           }
-          if (undoMutation) {
-            mutation.unmutate()
-          }
+
+          mutation.unmutate()
         }
         else if (currentChosenCon != null) {
           tabu.addOne(currentChosenCon)

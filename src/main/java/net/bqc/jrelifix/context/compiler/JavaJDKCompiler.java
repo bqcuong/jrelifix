@@ -81,6 +81,10 @@ public class JavaJDKCompiler {
 		return Status.COMPILED;
 	}
 
+	public void updateSourceFileContents(String keyFile, DocumentASTRewrite newDocument) {
+		this.sourceFileContents.put(keyFile, newDocument);
+	}
+
 	/**
 	 * Stores the class files in the given directory.
 	 * @param directory Base directory for .class files.

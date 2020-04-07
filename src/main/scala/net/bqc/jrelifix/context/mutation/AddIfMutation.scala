@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
@@ -10,8 +11,8 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
-  extends Mutation(faultStatement, projectData) {
+class AddIfMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
+  extends Mutation(faultStatement, projectData, doc) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
@@ -43,7 +44,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     val replacedCon = ASTUtils.getConditionalNode(faultNode)
     logger.debug("The current condition will be replaced: " + replacedCon)
 
-    ASTUtils.replaceNode(this.document.rewriter, replacedCon, chosenCon.getJavaNode())
+    ASTUtils.replaceNode(this.astRewrite, replacedCon, chosenCon.getJavaNode())
     true
   }
 
@@ -55,7 +56,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     val newIfCode = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, wrappedNode.toString.trim)
     val newIfNode = ASTUtils.createStmtNodeFromString(newIfCode)
 
-    ASTUtils.replaceNode(this.document.rewriter, wrappedNode, newIfNode)
+    ASTUtils.replaceNode(this.astRewrite, wrappedNode, newIfNode)
     true
   }
 
@@ -90,14 +91,14 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     val assignListStr = assignList.mkString("")
     val ifStr = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, assignListStr)
     val ifNode = ASTUtils.createStmtNodeFromString(ifStr)
-    ASTUtils.insertNode(this.document.rewriter, faultNode, ifNode)
+    ASTUtils.insertNode(this.astRewrite, faultNode, ifNode)
 
     // replace original declaration with new declaration
     var declStr =  "%s ".format(variableCodes(0).declType.toString)
     declStr += declList.mkString(", ")
     declStr += ";"
     val declNode = ASTUtils.createStmtNodeFromString(declStr)
-    ASTUtils.replaceNode(this.document.rewriter, faultNode, declNode)
+    ASTUtils.replaceNode(this.astRewrite, faultNode, declNode)
     true
   }
 

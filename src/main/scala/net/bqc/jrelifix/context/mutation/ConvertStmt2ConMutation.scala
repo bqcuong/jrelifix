@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{BoolMethodInvocationCondition, Searcher}
 import org.apache.log4j.Logger
@@ -8,8 +9,8 @@ import org.eclipse.jdt.core.dom.ExpressionStatement
 
 import scala.collection.mutable
 
-case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: ProjectData)
-  extends AddIfMutation(faultStatement, projectData) {
+case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
+  extends AddIfMutation(faultStatement, projectData, doc) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 

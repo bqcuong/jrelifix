@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{InsideSnippetCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
@@ -10,8 +11,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, IfStatement, Statement, VariableDeclar
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: ProjectData)
-  extends Mutation(faultStatement, projectData) {
+case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
+  extends Mutation(faultStatement, projectData, doc) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
@@ -74,7 +75,7 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     val op = if (randOp > 0) "||" else "&&"
 
     // create new condition node
-    val newCode = "(%s %s %s)".format(chosenCondition, op, insertedCon.getJavaNode().toString)
+    val newCode = "(%s %s %s)".format(chosenCondition, op, chosenInsertlyCon.getJavaNode().toString)
     val newNode = ASTUtils.createExprNodeFromString(newCode)
     logger.debug("Combining condition: " + newCode)
 
