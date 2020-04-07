@@ -21,7 +21,7 @@ case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
     // delete only when the fault line is added in previous commit
     if (!faultStatement.isStatement()) return false
     val faultFile = faultStatement.getFileName()
-    val cs = Searcher.searchChangedSnippets(projectData.changedSourcesMap(faultFile), AddedSnippetCondition(faultStatement))
+    val cs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), AddedSnippetCondition(faultStatement))
     if (cs.nonEmpty) {
       // Modify source code on ASTRewrite
       this.emptyBlock = this.astRewrite.getAST.createInstance(classOf[Block])

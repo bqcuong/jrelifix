@@ -2,7 +2,7 @@ package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{ChangedSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.{InsideSnippetCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, IfStatement, Statement, VariableDeclarationStatement}
@@ -57,7 +57,7 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     changedBoolNodes = boolNodes.foldLeft(ArrayBuffer[ASTNode]()) {
       (res, node) => {
         val code = ASTUtils.createIdentifierForASTNode(node, faultFile)
-        val css = Searcher.searchChangedSnippets(projectData.changedSourcesMap(faultFile), ChangedSnippetCondition(code.toSourceRange()))
+        val css = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), InsideSnippetCondition(code.toSourceRange()))
         if (css.nonEmpty) res.addOne(node)
         res
       }

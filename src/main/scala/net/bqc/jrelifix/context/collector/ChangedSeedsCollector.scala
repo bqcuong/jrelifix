@@ -4,7 +4,7 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.ChangeType
 import net.bqc.jrelifix.identifier.PositionBasedIdentifier
 import net.bqc.jrelifix.identifier.seed.Seedy
-import net.bqc.jrelifix.search.{ExactlySnippetCondition, InsideSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.{SameCodeSnippetCondition, ChildSnippetCondition, Searcher}
 import org.apache.log4j.Logger
 
 case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(projectData){
@@ -21,7 +21,7 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
           val seedAsIdentifier = s.asInstanceOf[PositionBasedIdentifier]
 
           // find the changed snippet that exactly equals to seed
-          var changedRes = Searcher.searchChangedSnippets(changedFile, ExactlySnippetCondition(seedAsIdentifier.getJavaNode().toString))
+          var changedRes = Searcher.searchChangeSnippets(changedFile, SameCodeSnippetCondition(seedAsIdentifier.getJavaNode().toString))
           var alreadySet = false
           if (changedRes.nonEmpty) {
             // prioritize on update as ADDED over other change operations (if many occur on the same code)
@@ -40,7 +40,7 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
           }
           else {
             // try to check if there are any changed snippets inside this seed
-            changedRes = Searcher.searchChangedSnippets(changedFile, InsideSnippetCondition(seedAsIdentifier.getJavaNode().toString))
+            changedRes = Searcher.searchChangeSnippets(changedFile, ChildSnippetCondition(seedAsIdentifier.getJavaNode().toString))
             if (changedRes.nonEmpty) {
               seed.addChangeType(ChangeType.MODIFIED)
               alreadySet = true

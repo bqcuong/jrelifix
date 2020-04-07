@@ -1,6 +1,6 @@
 package net.bqc.jrelifix.search
 
-import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet}
+import net.bqc.jrelifix.context.diff.{ChangedFile, ChangeSnippet}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.seed.Seedy
 
@@ -47,11 +47,11 @@ object Searcher {
     result
   }
 
-  def searchChangedSnippets(changedFile: ChangedFile, condition: IChangedSnippetCondition)
-    : ArrayBuffer[ChangedSnippet] = {
-    val result = ArrayBuffer[ChangedSnippet]()
-    val changedSnippets = changedFile.allCS
-    for (cs <- changedSnippets) {
+  def searchChangeSnippets(changedFile: ChangedFile, condition: IChangeSnippetCondition)
+    : ArrayBuffer[ChangeSnippet] = {
+    val result = ArrayBuffer[ChangeSnippet]()
+    val css = changedFile.allCS
+    for (cs <- css) {
       if (condition.satisfied(cs)) result.addOne(cs)
     }
     result

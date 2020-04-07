@@ -1,22 +1,23 @@
 package net.bqc.jrelifix.search
-import net.bqc.jrelifix.context.diff.ChangedSnippet
+
+import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType, SourceRange}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.utils.ASTUtils
 
 /**
- * Check if a changed snippet is a child of the given parent code
- * @param parentCode
+ * Condition for a valid added snippet
  */
-case class InsideSnippetCondition(parentCode: String) extends IChangedSnippetCondition {
-  override def satisfied(changedSnippet: ChangedSnippet): Boolean = {
-    var childCode = changedSnippet.dstSource
-    if (childCode == null) {
-      childCode = changedSnippet.srcSource
-    }
-    var childNode = childCode.getJavaNode()
-    while (childNode.getParent != null) {
-      childNode = childNode.getParent
-      if (childNode.toString.equals(parentCode))
-        return true
-    }
-    false
+case class InsideSnippetCondition(insideSourceRange: SourceRange)
+  extends IChangeSnippetCondition {
+
+  override def satisfied(cs: ChangeSnippet): Boolean = {
+    var source: Identifier = null
+    if (cs.changeType != ChangeType.REMOVED)
+      source = cs.dstSource
+    else
+      source = cs.srcSource
+
+    assert(source != null)
+    ASTUtils.isInRange(source, insideSourceRange)
   }
 }

@@ -57,7 +57,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
     val initialOperators = mutable.Queue[MutationType.Value](
-      MutationType.DELETE
+      MutationType.REVERT
 //      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF,
     )
     logger.debug("Initial Operators: " + initialOperators)

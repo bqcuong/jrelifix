@@ -1,19 +1,23 @@
 package net.bqc.jrelifix.search
-import net.bqc.jrelifix.context.diff.ChangedSnippet
 
-case class ExactlySnippetCondition(exactlyCode: String) extends IChangedSnippetCondition {
-  override def satisfied(changedSnippet: ChangedSnippet): Boolean = {
-    val srcCode = changedSnippet.srcSource
-    val dstCode = changedSnippet.dstSource
-    var code: String = null
-    if (dstCode != null) {
-      code = dstCode.getJavaNode().toString.trim
-    }
-    else {
-      code = srcCode.getJavaNode().toString.trim
-    }
+import net.bqc.jrelifix.context.diff.{ChangeType, ChangeSnippet, SourceRange}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.utils.ASTUtils
 
-    if (code.equals(exactlyCode)) return true
-    code.endsWith(";") && code.dropRight(1).equals(exactlyCode)
+/**
+ * Condition for a valid added snippet
+ */
+case class ExactlySnippetCondition(to_check: Identifier)
+  extends IChangeSnippetCondition {
+
+  override def satisfied(cs: ChangeSnippet): Boolean = {
+    var source: Identifier = null
+    if (cs.changeType != ChangeType.REMOVED)
+      source = cs.dstSource
+    else
+      source = cs.srcSource
+
+    assert(source != null)
+    source.equals(to_check)
   }
 }

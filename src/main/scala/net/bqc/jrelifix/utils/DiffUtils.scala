@@ -4,9 +4,9 @@ import java.io._
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-import net.bqc.jrelifix.context.diff.{ChangedFile, ChangedSnippet, ChangeType}
+import net.bqc.jrelifix.context.diff.{ChangedFile, ChangeSnippet, ChangeType}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{ChangedSnippetCondition, IChangedSnippetCondition}
+import net.bqc.jrelifix.search.{InsideSnippetCondition, IChangeSnippetCondition}
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 
@@ -24,11 +24,11 @@ object DiffUtils {
    * @param condition
    * @return
    */
-  def searchChangedSnippets(changedSourcesMap: mutable.HashMap[String, ChangedFile],
-                            condition: IChangedSnippetCondition,
-                            fileName: String = null) : ArrayBuffer[ChangedSnippet] = {
+  def searchChangeSnippets(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                           condition: IChangeSnippetCondition,
+                           fileName: String = null) : ArrayBuffer[ChangeSnippet] = {
     val fileNames = ArrayBuffer[String]()
-    val result = ArrayBuffer[ChangedSnippet]()
+    val result = ArrayBuffer[ChangeSnippet]()
 
     if (fileName != null) fileNames.addOne(fileName)
     else fileNames.addAll(changedSourcesMap.keys)
@@ -39,8 +39,8 @@ object DiffUtils {
         logger.debug("Not found modified file for " + fileName)
       }
       else {
-        val changedSnippets = changedFile.rootCS
-        for (cs <- changedSnippets) {
+        val css = changedFile.rootCS
+        for (cs <- css) {
           if (condition.satisfied(cs)) result.addOne(cs)
         }
       }
@@ -48,14 +48,14 @@ object DiffUtils {
     result
   }
 
-  def searchChangedSnippetOutside(changedSourcesMap: mutable.HashMap[String, ChangedFile],
-                                  toCheck: Identifier): ChangedSnippet = {
-    searchChangedSnippetOutside(changedSourcesMap, toCheck, 0)
+  def searchChangeSnippetOutside(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                                 toCheck: Identifier): ChangeSnippet = {
+    searchChangeSnippetOutside(changedSourcesMap, toCheck, 0)
   }
 
-  def searchChangedSnippetOutside(changedSourcesMap: mutable.HashMap[String, ChangedFile],
-                                  toCheck: Identifier,
-                                  distance: Int): ChangedSnippet = {
+  def searchChangeSnippetOutside(changedSourcesMap: mutable.HashMap[String, ChangedFile],
+                                 toCheck: Identifier,
+                                 distance: Int): ChangeSnippet = {
 
     val fileName = toCheck.getFileName()
     val changedFile: ChangedFile = changedSourcesMap.get(fileName).orNull
@@ -65,8 +65,8 @@ object DiffUtils {
     }
 
     var changed = false
-    val changedSnippets = changedFile.rootCS
-    for (cs <- changedSnippets) {
+    val css = changedFile.rootCS
+    for (cs <- css) {
       cs.changeType match {
         case ChangeType.ADDED =>
           changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
@@ -85,8 +85,8 @@ object DiffUtils {
 
   def isChanged(changedSourcesMap: mutable.HashMap[String, ChangedFile],
                 toCheck: Identifier): Boolean = {
-    searchChangedSnippetOutside(changedSourcesMap, toCheck) != null ||
-    searchChangedSnippets(changedSourcesMap, ChangedSnippetCondition(toCheck.toSourceRange()),
+    searchChangeSnippetOutside(changedSourcesMap, toCheck) != null ||
+    searchChangeSnippets(changedSourcesMap, InsideSnippetCondition(toCheck.toSourceRange()),
       toCheck.getFileName()).nonEmpty
   }
 

@@ -33,8 +33,15 @@ object ASTUtils {
     this.replaceNode(rew, toRemoved, rew.getAST.createInstance(classOf[Block]))
   }
 
+  def appendNode(rew: ASTRewrite, parentNode: ASTNode, newNode: ASTNode): ASTRewrite = {
+    val to_add: ASTNode = ASTNode.copySubtree(parentNode.getAST, newNode)
+    val bl: Block = parentNode.getParent.asInstanceOf[Block]
+    val rewrite: ListRewrite = rew.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
+    rewrite.insertAfter(to_add, parentNode, null)
+    rew
+  }
+
   def insertNode(rew: ASTRewrite, currentNode: ASTNode, newNode: ASTNode, insertAfter: Boolean = true): ASTRewrite = {
-    if (newNode == null) throw new Exception("This should never happen")
     val to_add: ASTNode = ASTNode.copySubtree(currentNode.getAST, newNode)
     val bl: Block = currentNode.getParent.asInstanceOf[Block]
     val rewrite: ListRewrite = rew.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
@@ -126,6 +133,11 @@ object ASTUtils {
       }
     }
     null
+  }
+
+  def isExistedNode(cu: CompilationUnit, node: ASTNode): Boolean = {
+    val code = ASTUtils.createIdentifierForASTNode(node)
+    searchNodeByIdentifier(cu, code) != null
   }
 
   def searchNodeByIdentifier(cu: CompilationUnit, identifier: Identifier): ASTNode = {

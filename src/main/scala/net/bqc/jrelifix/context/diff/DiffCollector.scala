@@ -88,8 +88,8 @@ case class DiffCollector(projectData: ProjectData) {
     changedFile
   }
 
-  private def parseDiffOperations(ops: util.List[Operation[_ <: Action]], changedFile: ChangedFile): ArrayBuffer[ChangedSnippet] = {
-    val result = ArrayBuffer[ChangedSnippet]()
+  private def parseDiffOperations(ops: util.List[Operation[_ <: Action]], changedFile: ChangedFile): ArrayBuffer[ChangeSnippet] = {
+    val result = ArrayBuffer[ChangeSnippet]()
     import scala.jdk.CollectionConverters._
     for (op <- ops.asScala) {
       logger.debug(op)
@@ -116,8 +116,8 @@ case class DiffCollector(projectData: ProjectData) {
       if (srcRange != null || dstRange != null) {
         val wrongMovedAction = changeType == ChangeType.MOVED && srcRange.equals(dstRange) // this is a wrong move action detect of GumTree
         if (!wrongMovedAction) {
-          val changedSnippet = ChangedSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
-          result.addOne(changedSnippet)
+          val cs = ChangeSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
+          result.addOne(cs)
         }
       }
     }

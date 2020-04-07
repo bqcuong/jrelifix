@@ -15,10 +15,10 @@ class SourceRange(val beginLine: Int, val endLine: Int, val beginColumn: Int, va
   }
 }
 
-case class ChangedSnippet(srcRange: SourceRange,
-                          dstRange: SourceRange,
-                          srcSource: Identifier,
-                          dstSource: Identifier,
-                          changeType: ChangeType.Value) {
+case class ChangeSnippet(srcRange: SourceRange,
+                         dstRange: SourceRange,
+                         srcSource: Identifier,
+                         dstSource: Identifier,
+                         changeType: ChangeType.Value) {
 
 }
