@@ -72,10 +72,19 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
         }
 
         if (seed != null) {
-          seed.addChangeType(ChangeType.REMOVED)
           val seedAsIdentifier = seed.asInstanceOf[Identifier]
-          projectData.seedsMap(f).addOne(seedAsIdentifier)
-          logger.debug("Additional seed from change history: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString))
+          val seedCode = seedAsIdentifier.getJavaNode().toString.trim
+          var duplicated = false
+          for (exSeed <- projectData.seedsMap(f)) {
+            if (seedCode.contains(exSeed.getJavaNode().toString.trim)) {
+              duplicated = true
+            }
+          }
+          if (!duplicated) {
+            seed.addChangeType(ChangeType.REMOVED)
+            projectData.seedsMap(f).addOne(seedAsIdentifier)
+            logger.debug("Additional seed from change history: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString))
+          }
         }
       }
     }
