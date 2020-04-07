@@ -4,7 +4,7 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite
-import org.eclipse.text.edits.TextEdit
+import org.eclipse.text.edits.{TextEdit, UndoEdit}
 
 abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
   /**
@@ -13,11 +13,12 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
   protected val MAX_LINE_DISTANCE: Int = 1
   protected val document: DocumentASTRewrite = projectData.sourceFileContents.get(faultStatement.getFileName())
   protected val astRewrite: ASTRewrite = document.rewriter
+  protected var undo: UndoEdit = _
 
   protected def doMutating(): Unit = {
     // Apply changes to the document object
     val edits = this.astRewrite.rewriteAST(this.document.modifiedDocument, null)
-    edits.apply(this.document.modifiedDocument, TextEdit.NONE)
+    undo = edits.apply(this.document.modifiedDocument, TextEdit.CREATE_UNDO)
   }
 
   def isParameterizable: Boolean
@@ -28,8 +29,12 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
    */
   def mutate(conditionExpr: Identifier = null): Boolean
 
-  def unmutate(): Unit
-  def applicable(): Boolean
+  def unmutate(): Unit = {
+    if (undo != null) {
+      undo.apply(this.document.modifiedDocument)
+    }
+  }
 
+  def applicable(): Boolean
   def getRewriter(): ASTRewrite = this.astRewrite
 }

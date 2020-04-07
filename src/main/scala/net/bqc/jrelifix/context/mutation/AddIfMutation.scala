@@ -101,8 +101,6 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     true
   }
 
-  override def unmutate(): Unit = ???
-
   override def applicable(): Boolean = ???
 
   override def isParameterizable: Boolean = true

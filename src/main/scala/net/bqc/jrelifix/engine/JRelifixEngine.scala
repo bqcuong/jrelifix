@@ -77,6 +77,26 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       var operators = Random.shuffle(initialOperators)
       logger.debug("[OPERATOR] Candidates: " + operators)
 
+/*      val mutation1 = this.context.mutationGenerator.getMutation(faultLine, MutationType.ADDIF)
+      val mutation2 = this.context.mutationGenerator.getMutation(faultLine, MutationType.ADDCON)
+      currentChosenCon = chooseRandomlyExpr()
+
+      mutation1.mutate(currentChosenCon)
+      logger.debug("==========> AFTER MUTATING 1")
+      this.context.compiler.compile()
+
+      mutation2.mutate(currentChosenCon)
+      logger.debug("==========> AFTER MUTATING 2")
+      this.context.compiler.compile()
+
+      mutation2.mutate(currentChosenCon)
+      logger.debug("==========> AFTER UN-MUTATING 2")
+      this.context.compiler.compile()
+
+      mutation1.mutate(currentChosenCon)
+      logger.debug("==========> AFTER UN-MUTATING 1")
+      this.context.compiler.compile()*/
+
       while(iter <= P && operators.nonEmpty) {
         val nextOperator = operators.dequeue()
         logger.debug("[OPERATOR] Try: " + nextOperator)
@@ -85,16 +105,17 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
         var applied: Boolean = false
         if (mutation.isParameterizable) {
           currentChosenCon = chooseRandomlyExpr()
-          applied = mutation.mutate(currentChosenCon)
         }
-        else {
-          applied = mutation.mutate()
-        }
+
+        applied = mutation.mutate(currentChosenCon)
 
         if (applied) {
           // Try to compile
+          logger.debug("==========> AFTER MUTATING")
           val compileStatus = this.context.compiler.compile()
           logger.debug("[COMPILE] Status: " + compileStatus)
+
+          var undoMutation = true
 
           if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
             val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, projectData.config().classpath())
@@ -124,6 +145,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               }
               else { // introduce new regression
 //                operators = Random.shuffle(initialOperators)
+//                undoMutation = false
               }
             }
             else {
@@ -137,7 +159,9 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               }
             }
           }
-          projectData.resetDocument(faultFile)
+          if (undoMutation) {
+            mutation.unmutate()
+          }
         }
         else if (currentChosenCon != null) {
           tabu.addOne(currentChosenCon)

@@ -137,8 +137,6 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     else false
   }
 
-  override def unmutate(): Unit = ???
-
   override def applicable(): Boolean = ???
 
   override def isParameterizable: Boolean = false

@@ -32,11 +32,6 @@ case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
     else false
   }
 
-  override def unmutate(): Unit = {
-    ASTUtils.replaceNode(this.astRewrite, this.emptyBlock, faultStatement.getJavaNode())
-    doMutating()
-  }
-
   override def applicable(): Boolean = ???
 
   override def isParameterizable: Boolean = false

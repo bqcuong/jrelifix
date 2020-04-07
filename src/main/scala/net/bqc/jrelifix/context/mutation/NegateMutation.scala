@@ -53,11 +53,6 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     ASTUtils.createExprNodeFromString(negatedStr)
   }
 
-  override def unmutate(): Unit = {
-    ASTUtils.replaceNode(this.document.rewriter, this.negatedCon, this.replacedCon)
-    doMutating()
-  }
-
   override def applicable(): Boolean = ???
 
   override def isParameterizable: Boolean = false

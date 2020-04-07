@@ -84,6 +84,5 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     true
   }
 
-  override def unmutate(): Unit = ???
   override def applicable(): Boolean = ???
 }
