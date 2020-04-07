@@ -44,10 +44,12 @@ case class ProjectData() {
     class2FilePathMap(className)
   }
 
-  def resetDocuments(): Unit = {
-    sourceFileContents.values().forEach(d => {
-      d.resetModifiedDocument()
-    })
+  def updateDocument(faultFile: String): Unit = {
+    sourceFileContents.get(faultFile).resetModifiedDocument()
+  }
+
+  def resetDocument(faultFile: String): Unit = {
+    sourceFileContents.get(faultFile).resetModifiedDocument()
   }
 
   def mergeSeeds(): mutable.HashSet[Identifier] = {

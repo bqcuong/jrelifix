@@ -29,13 +29,15 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     val result = mutable.HashSet[Identifier]()
     val seedySet = Searcher.searchSeeds(projectData.seedsMap, null, ConSeedForEngineCondition())
     for (seed <- seedySet) {
-      seed match {
-        case s: AssignmentSeedIdentifier => // convert assignment to conditional expression here
-          val newJavaNode = s.generateEqualityExpression() // convert a = 0 -> a != 0
-          val decorator = new AssignmentDecoratorSeedIdentifier(s)
-          decorator.setJavaNode(newJavaNode) // update new java node for the decorator
-          result.addOne(decorator)
-        case _ => result.addOne(seed.asInstanceOf[Identifier])
+      if (seed.getChangeTypes().nonEmpty) {
+        seed match {
+          case s: AssignmentSeedIdentifier => // convert assignment to conditional expression here
+            val newJavaNode = s.generateEqualityExpression() // convert a = 0 -> a != 0
+            val decorator = new AssignmentDecoratorSeedIdentifier(s)
+            decorator.setJavaNode(newJavaNode) // update new java node for the decorator
+            result.addOne(decorator)
+          case _ => result.addOne(seed.asInstanceOf[Identifier])
+        }
       }
     }
     result
@@ -57,8 +59,8 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
     val initialOperators = mutable.Queue[MutationType.Value](
-      MutationType.REVERT
-//      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF,
+//      MutationType.REVERT
+      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
     )
     logger.debug("Initial Operators: " + initialOperators)
 
@@ -68,10 +70,11 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
     for(faultLine <- faults) {
       logger.debug("[FAULT] Try: " + faultLine)
+      val faultFile = faultLine.getFileName()
       var changedCount = 0
       var iter = 0
 
-      val operators = Random.shuffle(initialOperators)
+      var operators = Random.shuffle(initialOperators)
       logger.debug("[OPERATOR] Candidates: " + operators)
 
       while(iter <= P && operators.nonEmpty) {
@@ -92,7 +95,6 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
           // Try to compile
           val compileStatus = this.context.compiler.compile()
           logger.debug("[COMPILE] Status: " + compileStatus)
-          var unmutated = true
 
           if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
             val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, projectData.config().classpath())
@@ -120,6 +122,9 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
                 logger.debug("==========================================")
                 return
               }
+              else { // introduce new regression
+//                operators = Random.shuffle(initialOperators)
+              }
             }
             else {
               changedCount += 1
@@ -132,7 +137,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               }
             }
           }
-          if (unmutated) projectData.resetDocuments()
+          projectData.resetDocument(faultFile)
         }
         else if (currentChosenCon != null) {
           tabu.addOne(currentChosenCon)
