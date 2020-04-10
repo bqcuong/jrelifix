@@ -45,11 +45,13 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
   }
 
   def chooseRandomlyExpr(): Identifier = {
+    var exceed = 0
     do {
       val randDrop = Random.nextInt(conExprSet.size)
       currentChosenCon = conExprSet.drop(randDrop).head
+      exceed += 1
     }
-    while (tabu.contains(currentChosenCon))
+    while (exceed < 1000 && tabu.contains(currentChosenCon))
     logger.debug("[OPERATOR PARAM] Chosen Condition: " + currentChosenCon)
     currentChosenCon
   }
@@ -60,12 +62,12 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
     val initialOperators = mutable.Queue[MutationType.Value](
-      MutationType.NEGATE
-//      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
+//      MutationType.NEGATE
+      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
     )
     val secondaryOperators = mutable.Queue[MutationType.Value](
-      MutationType.ADDCON, MutationType.ADDIF
-//      MutationType.NEGATE, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
+//      MutationType.ADDCON, MutationType.ADDIF
+      MutationType.NEGATE, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
     )
     logger.debug("Initial Operators: " + initialOperators)
     logger.debug("Secondary Operators: " + secondaryOperators)
@@ -81,6 +83,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       var changedCount = 0
       var iter = 0
       var secondaryDoc: DocumentASTRewrite = null
+      this.tabu.clear()
 
       var operators = Random.shuffle(initialOperators)
       logger.debug("[OPERATOR] Candidates: " + operators)
