@@ -1,15 +1,15 @@
 package net.bqc.jrelifix.context.vcs
 
-import java.io.{ByteArrayOutputStream, File}
+import java.io.{ByteArrayOutputStream, File, IOException}
 
 import ch.qos.logback.classic.Level
 import net.bqc.jrelifix.context.diff.ChangedFile
-import org.eclipse.jgit.diff.DiffFormatter
-import org.eclipse.jgit.lib.{ObjectLoader, Repository}
-import org.eclipse.jgit.revwalk.DepthWalk.RevWalk
+import org.eclipse.jgit.diff.{DiffEntry, DiffFormatter, RenameDetector}
+import org.eclipse.jgit.lib.{Config, ObjectLoader, Repository}
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import org.eclipse.jgit.treewalk.TreeWalk
+import org.eclipse.jgit.treewalk.{CanonicalTreeParser, TreeWalk}
 import org.eclipse.jgit.treewalk.filter.PathFilter
 import org.slf4j.LoggerFactory
 
@@ -33,7 +33,7 @@ class GitParser extends VCSParser {
 
   def getCommit(commitHash: String): RevCommit = {
     val obj = repository.resolve(commitHash)
-    val walk = new RevWalk(repository, 100)
+    val walk = new RevWalk(repository)
     val commit = walk.parseCommit(obj)
     commit
   }
@@ -44,32 +44,37 @@ class GitParser extends VCSParser {
    * @param newCommit
    * @return
    */
-  def listModifiedFiles(oldCommit: RevCommit, newCommit: RevCommit): mutable.Set[String] = {
-    val modifiedFiles = mutable.Set[String]()
+  def listModifiedFiles(oldCommit: RevCommit, newCommit: RevCommit): mutable.Set[(String, String)] = {
+    val modifiedFiles = mutable.HashSet[(String, String)]()
 
     val out = new ByteArrayOutputStream()
     val df = new DiffFormatter(out)
     df.setRepository(this.repository)
     df.setContext(0)
 
-    val diffs = df.scan(oldCommit, newCommit)
+    var diffs = df.scan(oldCommit, newCommit)
+
+    // these three below lines are used to compute the rename file action, damn JGit API!!!
+    val rd = new RenameDetector(this.repository)
+    rd.addAll(diffs)
+    diffs = rd.compute()
+
     import scala.jdk.CollectionConverters._
     for (diff <- diffs.asScala) {
       df.format(diff)
-      var filePath = diff.getOldPath
-      if (filePath == null) {
-        filePath = diff.getNewPath
-      }
-      if (filePath.endsWith(".java")) {
-        modifiedFiles.add(filePath)
+      val prevPath: String = diff.getOldPath
+      val currPath: String = diff.getNewPath
+      if (prevPath.endsWith(".java") || currPath.endsWith(".java")) {
+        modifiedFiles.add((prevPath, currPath))
       }
     }
     modifiedFiles
   }
 
   def getFileContent(filePath: String, commit: RevCommit): String = {
-    val tree = commit.getTree
+    if (filePath == DiffEntry.DEV_NULL) return ""
 
+    val tree = commit.getTree
     // now try to find a specific file
     try {
       val treeWalk: TreeWalk = new TreeWalk(repository)
@@ -101,17 +106,21 @@ class GitParser extends VCSParser {
     repository.close()
   }
 
-  def getModifiedFiles(projectPath: String, commit: String): ArrayBuffer[ChangedFile] = {
+  override def getModifiedFiles(projectPath: String, currentCommit: String, previousCommit: String): ArrayBuffer[ChangedFile] = {
     loadRepository(projectPath)
 
-    val currentCommit = getCommit(commit)
-    val parentCommit = getCommit(commit + "^")
-    val modifiedRelativeFilePaths = listModifiedFiles(parentCommit, currentCommit)
+    val currentRevCommit = getCommit(currentCommit)
+    val parentRevCommit = getCommit(if (currentCommit == previousCommit) currentCommit + "^" else previousCommit)
+    val modifiedRelativeFilePaths = listModifiedFiles(parentRevCommit, currentRevCommit)
     val modifiedFiles = ArrayBuffer[ChangedFile]()
     for (f <- modifiedRelativeFilePaths) {
-      val v1 = getFileContent(f, parentCommit)
-      val v2 = getFileContent(f, currentCommit)
-      modifiedFiles.append(ChangedFile(projectPath + File.separator + f, v1, v2))
+      val v1 = getFileContent(f._1, parentRevCommit)
+      val v2 = getFileContent(f._2, currentRevCommit)
+      modifiedFiles.append(ChangedFile(
+        projectPath + File.separator + f._2,
+        projectPath + File.separator + f._1,
+        projectPath + File.separator + f._2,
+        v1, v2))
     }
 
     closeRepository()

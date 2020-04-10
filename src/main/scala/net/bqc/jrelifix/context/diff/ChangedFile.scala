@@ -6,6 +6,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit
 import scala.collection.mutable.ArrayBuffer
 
 case class ChangedFile(filePath: String,
+                       oldPath: String,
+                       newPath: String,
                        oldVersion: String,
                        newVersion: String) {
 

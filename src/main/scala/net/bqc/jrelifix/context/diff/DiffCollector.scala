@@ -34,17 +34,15 @@ case class DiffCollector(projectData: ProjectData) {
    */
   def collectChangedSources(): ArrayBuffer[ChangedFile] = {
     val changedSources = ArrayBuffer[ChangedFile]()
-    val bugInducingCommits = projectData.config().bugInducingCommits
+    val bugInducingCommit = projectData.config().bugInducingCommit
     this.initializeGumTree()
 
     val sourcePath = projectData.config().sourceFolder
-    for (commit <- bugInducingCommits) {
-      val changedFiles = gitParser.getModifiedFiles(projectData.config().projFolder, commit)
-      for (changedFile <- changedFiles) {
-        // only process java file in the source path
-        if (changedFile.filePath.startsWith(sourcePath)) {
-          changedSources.addOne(diffAST(changedFile))
-        }
+    val changedFiles = gitParser.getModifiedFiles(projectData.config().rootProjFolder, "HEAD", bugInducingCommit)
+    for (changedFile <- changedFiles) {
+      // only process java file in the source path
+      if (changedFile.filePath.startsWith(sourcePath)) {
+        changedSources.addOne(diffAST(changedFile))
       }
     }
     changedSources

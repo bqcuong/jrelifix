@@ -152,7 +152,7 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
      */
     override def visit(node: MethodInvocation): Boolean = {
       val binding: IMethodBinding = node.resolveMethodBinding()
-      if (keys.contains(binding.getKey))
+      if (binding != null && keys.contains(binding.getKey))
         mlist.addOne(node)
       true
     }

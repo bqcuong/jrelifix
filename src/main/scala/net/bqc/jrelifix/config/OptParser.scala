@@ -47,7 +47,11 @@ object OptParser {
 
     opt[String]( "projectFolder")
       .action((t, c) => c.copy(projFolder = t))
-      .text("Folder of project, e.g., blah")
+      .text("Folder of project, if there are multiple modules, please fill in the path to the module, e.g., jrelifix/core")
+
+    opt[String]( "rootProjectFolder")
+      .action((t, c) => c.copy(rootProjFolder = t))
+      .text("Root folder of project in case there are more than one module in a project, e.g., jrelifix")
 
     opt[Int]("testTimeout")
       .action((t, c) => c.copy(testTimeout = t))
@@ -76,9 +80,9 @@ object OptParser {
       .action((o, c) => c.copy(iterationPeriod = o))
       .text("Number of max iterations for considering each fault location")
 
-    opt[Seq[String]]("bugInducingCommits")
-      .action((o, c) => c.copy(bugInducingCommits = o))
-      .text("The hash of bug inducing commits. If not being set, it'll be the current commit.")
+    opt[String]("bugInducingCommit")
+      .action((o, c) => c.copy(bugInducingCommit = o))
+      .text("The hash of bug inducing commit. If not being set, it'll be the current commit.")
   }
 
   def parseOpts(args: Array[String]): Config = {

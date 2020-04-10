@@ -51,9 +51,9 @@ public class JavaJDKCompiler {
 		/* Build the map of source files that the compiler will read from. The
 		 * modified files will be returned by DocumentASTRewrite. */
 		Map<String, String> sourceMap = this.buildSourceMap();
-		for(String s : sourceMap.values()) {
+		/*for(String s : sourceMap.values()) {
 			System.out.println("\n" + s);
-		}
+		}*/
 
 		/* Compile the Java file. */
 		this.mcl = new MemoryClassLoader(sourceMap, this.classpath, output);

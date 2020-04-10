@@ -13,6 +13,7 @@ case class Config(
                    var testClassFolder: String = "target/test-classes",
 
                    projFolder: String = "",
+                   rootProjFolder: String = "",
 
                    passingTests: Seq[String] = null,
                    failingTests: Seq[String] = null,
@@ -29,7 +30,7 @@ case class Config(
                    javaHome: String = null,
 
                    iterationPeriod: Int = 1, // Specific for JRelifix Engine
-                   bugInducingCommits: Seq[String] = Array[String]("HEAD"),
+                   bugInducingCommit: String = "HEAD",
                  ) {
 
   def classpath(): String = {
