@@ -127,6 +127,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
           // insert before fault statement
           ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
         }
+        logger.debug("REVERT: Add removedly statement: " + prevCode.getJavaNode().toString.trim)
         applied = true
       }
     }

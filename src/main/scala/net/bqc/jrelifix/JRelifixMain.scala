@@ -28,6 +28,7 @@ object JRelifixMain {
     val projectData = ProjectData()
     projectData.setConfig(cfg)
     projectData.makeTemp()
+    logger.debug("classpath: " + cfg.classpath())
 
     logger.info("Parsing AST ...")
     val astParser = JavaParser(projectData.config().projFolder, projectData.config().sourceFolder, projectData.config().classpath())
@@ -57,7 +58,9 @@ object JRelifixMain {
     val compiler = initializeCompiler(projectData.sourceFileContents, projectData)
     val compilable = compiler.compile() == JavaJDKCompiler.Status.COMPILED
     if (!compilable) {
-      logger.error("Please make sure your project compilable first!")
+      logger.error("Please make sure your project compilable first!\n" +
+                   "----------------COMPILATION LOG----------------\n" +
+                   compiler.dequeueCompileError())
       System.exit(1)
     }
     val testValidator = TestCaseValidator(projectData)

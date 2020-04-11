@@ -62,8 +62,8 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
     val initialOperators = mutable.Queue[MutationType.Value](
-//      MutationType.NEGATE
-      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
+      MutationType.REVERT
+//      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
     )
     val secondaryOperators = mutable.Queue[MutationType.Value](
 //      MutationType.ADDCON, MutationType.ADDIF
@@ -114,10 +114,13 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
           logger.debug("[COMPILE] Status: " + compileStatus)
 
           if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
-            val reducedTSValidation = this.context.testValidator.validateTestCases(this.context.testValidator.predefinedNegTests, projectData.config().classpath())
+            val reducedTSValidation = this.context.testValidator.validateTestCases(
+              this.context.testValidator.predefinedNegTests,
+              projectData.config().projFolder,
+              projectData.config().classpath())
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
             if (reducedTSValidation._1) {
-              val wholeTSValidation = this.context.testValidator.validateAllTestCases(projectData.config().classpath())
+              val wholeTSValidation = this.context.testValidator.validateAllTestCases(projectData.config().projFolder, projectData.config().classpath())
               logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
               if (wholeTSValidation._1) {
                 logger.debug("==========================================")

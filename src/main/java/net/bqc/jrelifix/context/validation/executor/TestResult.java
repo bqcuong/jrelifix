@@ -13,6 +13,7 @@ public class TestResult {
 
     public List<String> successTest = new ArrayList<>();
     public List<String> failTest = new ArrayList<>();
+    public List<String> ignoredTest = new ArrayList<>();
 
     public void setSuccessTest(List<String> successTest) {
         this.successTest = successTest;

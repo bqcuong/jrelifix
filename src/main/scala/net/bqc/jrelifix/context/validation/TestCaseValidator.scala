@@ -63,17 +63,17 @@ case class TestCaseValidator(projectData: ProjectData) {
     positiveTestCases
   }
 
-  def validateAllTestCases(classpath: String) : (Boolean, ArrayBuffer[TestCase]) = {
-    val (negAllPassed, negFailed) = validateTestCases(predefinedNegTests, classpath)
-    val (posAllPassed, posFailed) = validateTestCases(predefinedPosTests, classpath)
+  def validateAllTestCases(projectFolder: String, classpath: String) : (Boolean, ArrayBuffer[TestCase]) = {
+    val (negAllPassed, negFailed) = validateTestCases(predefinedNegTests, projectFolder, classpath)
+    val (posAllPassed, posFailed) = validateTestCases(predefinedPosTests, projectFolder, classpath)
     (negAllPassed && posAllPassed, negFailed ++ posFailed)
   }
 
-  def validateTestCases(testCases: ArrayBuffer[TestCase], classpath: String) : (Boolean, ArrayBuffer[TestCase]) = {
+  def validateTestCases(testCases: ArrayBuffer[TestCase], projectFolder: String, classpath: String) : (Boolean, ArrayBuffer[TestCase]) = {
     var allPassed = true
     val failedTestCases = testCases.foldLeft(ArrayBuffer[TestCase]()) {
       (failedTC, tc) => {
-        val testPassed = validateTestCase(tc, classpath)
+        val testPassed = validateTestCase(tc, projectFolder, classpath)
         if (!testPassed) {
           allPassed = false
           failedTC :+ tc
@@ -84,15 +84,16 @@ case class TestCaseValidator(projectData: ProjectData) {
     (allPassed, failedTestCases)
   }
 
-  def validateTestCase(testCase: TestCase, classpath: String) : Boolean = {
+  def validateTestCase(testCase: TestCase, projectFolder: String, classpath: String) : Boolean = {
     val process = new TestExecutionProcessLauncher()
     val testResult = process.execute(
+      projectFolder,
       classpath,
       testCase.getFullName,
       classOf[JUnitTestExecutor],
       projectData.config().javaHome,
       projectData.config().testTimeout,
-      Array[String]{""}
+      Array[String]()
     )
     testResult.wasSuccessful()
   }

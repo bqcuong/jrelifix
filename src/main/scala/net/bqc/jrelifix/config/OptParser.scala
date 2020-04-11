@@ -13,7 +13,7 @@ object OptParser {
 
     opt[String]( "depClasspath")
       .action((cp, c) => c.copy(depClasspath = cp))
-      .text("Dependencies Classpath (external libs,...)")
+      .text("Dependencies Classpath (external libs,...). Accept both folder and jar path. Format: /libs1/:/lib2/common.jar:...")
 
     opt[String]( "javaHome")
       .action((cp, c) => c.copy(javaHome = cp))
