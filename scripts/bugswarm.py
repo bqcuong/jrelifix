@@ -6,13 +6,14 @@ from shell_wrapper import ShellWrapper
 
 DOCKER_HUB_REPO="bugswarm/images"
 SCRIPT_DEFAULT = '/bin/bash'
-RUN_VALIDATION = '\"/usr/local/bin/run_failed.sh\"'
+RUN_VALIDATION = '/home/travis/run_failed_clone.sh'
+RUN_VALIDATION_ORIGINAL = '/usr/local/bin/run_failed.sh'
 
 HOST_M2 = '~/.m2'
 CONTAINER_M2 = '/home/travis/.m2'
 
-HOST_SOURCE_CODE = '~/bugswarm-code'
-CONTAINER_SOURCE_CODE = '/home/travis/build/failed'
+HOST_SOURCE_CODE = '~/bugswarm/code'
+CONTAINER_SOURCE_CODE = '/home/travis/build/failed_clone'
 
 
 def docker_run_container(image_tag, use_m2_cache, binding_source_code, interactive):
@@ -50,7 +51,9 @@ def docker_run_container(image_tag, use_m2_cache, binding_source_code, interacti
     image_location = _image_location(image_tag)
 
     # Prepare the arguments for the docker run command.
-    volume_args = ['-v', '{}:{}'.format(host_m2, container_m2)] if use_m2_cache else []
+    m2_args = ['-v', '{}:{}'.format(host_m2, container_m2)] if use_m2_cache else []
+    code_args = ['-v', '{}:{}'.format(host_source_code, container_source_code)] if binding_source_code else []
+    volume_args = m2_args + code_args
     name_args = ['--name', container_name]
     interactive_args = ['-i', '-t'] if interactive else []
     detach_args = ['-d']
@@ -61,16 +64,45 @@ def docker_run_container(image_tag, use_m2_cache, binding_source_code, interacti
     command = ' '.join(args)
     log.info(command)
     _, _, return_code = ShellWrapper.run_commands(command, shell=True)
+
+    # clone the code to failed_clone to edit and run validation
+    if return_code == 0 and binding_source_code:
+        return _docker_clone_validation_script(container_name)
+
     return return_code == 0
 
 
-def docker_run_validation(container_name):
-    assert isinstance(container_name, str)  and not container_name.isspace()
-    script_args = [SCRIPT_DEFAULT, '-c', RUN_VALIDATION]
+def _docker_clone_validation_script(container_name):
+    res = _docker_execute_script(container_name, 'cp /usr/local/bin/run_failed.sh /home/travis/run_failed_clone.sh')
+    if res:
+        res = _docker_execute_script(container_name, "sed -i 's/failed\//failed_clone\//g' /home/travis/run_failed_clone.sh")
+    return res
+
+
+def docker_clone_code(compile_first, container_name):
+    assert isinstance(compile_first, bool)
+    if compile_first:
+        _docker_compile(container_name)
+    res = _docker_execute_script(container_name, 'rm -rf /home/travis/build/failed_clone/*;cp -r /home/travis/build/failed/* /home/travis/build/failed_clone')
+    return res
+
+
+def _docker_execute_script(container_name, script):
+    assert isinstance(container_name, str) and not container_name.isspace()
+    script_args = [SCRIPT_DEFAULT, '-c', '\"' + script + '\"']
     args = ['docker', 'exec', container_name] + script_args
     command = ' '.join(args)
     _, _, return_code = ShellWrapper.run_commands(command, shell=True)
     return return_code == 0
+
+
+def _docker_compile(container_name):
+    return _docker_execute_script(container_name, RUN_VALIDATION_ORIGINAL)
+
+
+def docker_run_validation(container_name):
+    res = _docker_execute_script(container_name, RUN_VALIDATION)
+    return res
 
 
 def docker_remove(container_name):
