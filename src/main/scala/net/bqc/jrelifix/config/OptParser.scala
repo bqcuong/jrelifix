@@ -83,6 +83,14 @@ object OptParser {
     opt[String]("bugInducingCommit")
       .action((o, c) => c.copy(bugInducingCommit = o))
       .text("The hash of bug inducing commit. If not being set, it'll be the current commit.")
+
+    opt[Boolean]("bugswarmValidation")
+      .action((o, c) => c.copy(BugSwarmValidation = o))
+      .text("Specify if use bugswarm scripts to execute and validate the whole test suite")
+
+    opt[String]("bgImageTag")
+      .action((o, c) => c.copy(BugSwarmImageTag = o))
+      .text("The image tag of BugSwam artifact which you want to evaluate on")
   }
 
   def parseOpts(args: Array[String]): Config = {

@@ -34,6 +34,8 @@ case class Config(
 
                    iterationPeriod: Int = 1, // Specific for JRelifix Engine
                    bugInducingCommit: String = "HEAD",
+                   BugSwarmValidation: Boolean = false,
+                   BugSwarmImageTag: String = null,
                  ) {
 
   def classpath(): String = {
