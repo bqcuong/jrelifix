@@ -82,6 +82,7 @@ case class ProjectData() {
    * Clone a new temporary classes folder for the repair process
    */
   def makeTemp(): Unit = {
+    if (config().BugSwarmValidation) return // no need to use temp when use BugSwarm Validation
     val srcClass = new File(config().sourceClassFolder)
     if (!srcClass.exists()) throw new FileNotFoundException("Source Classes: %s not found!".format(config().sourceClassFolder))
     val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
@@ -94,6 +95,7 @@ case class ProjectData() {
    * clean temp folder after repair
    */
   def cleanTemp(): Unit = {
+    if (config().BugSwarmValidation) return // no need to use temp when use BugSwarm Validation
     val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
     FileUtils.deleteDirectory(srcClassTemp)
   }

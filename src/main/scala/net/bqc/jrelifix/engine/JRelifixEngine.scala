@@ -74,7 +74,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
     val P = 20
 
-    val reducedTSNames: Set[String] = this.context.testValidator.predefinedNegTests.map(_.getFullName).toSet
+    val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
 
     for(f <- faults) {
       var faultLine = f
@@ -115,12 +115,12 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
           if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
             val reducedTSValidation = this.context.testValidator.validateTestCases(
-              this.context.testValidator.predefinedNegTests,
+              this.context.testValidator.predefinedTests,
               projectData.config().projFolder,
               projectData.config().classpath())
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
             if (reducedTSValidation._1) {
-              val wholeTSValidation = this.context.testValidator.validateAllTestCases(projectData.config().projFolder, projectData.config().classpath())
+              val wholeTSValidation = this.context.testValidator.validateAllTestCases()
               logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
               if (wholeTSValidation._1) {
                 logger.debug("==========================================")

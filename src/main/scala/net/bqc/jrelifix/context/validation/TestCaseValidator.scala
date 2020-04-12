@@ -8,24 +8,24 @@ import org.apache.log4j.Logger
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
-case class TestCaseValidator(projectData: ProjectData) {
+class TestCaseValidator(projectData: ProjectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  var predefinedNegTests: ArrayBuffer[TestCase] = ArrayBuffer[TestCase]()
-  var predefinedPosTests: ArrayBuffer[TestCase] = ArrayBuffer[TestCase]()
+  val predefinedTests: ArrayBuffer[TestCase] = ArrayBuffer[TestCase]()
+  val remainingTests: ArrayBuffer[TestCase] = ArrayBuffer[TestCase]()
 
   def loadTestsCasesFromOpts(): Unit = {
-    predefinedNegTests.addAll(loadNegativeTestCases())
-    predefinedNegTests.foreach(tc => logger.debug("Initially Negative Tests(-): " + tc.getFullName))
+    predefinedTests.addAll(loadPredefinedTestCases())
+    predefinedTests.foreach(tc => logger.debug("Initially Tests: " + tc.getFullName))
 
-    predefinedPosTests.addAll(loadPositiveTestCases(predefinedNegTests))
+    remainingTests.addAll(loadPositiveTestCases(predefinedTests))
 //    predefinedPosTests.foreach(tc => logger.debug("Initially Positive Tests(+): " + tc.getFullName))
 
   }
 
-  def loadNegativeTestCases(): ArrayBuffer[TestCase] = {
-    val failingTests = projectData.config().failingTests
+  def loadPredefinedTestCases(): ArrayBuffer[TestCase] = {
+    val failingTests = projectData.config().reducedTests
     failingTests.foldLeft(new ArrayBuffer[TestCase]){
       (res, testName) => {
         val tc = new TestCase(testName)
@@ -35,22 +35,18 @@ case class TestCaseValidator(projectData: ProjectData) {
     }
   }
 
-  def loadPositiveTestCases(negTests: ArrayBuffer[TestCase]): ArrayBuffer[TestCase] = {
-    // only validate with failed tests
-    if(projectData.config().onlyFailTests)
-      return new ArrayBuffer[TestCase]()
-
+  def loadPositiveTestCases(predefinedTests: ArrayBuffer[TestCase]): ArrayBuffer[TestCase] = {
     val allTestCases = TestCaseFinder(
       ClassPathUtils.parseClassPaths(projectData.config().classpath()),
       projectData.config().testClassFolder,
-      TestCaseFilter(projectData.config().testsIgnored)).find()
+      TestCaseFilter(projectData.config().ignoredTests)).find()
 
     var positiveTestCases = ArrayBuffer[TestCase]()
     for (tc <- allTestCases) {
       var flag = false
       val loop = new Breaks
       loop.breakable(
-        for (negTc <- negTests) {
+        for (negTc <- predefinedTests) {
           if (tc.getFullName.contains(negTc.getFullName)) {
             flag = true
             loop.break
@@ -63,9 +59,11 @@ case class TestCaseValidator(projectData: ProjectData) {
     positiveTestCases
   }
 
-  def validateAllTestCases(projectFolder: String, classpath: String) : (Boolean, ArrayBuffer[TestCase]) = {
-    val (negAllPassed, negFailed) = validateTestCases(predefinedNegTests, projectFolder, classpath)
-    val (posAllPassed, posFailed) = validateTestCases(predefinedPosTests, projectFolder, classpath)
+  def validateAllTestCases() : (Boolean, ArrayBuffer[TestCase]) = {
+    val projectFolder = projectData.config().projFolder
+    val classpath = projectData.config().classpath()
+    val (negAllPassed, negFailed) = validateTestCases(predefinedTests, projectFolder, classpath)
+    val (posAllPassed, posFailed) = validateTestCases(remainingTests, projectFolder, classpath)
     (negAllPassed && posAllPassed, negFailed ++ posFailed)
   }
 

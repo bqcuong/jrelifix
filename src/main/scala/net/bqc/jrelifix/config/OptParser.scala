@@ -27,15 +27,8 @@ object OptParser {
       .action((source, c) => c.copy(sourceClassFolder = source))
       .text("Folder of classes of compiled source code, e.g., blah/target/classes")
 
-    opt[Seq[String]]("passingTests")
-      .action((p, c) => c.copy(passingTests = p))
-
-    opt[Seq[String]]("failingTests")
-      .action((p, c) => c.copy(failingTests = p))
-
-    opt[Boolean]("onlyFailTests")
-      .action((o, c) => c.copy(onlyFailTests = o))
-      .text("Run only fail tests")
+    opt[Seq[String]]("reducedTests")
+      .action((p, c) => c.copy(reducedTests = p))
 
     opt[String]( "testFolder")
       .action((t, c) => c.copy(testFolder = t))
@@ -57,8 +50,8 @@ object OptParser {
       .action((t, c) => c.copy(testTimeout = t))
       .text("Timeout for running tests, in seconds")
 
-    opt[Seq[String]]("testsIgnored")
-      .action((p, c) => c.copy(testsIgnored = p))
+    opt[Seq[String]]("ignoredTests")
+      .action((p, c) => c.copy(ignoredTests = p))
 
     opt[String]("locHeuristic")
       .action((o, c) => c.copy(locHeuristic = o))
@@ -84,7 +77,7 @@ object OptParser {
       .action((o, c) => c.copy(bugInducingCommit = o))
       .text("The hash of bug inducing commit. If not being set, it'll be the current commit.")
 
-    opt[Boolean]("bugswarmValidation")
+    opt[Boolean]("bgValidation")
       .action((o, c) => c.copy(BugSwarmValidation = o))
       .text("Specify if use bugswarm scripts to execute and validate the whole test suite")
 

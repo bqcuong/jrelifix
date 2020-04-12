@@ -68,7 +68,7 @@ abstract class BaseTest extends TestCase {
   }
 
   protected def initTestValidator(): Unit = {
-    testValidator = TestCaseValidator(projectData)
+    testValidator = new TestCaseValidator(projectData)
     testValidator.loadTestsCasesFromOpts()
   }
 

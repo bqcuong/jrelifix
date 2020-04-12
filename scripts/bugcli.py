@@ -21,16 +21,16 @@ def cli():
 @click.option('--m2cache', '-m', default=True)
 @click.option('--interactive', default=True)
 @click.argument('image_tag')
-def run(image_tag, codebinding, m2cache, interactive):
+def run(image_tag, code_binding, m2cache, interactive):
     """Create and run the artifact"""
-    codebinding = True if codebinding else False
+    code_binding = True if code_binding else False
     m2cache = True if m2cache else False
     interactive = True if interactive else False
-    res = bugswarm.docker_run_container(image_tag, codebinding, m2cache, interactive)
+    res = bugswarm.docker_run_container(image_tag, code_binding, m2cache, interactive)
     sys.exit(0 if res else 1)
 
 
-@cli.command(help('Validate the mutated project. Before run validation, make sure you run clone code first'))
+@cli.command()
 @click.argument('container_name')
 def validate(container_name):
     """Validate the mutated program. Before run validation, make sure you run clone code first"""

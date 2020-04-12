@@ -18,12 +18,10 @@ case class Config(
                    projFolder: String = "",
                    rootProjFolder: String = "",
 
-                   passingTests: Seq[String] = null,
-                   failingTests: Seq[String] = null,
-                   onlyFailTests: Boolean = false,
+                   reducedTests: Seq[String] = null,
 
-                   testTimeout: Int = 100,
-                   testsIgnored: Seq[String] = null,
+                   testTimeout: Int = 30,
+                   ignoredTests: Seq[String] = null,
 
                    isDataFlow: Boolean = false,
                    locHeuristic: String = "Ochiai",

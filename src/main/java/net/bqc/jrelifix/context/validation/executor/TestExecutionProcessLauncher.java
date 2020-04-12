@@ -68,7 +68,7 @@ public class TestExecutionProcessLauncher {
             worker.start();
             worker.join(waitTime);
 
-            if (!p.waitFor(waitTime, TimeUnit.SECONDS)) { // java 8 feature
+            if (!p.waitFor(waitTime, TimeUnit.MINUTES)) { // java 8 feature
                 logger.info("Test timed out!");
                 p.destroy();
                 return null;

@@ -9,7 +9,7 @@ import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
 import net.bqc.jrelifix.context.mutation.MutationGenerator
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.context.validation.TestCaseValidator
+import net.bqc.jrelifix.context.validation.{BugSwarmTestCaseValidator, TestCaseValidator}
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
 import net.bqc.jrelifix.identifier.Identifier
@@ -63,7 +63,19 @@ object JRelifixMain {
                    compiler.dequeueCompileError())
       System.exit(1)
     }
-    val testValidator = TestCaseValidator(projectData)
+    var testValidator: TestCaseValidator = null
+    if (projectData.config().BugSwarmValidation) {
+      if (projectData.config().BugSwarmImageTag != null) {
+        testValidator = new BugSwarmTestCaseValidator(projectData)
+      }
+      else {
+        logger.error("Please provide the BugSwarm image tag!")
+        System.exit(1)
+      }
+    }
+    else {
+      testValidator = new TestCaseValidator(projectData)
+    }
     testValidator.loadTestsCasesFromOpts()
     logger.info("Done initializing!")
 
@@ -137,7 +149,7 @@ object JRelifixMain {
           new File(projectData.config().projFolder),
           new File(projectData.config().sourceClassFolder),
           new File(projectData.config().testClassFolder),
-          projectData.config().testsIgnored,
+          projectData.config().ignoredTests,
           projectData.config().isDataFlow)
 
         val locLib = JaguarLocalizationLibrary(locConfig, ClassPathUtils.parseClassPaths(projectData.config().classpath()))

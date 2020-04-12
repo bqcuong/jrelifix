@@ -1,34 +1,30 @@
-package net.bqc.jrelifix.utils;
+package net.bqc.jrelifix.context.validation.executor;
 
-import net.bqc.jrelifix.context.validation.executor.TestExecutionProcessLauncher;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class BugSwarmUtils {
+public class BugSwarmTestExecutionLauncher {
 
-    public static final int WAIT_TIME = 10;
     public static final String BUG_CLI = "./scripts/bugcli.py";
     public static final String VALIDATE_SUB_COMMAND = "validate";
-    private static Logger logger = Logger.getLogger(BugSwarmUtils.class);
+    private static Logger logger = Logger.getLogger(BugSwarmTestExecutionLauncher.class);
 
     public static void main(String[] args) {
-        validate("puniverse-capsule-78565048");
+        validate("puniverse-capsule-78565048", 10);
     }
 
-    public static boolean validate(String imageTag) {
+    public static boolean validate(String imageTag, int timeout) {
         logger.info("[BugSwarm] Validating for " + imageTag + "...");
-        boolean result = execute(VALIDATE_SUB_COMMAND, imageTag, true);
+        boolean result = execute(VALIDATE_SUB_COMMAND, imageTag, timeout, true);
         logger.info("[BugSwarm] Validation result: " + (result ? "\u2713" : "\u00D7"));
         return result;
     }
 
-    public static boolean execute(String subCommand, String argument, boolean redirectOutput) {
+    public static boolean execute(String subCommand, String argument, int timeout, boolean redirectOutput) {
         Process p = null;
         List<String> command = new ArrayList<>();
         try {
@@ -45,9 +41,9 @@ public class BugSwarmUtils {
             p = pb.start();
             TestExecutionProcessLauncher.Worker worker = new TestExecutionProcessLauncher.Worker(p);
             worker.start();
-            worker.join(WAIT_TIME);
+            worker.join(timeout);
 
-            if (!p.waitFor(WAIT_TIME, TimeUnit.MINUTES)) { // java 8 feature
+            if (!p.waitFor(timeout, TimeUnit.MINUTES)) { // java 8 feature
                 logger.info("BugSwarm validation timed out!");
                 p.destroy();
                 return false;
