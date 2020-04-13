@@ -261,6 +261,11 @@ object ASTUtils {
       op.equals(InfixExpression.Operator.XOR)
   }
 
+  def isEqualityOperator(op: InfixExpression.Operator): Boolean = {
+    op.equals(InfixExpression.Operator.EQUALS) ||
+    op.equals(InfixExpression.Operator.NOT_EQUALS)
+  }
+
   /**
    * Parse a VariableDeclarationStatement to obtain information about variables
    * @param varDecl

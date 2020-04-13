@@ -31,20 +31,27 @@ def run(image_tag, code_binding, m2cache, interactive):
 
 
 @cli.command()
+@click.option('--reduced-ts', '-r', is_flag=True, help='Only validate on the reduced test suite')
 @click.argument('container_name')
-def validate(container_name):
+def validate(reduced_ts, container_name):
     """Validate the mutated program. Before run validation, make sure you run clone code first"""
-    res = bugswarm.docker_run_validation(container_name)
+    res = bugswarm.docker_run_validation(reduced_ts, container_name)
     sys.exit(0 if res else 1)
 
 
 @cli.command()
-@click.option('--compile-first', '-c', is_flag=True, help='Compile the original source code before cloning')
 @click.argument('container_name')
-def clone(compile_first, container_name):
+def compile(container_name):
+    """Compile the project"""
+    res = bugswarm.docker_compile(container_name)
+    sys.exit(0 if res else 1)
+
+
+@cli.command()
+@click.argument('container_name')
+def clone(container_name):
     """Clone the original source code to new dir"""
-    compile_first = True if compile_first else False
-    res = bugswarm.docker_clone_code(compile_first, container_name)
+    res = bugswarm.docker_clone_code(container_name)
     sys.exit(0 if res else 1)
 
 

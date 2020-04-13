@@ -1,7 +1,7 @@
 /**
  * Source: https://raw.githubusercontent.com/qhanam/Java-RSRepair/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/compiler/MemoryClassLoader.java
  */
-package net.bqc.jrelifix.context.compiler;
+package net.bqc.jrelifix.context.compiler.inmemory;
 
 import org.apache.commons.lang3.StringUtils;
 

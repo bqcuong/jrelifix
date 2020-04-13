@@ -4,7 +4,8 @@ import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.collector.{ChangedSeedsCollector, SeedsCollector}
-import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
+import net.bqc.jrelifix.context.compiler.inmemory.JavaJDKCompiler
+import net.bqc.jrelifix.context.compiler.{BugSwarmCompiler, DocumentASTRewrite, ICompiler}
 import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
 import net.bqc.jrelifix.context.mutation.MutationGenerator
@@ -45,12 +46,14 @@ object JRelifixMain {
 
     logger.info("Initializing Compiler/TestCases Invoker ...")
     val compiler = initializeCompiler(projectData.sourceFileContents, projectData)
-    val compilable = compiler.compile() == JavaJDKCompiler.Status.COMPILED
-    if (!compilable) {
-      logger.error("Please make sure your project compilable first!\n" +
-                   "----------------COMPILATION LOG----------------\n" +
-                   compiler.dequeueCompileError())
-      System.exit(1)
+    if (!projectData.config().BugSwarmValidation) {
+      val compilable = compiler.compile() == ICompiler.Status.COMPILED
+      if (!compilable) {
+        logger.error("Please make sure your project compilable first!\n" +
+          "----------------COMPILATION LOG----------------\n" +
+          compiler.dequeueCompileError())
+        System.exit(1)
+      }
     }
     var testValidator: TestCaseValidator = null
     if (projectData.config().BugSwarmValidation) {
@@ -108,13 +111,17 @@ object JRelifixMain {
     projectData.cleanTemp()
   }
 
-  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): JavaJDKCompiler  = {
+  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): ICompiler  = {
+    if (projectData.config().BugSwarmValidation) {
+      return new BugSwarmCompiler(projectData.config().BugSwarmImageTag)
+    }
+
     val cpArr = projectData.config().classpathURLs().map(_.toString)
     val srcArr = Array[String] {projectData.config().sourceFolder}
     val copyIncludes: Array[String] = Array[String]{""}
     val copyExcludes: Array[String] = Array[String]{""}
 
-    val compiler = new JavaJDKCompiler(
+    val compiler: ICompiler = new JavaJDKCompiler(
       projectData.config().sourceClassFolder,
       cpArr,
       sourceFileContents,

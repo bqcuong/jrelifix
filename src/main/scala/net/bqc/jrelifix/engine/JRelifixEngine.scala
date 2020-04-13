@@ -2,7 +2,7 @@ package net.bqc.jrelifix.engine
 
 import java.io.File
 
-import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
+import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, ICompiler}
 import net.bqc.jrelifix.context.mutation.MutationType
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
@@ -119,14 +119,12 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
           }
 
           logger.debug("==========> AFTER MUTATING")
+          projectData.updateChangedSourceFiles()
           val compileStatus = this.context.compiler.compile()
           logger.debug("[COMPILE] Status: " + compileStatus)
 
-          if (compileStatus == JavaJDKCompiler.Status.COMPILED) {
-            val reducedTSValidation = this.context.testValidator.validateTestCases(
-              this.context.testValidator.predefinedTests,
-              projectData.config().projFolder,
-              projectData.config().classpath())
+          if (compileStatus == ICompiler.Status.COMPILED) {
+            val reducedTSValidation = this.context.testValidator.validateReducedTestCases()
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
             if (reducedTSValidation._1) {
               val wholeTSValidation = this.context.testValidator.validateAllTestCases()
@@ -173,6 +171,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               if (mutation.isParameterizable) {
                 val newFailedTSNames: Set[String] = reducedTSValidation._2.map(_.getFullName).toSet
                 if (diffResults(reducedTSNames, newFailedTSNames)) {
+                  logger.debug("[OPERATOR] Reuse: " + operators)
                   operators.enqueue(nextOperator)
                 }
               }
@@ -180,6 +179,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
           }
 
           mutation.unmutate()
+          projectData.updateChangedSourceFiles()
         }
         else if (currentChosenCon != null) {
           tabu.addOne(currentChosenCon)
@@ -193,6 +193,6 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
   }
 
   private def diffResults(initialTS: Set[String], newTS: Set[String]): Boolean = {
-    initialTS.equals(newTS)
+    !initialTS.equals(newTS)
   }
 }

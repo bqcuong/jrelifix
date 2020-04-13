@@ -1,6 +1,7 @@
 package net.bqc.jrelifix.context
 
 import java.io.{File, FileNotFoundException}
+import java.nio.charset.Charset
 import java.util
 
 import net.bqc.jrelifix.config.Config
@@ -10,7 +11,7 @@ import net.bqc.jrelifix.engine.JRelifixEngine
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.identifier.seed.Seedy
-import net.bqc.jrelifix.utils.ASTUtils
+import net.bqc.jrelifix.utils.{ASTUtils, FileFolderUtils}
 import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
 
@@ -116,4 +117,12 @@ case class ProjectData() {
 
   def setEngine(e: JRelifixEngine): Unit = this.engine = e
   def getEngine: JRelifixEngine = this.engine
+
+  def updateChangedSourceFiles(): Unit = {
+    if (!config().BugSwarmValidation) return // only apply for bugswarm validation
+    for (f <- originalFaultFiles) {
+      val changedSource = sourceFileContents.get(f).modifiedDocument.get()
+      FileUtils.writeStringToFile(new File(f), changedSource, "utf-8")
+    }
+  }
 }

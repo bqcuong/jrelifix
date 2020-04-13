@@ -28,6 +28,9 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
         for (s <- seedCodes) {
           val seed = s.asInstanceOf[Seedy]
           val seedAsIdentifier = s.asInstanceOf[PositionBasedIdentifier]
+          if (seedAsIdentifier.getJavaNode().toString.trim == "channel != null") {
+            println("z")
+          }
 
           // find the changed snippet that exactly equals to seed
           var changedRes = Searcher.searchChangeSnippets(changedFile, SameCodeSnippetCondition(seedAsIdentifier.getJavaNode().toString))
@@ -77,8 +80,10 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
           val seedCode = seedAsIdentifier.getJavaNode().toString.trim
           var duplicated = false
           for (exSeed <- projectData.seedsMap(f)) {
-            if (seedCode.contains(exSeed.getJavaNode().toString.trim)) {
+            if (seedCode.equals(exSeed.getJavaNode().toString.trim)) {
               duplicated = true
+              exSeed.asInstanceOf[Seedy].addChangeType(ChangeType.REMOVED)
+              logger.debug("Update seed change status: [%s] %s".format(exSeed.asInstanceOf[Seedy].getChangeTypes(), exSeed.getJavaNode().toString))
             }
           }
           if (!duplicated) {
@@ -97,7 +102,7 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
       case node: InfixExpression =>
         val op = node.getOperator
         // expression in if-statement, for-statement, while-statement
-        if (ASTUtils.isConditionalOperator(op) && ASTUtils.belongsToConditionStatement(node)) {
+        if ((ASTUtils.isConditionalOperator(op) || ASTUtils.isEqualityOperator(op)) && ASTUtils.belongsToConditionStatement(node)) {
           val (bl, el, bc, ec) = getNodePosition(node, prevCu)
           val atomicBoolCode = new ExpressionSeedIdentifier(bl, el, bc, ec, prevCode.getFileName())
           atomicBoolCode.setBool(true)

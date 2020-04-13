@@ -2,7 +2,10 @@
  * The In-Memory Java Compiler
  * Source: https://raw.githubusercontent.com/qhanam/Java-RSRepair/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/compiler/JavaJDKCompiler.java
  */
-package net.bqc.jrelifix.context.compiler;
+package net.bqc.jrelifix.context.compiler.inmemory;
+
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite;
+import net.bqc.jrelifix.context.compiler.ICompiler;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -13,7 +16,7 @@ import java.util.*;
 /**
  * From https://weblogs.java.net/blog/malenkov/archive/2008/12/how_to_compile.html
  */
-public class JavaJDKCompiler {
+public class JavaJDKCompiler implements ICompiler {
 	private MemoryClassLoader mcl;
 	private Map<String, DocumentASTRewrite> sourceFileContents;
 	private String[] sourcePaths;
@@ -45,7 +48,8 @@ public class JavaJDKCompiler {
 	 * @return JRSRepair.TestStatus (NOT_COMPILED or COMPILED)
 	 * @throws Exception
 	 */
-	public Status compile() throws Exception{
+	@Override
+	public Status compile() throws Exception {
 		StringWriter output = new StringWriter();
 
 		/* Build the map of source files that the compiler will read from. The
@@ -181,9 +185,6 @@ public class JavaJDKCompiler {
 	/**
 	 * The possible results from the compile method.
 	 */
-	public enum Status{
-		NOT_COMPILED, COMPILED
-	}
 
 	private class JavaSourceFilter implements FileFilter {
 

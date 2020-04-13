@@ -1,7 +1,7 @@
 /**
  * Source: https://github.com/qhanam/Java-RSRepair/raw/master/src/ca/uwaterloo/ece/qhanam/jrsrepair/Utilities.java
  */
-package net.bqc.jrelifix.context.compiler;
+package net.bqc.jrelifix.context.compiler.inmemory;
 
 import org.apache.commons.io.FileUtils;
 

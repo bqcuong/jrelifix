@@ -7,6 +7,8 @@ from shell_wrapper import ShellWrapper
 DOCKER_HUB_REPO="bugswarm/images"
 SCRIPT_DEFAULT = '/bin/bash'
 RUN_VALIDATION = '/home/travis/run_failed_clone.sh'
+RUN_VALIDATION_REDUCED = '/home/travis/run_reduced.sh'
+RUN_COMPILATION = '/home/travis/compile.sh'
 RUN_VALIDATION_ORIGINAL = '/usr/local/bin/run_failed.sh'
 
 HOST_M2 = '~/.m2'
@@ -79,10 +81,7 @@ def _docker_clone_validation_script(container_name):
     return res
 
 
-def docker_clone_code(compile_first, container_name):
-    assert isinstance(compile_first, bool)
-    if compile_first:
-        _docker_compile(container_name)
+def docker_clone_code(container_name):
     res = _docker_execute_script(container_name, 'rm -rf /home/travis/build/failed_clone/*;cp -r /home/travis/build/failed/* /home/travis/build/failed_clone')
     return res
 
@@ -96,12 +95,16 @@ def _docker_execute_script(container_name, script):
     return return_code == 0
 
 
-def _docker_compile(container_name):
-    return _docker_execute_script(container_name, RUN_VALIDATION_ORIGINAL)
+def docker_compile(container_name):
+    return _docker_execute_script(container_name, RUN_COMPILATION)
 
 
-def docker_run_validation(container_name):
-    res = _docker_execute_script(container_name, RUN_VALIDATION)
+def docker_run_validation(reduced_ts, container_name):
+    assert isinstance(reduced_ts, bool)
+    if reduced_ts:
+        res = _docker_execute_script(container_name, RUN_VALIDATION_REDUCED)
+    else:
+        res = _docker_execute_script(container_name, RUN_VALIDATION)
     return res
 
 

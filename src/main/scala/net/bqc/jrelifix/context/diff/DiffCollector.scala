@@ -38,7 +38,9 @@ case class DiffCollector(projectData: ProjectData) {
     this.initializeGumTree()
 
     val sourcePath = projectData.config().sourceFolder
-    val changedFiles = gitParser.getModifiedFiles(projectData.config().rootProjFolder, "HEAD", bugInducingCommit)
+    var gitProjectPath = projectData.config().rootProjFolder
+    if (gitProjectPath == null) gitProjectPath = projectData.config().projFolder
+    val changedFiles = gitParser.getModifiedFiles(gitProjectPath, "HEAD", bugInducingCommit)
     for (changedFile <- changedFiles) {
       // only process java file in the source path
       if (changedFile.filePath.startsWith(sourcePath)) {
