@@ -17,7 +17,7 @@ class TestCaseValidator(projectData: ProjectData) {
 
   def loadTestsCasesFromOpts(): Unit = {
     predefinedTests.addAll(loadPredefinedTestCases())
-    predefinedTests.foreach(tc => logger.debug("Initially Tests: " + tc.getFullName))
+    predefinedTests.foreach(tc => logger.debug("Initially Reduced Tests: " + tc.getFullName))
 
     remainingTests.addAll(loadPositiveTestCases(predefinedTests))
 //    predefinedPosTests.foreach(tc => logger.debug("Initially Positive Tests(+): " + tc.getFullName))

@@ -37,17 +37,6 @@ object JRelifixMain {
     projectData.class2FilePathMap.addAll(class2PathMap)
     logger.info("Done parsing AST!")
 
-    logger.info("Initializing Collectors...")
-    val differ = DiffCollector(projectData)
-    val changedSources = differ.collectChangedSources()
-    projectData.initChangedSourcesMap(changedSources)
-    val seedsCollector = SeedsCollector(projectData)
-    val changedSeedsCollector = ChangedSeedsCollector(projectData)
-    seedsCollector.collect()
-    changedSeedsCollector.collect()
-    projectData.mergeSeeds()
-    logger.info("Done Initializing Collectors!")
-
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](projectData.config().sourceFolder)
     projectData.sourceFilesArray.addAll(SourceUtils.getSourceFiles(sourcePath))
@@ -77,7 +66,19 @@ object JRelifixMain {
       testValidator = new TestCaseValidator(projectData)
     }
     testValidator.loadTestsCasesFromOpts()
+//    testValidator.validateTestCases(testValidator.predefinedTests, projectData.config().projFolder, projectData.config().classpath())
     logger.info("Done initializing!")
+
+    logger.info("Initializing Collectors...")
+    val differ = DiffCollector(projectData)
+    val changedSources = differ.collectChangedSources()
+    projectData.initChangedSourcesMap(changedSources)
+    val seedsCollector = SeedsCollector(projectData)
+    val changedSeedsCollector = ChangedSeedsCollector(projectData)
+    seedsCollector.collect()
+    changedSeedsCollector.collect()
+    projectData.mergeSeeds()
+    logger.info("Done Initializing Collectors!")
 
     logger.info("Initializing Mutation Generator ...")
     val mutationGenerator = new MutationGenerator(projectData)

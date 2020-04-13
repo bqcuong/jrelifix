@@ -164,22 +164,26 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
     }
 
     override def visit(node: IfStatement): Boolean = {
-      clist.addOne(ASTUtils.getConditionalNode(node))
+      val c = ASTUtils.getConditionalNode(node)
+      if (c != null) clist.addOne(c)
       true
     }
 
     override def visit(node: WhileStatement): Boolean = {
-      clist.addOne(ASTUtils.getConditionalNode(node))
+      val c = ASTUtils.getConditionalNode(node)
+      if (c != null) clist.addOne(c)
       true
     }
 
     override def visit(node: ForStatement): Boolean = {
-      clist.addOne(ASTUtils.getConditionalNode(node))
+      val c = ASTUtils.getConditionalNode(node)
+      if (c != null) clist.addOne(c)
       true
     }
 
     override def visit(node: ConditionalExpression): Boolean = {
-      clist.addOne(ASTUtils.getConditionalNode(node))
+      val c = ASTUtils.getConditionalNode(node)
+      if (c != null) clist.addOne(c)
       true
     }
   }

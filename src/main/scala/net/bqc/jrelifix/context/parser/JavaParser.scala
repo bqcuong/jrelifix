@@ -52,12 +52,13 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
       override def acceptAST(sourceFilePath: String, cu: CompilationUnit): Unit = {
         compilationUnitMap.put(sourceFilePath, cu)
 
-        val packageName = if (cu.getPackage != null) cu.getPackage.getName.getFullyQualifiedName else ""
+        val packageName = if (cu.getPackage != null) cu.getPackage.getName.getFullyQualifiedName else null
 
         cu.accept(new ASTVisitor() {
           override def visit(node: TypeDeclaration): Boolean = {
             val className = node.getName.toString
-            class2FilePathMap.put("%s.%s".format(packageName, className), sourceFilePath)
+            if (packageName != null) class2FilePathMap.put("%s.%s".format(packageName, className), sourceFilePath)
+            else class2FilePathMap.put(className, sourceFilePath)
             super.visit(node)
           }
         })

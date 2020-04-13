@@ -37,16 +37,17 @@ public class TestExecutionProcessLauncher {
         Process p = null;
 
         if (javaHome == null) javaHome = System.getProperty("java.home");
-//        logger.info("Java Home: " + javaHome);
-        String systemcp = System.getProperty("java.class.path");
-
-        // Be careful when rewrite path: the ones that come first would get picked first,
-        // and the picked ones would not get overwritten!
-        classpath = classpath + File.pathSeparator + systemcp;
-
-//        logger.debug("Classpath: " + classpath.replace(systemcp, ""));
 
         try {
+            String systemcp = System.getProperty("java.class.path");
+            if (systemcp.contains("idea_rt.jar")) { // run on IntelliJ IDEA
+                systemcp = new File("./target/classes").getCanonicalPath();
+            }
+
+            // Be careful when rewrite path: the ones that come first would get picked first,
+            // and the picked ones would not get overwritten!
+            classpath = classpath + File.pathSeparator + systemcp;
+
             command.add(javaHome + File.separator + "bin/java");
             for (String prop : props) {
                 command.add("-D" + prop);

@@ -12,7 +12,7 @@ class BugSwarmTestCaseValidator(projectData: ProjectData) extends TestCaseValida
 
   override def loadTestsCasesFromOpts(): Unit = {
     predefinedTests.addAll(loadPredefinedTestCases())
-    predefinedTests.foreach(tc => logger.debug("Initially Tests: " + tc.getFullName))
+    predefinedTests.foreach(tc => logger.debug("Initially Reduced Tests: " + tc.getFullName))
   }
 
   override def validateAllTestCases() : (Boolean, ArrayBuffer[TestCase]) = {

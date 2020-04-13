@@ -45,30 +45,39 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
   }
 
   def chooseRandomlyExpr(): Identifier = {
-    var exceed = 0
-    do {
-      val randDrop = Random.nextInt(conExprSet.size)
-      currentChosenCon = conExprSet.drop(randDrop).head
-      exceed += 1
+    if (conExprSet.isEmpty) {
+      logger.debug("Condition Expression Set is empty!")
+      currentChosenCon = null
     }
-    while (exceed < 1000 && tabu.contains(currentChosenCon))
-    logger.debug("[OPERATOR PARAM] Chosen Condition: " + currentChosenCon)
+    else {
+      var exceed = 0
+      do {
+        val randDrop = Random.nextInt(conExprSet.size)
+        currentChosenCon = conExprSet.drop(randDrop).head
+        exceed += 1
+      }
+      while (exceed < 1000 && tabu.contains(currentChosenCon))
+      logger.debug("[OPERATOR PARAM] Chosen Condition: " + currentChosenCon)
+    }
     currentChosenCon
   }
 
   override def repair(): Unit = {
     conExprSet.addAll(collectConditionExpressions())
-    assert(conExprSet.nonEmpty)
     logger.debug("Condition Expression Set for Engine: " + conExprSet)
 
-    val initialOperators = mutable.Queue[MutationType.Value](
-      MutationType.REVERT
-//      MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
-    )
-    val secondaryOperators = mutable.Queue[MutationType.Value](
-//      MutationType.ADDCON, MutationType.ADDIF
-      MutationType.NEGATE, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT
-    )
+    val initialOperators = mutable.Queue[MutationType.Value]()
+    val secondaryOperators = mutable.Queue[MutationType.Value]()
+
+    if (conExprSet.nonEmpty) {
+      initialOperators.enqueue(MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT)
+      secondaryOperators.enqueue(MutationType.NEGATE, MutationType.ADDIF, MutationType.ADDCON, MutationType.CONVERT)
+    }
+    else {
+      initialOperators.enqueue(MutationType.DELETE, MutationType.NEGATE, MutationType.SWAP, MutationType.REVERT, MutationType.CONVERT)
+      secondaryOperators.enqueue(MutationType.NEGATE, MutationType.CONVERT)
+    }
+
     logger.debug("Initial Operators: " + initialOperators)
     logger.debug("Secondary Operators: " + secondaryOperators)
 

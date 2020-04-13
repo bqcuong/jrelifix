@@ -149,10 +149,13 @@ case class DiffCollector(projectData: ProjectData) {
         val astNode = ASTUtils.searchNodeByIdentifier(cu, codeIdentifier)
         codeIdentifier.setJavaNode(astNode)
 
-        if (astNode == null) {
-          logger.debug("Not found ast node for changed node: " + node)
+        if (astNode != null) {
+          return (srcRange, codeIdentifier)
         }
-        return (srcRange, codeIdentifier)
+        else {
+          logger.debug("Not found ast node for changed node: " + node)
+          return (null, null)
+        }
       }
     }
     (null, null)
