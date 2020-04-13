@@ -57,8 +57,6 @@ case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, do
     else false
   }
 
-  override def unmutate(): Unit = ???
-
   override def applicable(): Boolean = ???
 
   override def isParameterizable: Boolean = false

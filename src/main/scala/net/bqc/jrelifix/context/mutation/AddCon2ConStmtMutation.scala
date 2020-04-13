@@ -66,12 +66,12 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     if (changedBoolNodes.isEmpty) changedBoolNodes = boolNodes
 
     // randomly choose on the candidate list, very fair
-    val ranIndex = Random.nextInt(changedBoolNodes.size)
+    val ranIndex = projectData.randomizer.nextInt(changedBoolNodes.size)
     val chosenCondition = changedBoolNodes(ranIndex)
     logger.debug("The chosen condition to be combined with: " + chosenCondition)
 
     // choose logic operator
-    val randOp = Random.between(0, 2)
+    val randOp = projectData.randomizer.between(0, 2)
     val op = if (randOp > 0) "||" else "&&"
 
     // create new condition node

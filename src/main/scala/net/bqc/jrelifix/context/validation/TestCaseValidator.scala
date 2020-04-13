@@ -80,7 +80,7 @@ class TestCaseValidator(projectData: ProjectData) {
         val testPassed = validateTestCase(tc, projectFolder, classpath)
         if (!testPassed) {
           allPassed = false
-          failedTC :+ tc
+          failedTC.addOne(tc)
         }
       }
       failedTC

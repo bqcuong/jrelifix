@@ -10,7 +10,7 @@ import scala.util.Random
 
 object Searcher {
 
-  def search1RandomSeed(allSeeds: mutable.HashSet[Identifier], condition: ISeedCondition)
+/*  def search1RandomSeed(allSeeds: mutable.HashSet[Identifier], condition: ISeedCondition)
   : Identifier = {
     val chosenSeeds = mutable.HashSet[Identifier]()
     for (seed <- allSeeds) {
@@ -22,7 +22,7 @@ object Searcher {
       chosenSeeds.iterator.drop(randIndex).next()
     }
     else null
-  }
+  }*/
 
   def searchSeeds(seedMap: mutable.Map[String, mutable.HashSet[Identifier]], filePath: String, condition: ISeedCondition)
   : mutable.HashSet[Seedy] = {

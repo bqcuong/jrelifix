@@ -1,7 +1,6 @@
 package net.bqc.jrelifix.context
 
 import java.io.{File, FileNotFoundException}
-import java.nio.charset.Charset
 import java.util
 
 import net.bqc.jrelifix.config.Config
@@ -11,15 +10,20 @@ import net.bqc.jrelifix.engine.JRelifixEngine
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.identifier.seed.Seedy
-import net.bqc.jrelifix.utils.{ASTUtils, FileFolderUtils}
+import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.commons.io.FileUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CompilationUnit}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 case class ProjectData() {
   private val TEMP_POSTFIX = "_temp"
+
+  val RANDOM_SEED: Long = 1586793494000L
+  val randomizer = new Random()
+  randomizer.setSeed(RANDOM_SEED)
 
   private var configData: Config = _
   private var engine: JRelifixEngine = _

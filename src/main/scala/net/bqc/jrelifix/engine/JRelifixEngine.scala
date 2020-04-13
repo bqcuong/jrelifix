@@ -52,7 +52,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     else {
       var exceed = 0
       do {
-        val randDrop = Random.nextInt(conExprSet.size)
+        val randDrop = projectData.randomizer.nextInt(conExprSet.size)
         currentChosenCon = conExprSet.drop(randDrop).head
         exceed += 1
       }
@@ -94,7 +94,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       var secondaryDoc: DocumentASTRewrite = null
       this.tabu.clear()
 
-      var operators = Random.shuffle(initialOperators)
+      var operators = projectData.randomizer.shuffle(initialOperators)
       logger.debug("[OPERATOR] Candidates: " + operators)
 
       while(iter <= P && operators.nonEmpty) {
@@ -160,7 +160,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
                   faultLine.asInstanceOf[PredefinedFaultIdentifier].setFileName(faultFile)
                   faultLine.setJavaNode(astNode)
                   // construct secondary operator set
-                  operators = Random.shuffle(secondaryOperators)
+                  operators = projectData.randomizer.shuffle(secondaryOperators)
                 }
                 else secondaryDoc = null // could not identify new fault statement, ignore
               }
@@ -171,7 +171,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               if (mutation.isParameterizable) {
                 val newFailedTSNames: Set[String] = reducedTSValidation._2.map(_.getFullName).toSet
                 if (diffResults(reducedTSNames, newFailedTSNames)) {
-                  logger.debug("[OPERATOR] Reuse: " + operators)
+                  logger.debug("[OPERATOR] Reuse: " + nextOperator)
                   operators.enqueue(nextOperator)
                 }
               }
