@@ -9,8 +9,5 @@
         <module name="jrelifix" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="java7-testlauncher" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>
