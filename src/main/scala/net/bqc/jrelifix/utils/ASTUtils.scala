@@ -196,9 +196,11 @@ object ASTUtils {
 
   /**
    * Check if the given node is inside the condition of a conditional statement
+   *
    * @param node
    * @return
    */
+  @scala.annotation.tailrec
   def belongsToConditionStatement(node: ASTNode): Boolean = {
     if (node == null) false
     else if (ASTUtils.isConditionalStatement(node)) true
@@ -212,6 +214,34 @@ object ASTUtils {
       case _: WhileStatement => true
       case _: IfStatement => true
       case _ => false
+    }
+  }
+
+  @scala.annotation.tailrec
+  def getParentStmt(node: ASTNode): Statement = {
+    if (node == null) null
+    else node match {
+      case n: MethodDeclaration => null
+      case n: Statement => n
+      case _ => getParentStmt(node.getParent)
+    }
+  }
+
+  def containsStmt(node: ASTNode): Boolean = {
+    if (node.isInstanceOf[Statement]) return true
+    val visitor = new CheckContainStmts()
+    node.accept(visitor)
+    visitor.contained
+  }
+
+  private class CheckContainStmts() extends ASTVisitor {
+    var contained = false
+    override def preVisit2(node: ASTNode): Boolean = {
+      if (node.isInstanceOf[Statement]) {
+        contained = true
+        return false
+      }
+      true
     }
   }
 

@@ -29,9 +29,9 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData, do
 
   /**
    * Handle the mutating actions
-   * @param conditionExpr if not null, this operator is parameterizable
+   * @param paramSeed if not null, this operator is parameterizable
    */
-  def mutate(conditionExpr: Identifier = null): Boolean
+  def mutate(paramSeed: Identifier = null): Boolean
 
   def unmutate(): Unit = {
     if (undo != null) {

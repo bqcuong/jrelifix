@@ -14,7 +14,7 @@ case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: Proj
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  override def mutate(expr: Identifier = null): Boolean = {
+  override def mutate(paramSeed: Identifier = null): Boolean = {
     val faultFile = faultStatement.getFileName()
     val seedList = Searcher
       .searchSeeds(projectData.seedsMap, faultFile, BoolMethodInvocationCondition(faultStatement))

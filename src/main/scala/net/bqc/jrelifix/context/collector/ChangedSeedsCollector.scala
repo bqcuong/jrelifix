@@ -3,12 +3,14 @@ package net.bqc.jrelifix.context.collector
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.ChangeType
 import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier}
-import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, Seedy}
+import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, Seedy, StatementSeedIdentifier}
 import net.bqc.jrelifix.search.{ChildSnippetCondition, SameCodeSnippetCondition, Searcher}
 import net.bqc.jrelifix.utils.ASTUtils
 import net.bqc.jrelifix.utils.ASTUtils.{getNodePosition, searchNodeByIdentifier}
 import org.apache.log4j.Logger
-import org.eclipse.jdt.core.dom.{CompilationUnit, InfixExpression}
+import org.eclipse.jdt.core.dom.{CompilationUnit, InfixExpression, Statement}
+
+import scala.collection.mutable
 
 case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(projectData){
   private val logger: Logger = Logger.getLogger(this.getClass)
@@ -68,48 +70,94 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
     for (f <- projectData.changedSourcesMap.keys) {
       val changedFile = projectData.changedSourcesMap(f)
       for (cs <- changedFile.allCS) {
-        var seed: Seedy = null
+        var oldSeed: Seedy = null
+        var newSeed: Seedy = null
+        val seedSet = projectData.seedsMap(f)
         cs.changeType match {
-          case ChangeType.REMOVED | ChangeType.MODIFIED =>
-            seed = generateSeed(cs.srcSource, changedFile.oldCUnit)
+          case ChangeType.REMOVED =>
+            oldSeed = generateSeed(cs.srcSource, changedFile.oldCUnit)
+            addOrUpdateSeedToSeedSet(oldSeed, seedSet, ChangeType.REMOVED)
+          case ChangeType.ADDED =>
+            newSeed = generateSeed(cs.dstSource, changedFile.newCUnit)
+            addOrUpdateSeedToSeedSet(newSeed, seedSet, ChangeType.ADDED)
+          case ChangeType.MODIFIED =>
+            oldSeed = generateSeed(cs.srcSource, changedFile.oldCUnit)
+            addOrUpdateSeedToSeedSet(oldSeed, seedSet, ChangeType.REMOVED)
+            newSeed = generateSeed(cs.dstSource, changedFile.newCUnit)
+            addOrUpdateSeedToSeedSet(newSeed, seedSet, ChangeType.MODIFIED)
+          case ChangeType.MOVED =>
+            newSeed = generateSeed(cs.dstSource, changedFile.newCUnit)
+            addOrUpdateSeedToSeedSet(newSeed, seedSet, ChangeType.MOVED)
           case _ =>
         }
 
-        if (seed != null) {
-          val seedAsIdentifier = seed.asInstanceOf[Identifier]
-          val seedCode = seedAsIdentifier.getJavaNode().toString.trim
-          var duplicated = false
-          for (exSeed <- projectData.seedsMap(f)) {
-            if (seedCode.equals(exSeed.getJavaNode().toString.trim)) {
-              duplicated = true
-              exSeed.asInstanceOf[Seedy].addChangeType(ChangeType.REMOVED)
-              logger.debug("Update seed change status: [%s] %s".format(exSeed.asInstanceOf[Seedy].getChangeTypes(), exSeed.getJavaNode().toString))
-            }
-          }
-          if (!duplicated) {
-            seed.addChangeType(ChangeType.REMOVED)
-            projectData.seedsMap(f).addOne(seedAsIdentifier)
-            logger.debug("Additional seed from change history: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString))
-          }
+        // add more statement seed from changed expression
+        val parentStmtSeed1 = generateStmtSeedFromExpr(cs.srcSource, changedFile.oldCUnit)
+        val parentStmtSeed2 = generateStmtSeedFromExpr(cs.dstSource, changedFile.newCUnit)
+        addOrUpdateSeedToSeedSet(parentStmtSeed1, seedSet, ChangeType.MODIFIED)
+        addOrUpdateSeedToSeedSet(parentStmtSeed2, seedSet, ChangeType.MODIFIED)
+
+      }
+      println("x")
+    }
+  }
+
+  private def generateStmtSeedFromExpr(id: Identifier, cu: CompilationUnit): Seedy = {
+    if (id != null ) {
+      val seedJavaNode = id.getJavaNode()
+      if (!ASTUtils.containsStmt(seedJavaNode)) {
+        val stmtNode = ASTUtils.getParentStmt(seedJavaNode)
+        if (stmtNode != null) {
+          val (bl, el, bc, ec) = getNodePosition(stmtNode, cu)
+          val stmtCode = new StatementSeedIdentifier(bl, el, bc, ec, id.getFileName())
+          stmtCode.setJavaNode(stmtNode)
+          return stmtCode
         }
+      }
+    }
+    null
+  }
+
+  private def addOrUpdateSeedToSeedSet(seed: Seedy, seedSet: mutable.HashSet[Identifier], changeType: ChangeType.Value): Unit = {
+    if (seed != null) {
+      val seedAsIdentifier = seed.asInstanceOf[Identifier]
+      val seedJavaNode = seedAsIdentifier.getJavaNode()
+      val seedCode = seedJavaNode.toString.trim
+      var duplicated = false
+      for (exSeed <- seedSet) {
+        if (seedCode.equals(exSeed.getJavaNode().toString.trim)) {
+          duplicated = true
+          exSeed.asInstanceOf[Seedy].addChangeType(changeType)
+          logger.debug("Update seed change status: [%s] %s".format(exSeed.asInstanceOf[Seedy].getChangeTypes(), exSeed.getJavaNode().toString.trim))
+        }
+      }
+      if (!duplicated) {
+        seed.addChangeType(changeType)
+        seedSet.addOne(seedAsIdentifier)
+        logger.debug("Additional seed from change history: [%s] %s".format(seed.getChangeTypes(), seedAsIdentifier.getJavaNode().toString.trim))
       }
     }
   }
 
-  private def generateSeed(prevCode: Identifier, prevCu: CompilationUnit): Seedy = {
-    val javaNode = prevCode.getJavaNode()
+  private def generateSeed(code: Identifier, cu: CompilationUnit): Seedy = {
+    val javaNode = code.getJavaNode()
     javaNode match {
       case node: InfixExpression =>
         val op = node.getOperator
         // expression in if-statement, for-statement, while-statement
         if ((ASTUtils.isConditionalOperator(op) || ASTUtils.isEqualityOperator(op)) && ASTUtils.belongsToConditionStatement(node)) {
-          val (bl, el, bc, ec) = getNodePosition(node, prevCu)
-          val atomicBoolCode = new ExpressionSeedIdentifier(bl, el, bc, ec, prevCode.getFileName())
+          val (bl, el, bc, ec) = getNodePosition(node, cu)
+          val atomicBoolCode = new ExpressionSeedIdentifier(bl, el, bc, ec, code.getFileName())
           atomicBoolCode.setBool(true)
-          atomicBoolCode.setJavaNode(searchNodeByIdentifier(prevCu, atomicBoolCode))
+          atomicBoolCode.setJavaNode(node)
           return atomicBoolCode
         }
 
+      case node: Statement =>
+        val (bl, el, bc, ec) = getNodePosition(node, cu)
+        val stmtCode = new StatementSeedIdentifier(bl, el, bc, ec, code.getFileName())
+        stmtCode.setJavaNode(node)
+        return stmtCode
       case _ => return null
     }
     null

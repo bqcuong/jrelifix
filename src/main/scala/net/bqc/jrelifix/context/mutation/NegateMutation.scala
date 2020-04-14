@@ -17,8 +17,8 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData, 
   private var replacedCon: ASTNode = _
   private var negatedCon: ASTNode = _
 
-  override def mutate(conditionExpr: Identifier = null): Boolean = {
-    if (isParameterizable) assert(conditionExpr != null)
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     // only applicable to conditional statement
     if (!faultStatement.isConditionalStatement()) return false
     // check if faulty statement is changed

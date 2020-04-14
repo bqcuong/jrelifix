@@ -19,8 +19,8 @@ case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, do
   private var chosenSibNode: ASTNode = _
   private var swapUp: Boolean = false
 
-  override def mutate(conditionExpr: Identifier = null): Boolean = {
-    if (isParameterizable) assert(conditionExpr != null)
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     if (!faultStatement.isSwappableStatement()) return false
 
     swapUp = swapDirection == SwapMutation.SWAP_UP

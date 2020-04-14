@@ -35,7 +35,7 @@ object Seedy {
   }
 
   def _toString(i: Identifier): String = {
-    "[%s] %s".format(i.getClass.getSimpleName, i.getJavaNode().toString)
+    "[%s] %s".format(i.getClass.getSimpleName, i.getJavaNode().toString.trim)
   }
 }
 

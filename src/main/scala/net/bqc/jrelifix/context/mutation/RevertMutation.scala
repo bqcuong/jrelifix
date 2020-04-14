@@ -67,8 +67,8 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
     }
   }
 
-  override def mutate(conditionExpr: Identifier = null): Boolean = {
-    if (isParameterizable) assert(conditionExpr != null)
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     var applied = false
     val faultLineNumber = faultStatement.getLine()
 

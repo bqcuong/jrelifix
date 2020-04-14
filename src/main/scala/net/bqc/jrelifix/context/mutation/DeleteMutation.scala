@@ -17,8 +17,8 @@ case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData, 
 
   private var emptyBlock: ASTNode = _
 
-  override def mutate(conditionExpr: Identifier = null): Boolean = {
-    if (isParameterizable) assert(conditionExpr != null)
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     // delete only when the fault line is added in previous commit
     if (!faultStatement.isStatement()) return false
     val faultFile = faultStatement.getFileName()

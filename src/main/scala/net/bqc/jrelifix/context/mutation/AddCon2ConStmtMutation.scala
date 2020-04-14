@@ -18,15 +18,15 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
 
   override def isParameterizable: Boolean = true
 
-  override def mutate(conditionExpr: Identifier): Boolean = {
-    if (isParameterizable) assert(conditionExpr != null)
+  override def mutate(paramSeed: Identifier): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return false
     if (!faultStatement.isConditionalStatement()) return false
 
     var applied = false
     val astNode = faultStatement.getJavaNode()
 
-    applied = addConditionForConditionalStatement(astNode.asInstanceOf[IfStatement], conditionExpr)
+    applied = addConditionForConditionalStatement(astNode.asInstanceOf[IfStatement], paramSeed)
 
     if (applied) {
       doMutating()

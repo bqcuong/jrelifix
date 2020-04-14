@@ -16,18 +16,18 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData, doc: D
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  override def mutate(conditionExpr: Identifier = null): Boolean = {
-    if (isParameterizable) assert(conditionExpr != null)
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     var applied = false
     val astNode = faultStatement.getJavaNode()
     if (faultStatement.isIfStatement()) {
-      applied = replaceConditionForIfStatement(astNode.asInstanceOf[IfStatement], conditionExpr)
+      applied = replaceConditionForIfStatement(astNode.asInstanceOf[IfStatement], paramSeed)
     }
     else if (faultStatement.isVariableDeclarationStatement()) {
-      applied = addConditionForVariableDeclaration(astNode.asInstanceOf[VariableDeclarationStatement], conditionExpr)
+      applied = addConditionForVariableDeclaration(astNode.asInstanceOf[VariableDeclarationStatement], paramSeed)
     }
     else {
-      applied = addConditionForOtherStatement(astNode.asInstanceOf[Statement], conditionExpr)
+      applied = addConditionForOtherStatement(astNode.asInstanceOf[Statement], paramSeed)
     }
 
     if (applied) {
