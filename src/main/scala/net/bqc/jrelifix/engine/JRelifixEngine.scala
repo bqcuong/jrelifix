@@ -89,6 +89,18 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     chosenSet
   }
 
+  private def filterFault(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
+    val filteredList = ArrayBuffer[Identifier]()
+    for (f <- faults) {
+      val isChanged = DiffUtils.isChanged(projectData.changedSourcesMap, f)
+      val isStmt = f.getJavaNode().isInstanceOf[Statement]
+      if (isChanged && isStmt) {
+        filteredList.addOne(f)
+      }
+    }
+    filteredList
+  }
+
   override def repair(): Unit = {
     conExprSet.addAll(collectConditionExpressions())
     stmtSet.addAll(collectStatements())
@@ -100,20 +112,16 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       MutationType.NEGATE,
       MutationType.SWAP,
       MutationType.REVERT,
-      MutationType.CONVERT)
+      MutationType.CONVERT,
+      MutationType.ADDIF,
+      MutationType.ADDCON,
+      MutationType.ADDSTMT)
 
     val SECONDARY_OPERATORS = mutable.Queue[MutationType.Value](
       MutationType.NEGATE,
-      MutationType.CONVERT)
-
-    if (conExprSet.nonEmpty) {
-      PRIMARY_OPERATORS.enqueue(MutationType.ADDIF, MutationType.ADDCON)
-      SECONDARY_OPERATORS.enqueue(MutationType.ADDIF, MutationType.ADDCON)
-    }
-    if (stmtSet.nonEmpty) {
-      PRIMARY_OPERATORS.enqueue(MutationType.ADDSTMT)
-      SECONDARY_OPERATORS.enqueue(MutationType.ADDSTMT)
-    }
+      MutationType.CONVERT,
+      MutationType.ADDIF,
+      MutationType.ADDCON)
 
     logger.debug("Primary Operators: " + PRIMARY_OPERATORS)
     logger.debug("Secondary Operators: " + SECONDARY_OPERATORS)
@@ -122,8 +130,10 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
 
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
 
-    // only support fix on faulty statements
-    val stmtFaults = faults.filter(_.getJavaNode().isInstanceOf[Statement])
+    // only support fix on changed-faulty statements
+    val stmtFaults = filterFault(faults)
+    logger.debug("Filtered Faults:")
+    stmtFaults.foreach(logger.info(_))
     for(f <- stmtFaults) {
       currentFault = f
       logger.debug("[FAULT] Try: " + currentFault)
@@ -146,9 +156,21 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
           logger.debug("[OPERATOR PARAM] Picking a parameter seed for parameterizable operator %s...".format(nextOperator))
           if (nextOperator == MutationType.ADDSTMT) currentChosenStmt = chooseRandomlyStmt()
           else currentChosenCon = chooseRandomlyExpr()
+
+          if (nextOperator == MutationType.ADDSTMT && currentChosenStmt != null) {
+            applied = mutation.mutate(currentChosenStmt)
+          }
+          else if (nextOperator != MutationType.ADDSTMT && currentChosenCon != null) {
+            applied = mutation.mutate(currentChosenCon)
+          }
+          else {
+            applied = false
+          }
+        }
+        else {
+          applied = mutation.mutate(null)
         }
 
-        applied = mutation.mutate(if (nextOperator == MutationType.ADDSTMT) currentChosenStmt else currentChosenCon)
         logger.debug("[OPERATOR] Applied: " + (if (applied) "\u2713" else "\u00D7"))
 
         if (applied) {

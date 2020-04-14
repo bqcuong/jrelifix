@@ -95,7 +95,7 @@ object JRelifixMain {
       case f@(fault: Faulty) =>
         fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
         f.setJavaNode(projectData.identifier2ASTNode(f))
-        if (f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
+//        if (f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
     }
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
