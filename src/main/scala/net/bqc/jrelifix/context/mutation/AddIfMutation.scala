@@ -3,6 +3,7 @@ package net.bqc.jrelifix.context.mutation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.search.{NotBelongSeedCondition, NotEqualSeedCondition, NotEqualingConSeedCondition}
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{IfStatement, Statement, VariableDeclarationStatement}
@@ -42,9 +43,18 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData, doc: D
    */
   private def replaceConditionForIfStatement(faultNode: IfStatement, chosenCon: Identifier): Boolean = {
     val replacedCon = ASTUtils.getConditionalNode(faultNode)
-    logger.debug("The current condition will be replaced: " + replacedCon)
+    var chosenInsertlyCon = chosenCon
+    val replacedCode = replacedCon.toString
+    if (replacedCode.equals(chosenInsertlyCon.getJavaNode().toString)) {
+      chosenInsertlyCon = projectData.getEngine.chooseRandomlyExpr(NotEqualSeedCondition(replacedCode))
+    }
+    if (chosenInsertlyCon == null) {
+      logger.debug("Could not find any satisfied condition from expr seed set to replace for current condition...")
+      return false
+    }
 
-    ASTUtils.replaceNode(this.astRewrite, replacedCon, chosenCon.getJavaNode())
+    logger.debug("The current condition will be replaced: " + replacedCon)
+    ASTUtils.replaceNode(this.astRewrite, replacedCon, chosenInsertlyCon.getJavaNode())
     true
   }
 

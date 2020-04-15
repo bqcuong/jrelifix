@@ -3,7 +3,7 @@ package net.bqc.jrelifix.context.mutation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{InsideSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.{InsideSnippetCondition, NotBelongSeedCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, IfStatement, Statement, VariableDeclarationStatement}
@@ -42,12 +42,14 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     assert(boolNodes.nonEmpty)
 
     // assure the insertedCon does not exist in the parenCond
-    var exceed = 0
     var chosenInsertlyCon = insertedCon
     val parenCode = parentCon.toString
-    while (exceed < 1000 && parenCode.contains(chosenInsertlyCon.getJavaNode().toString)) {
-      chosenInsertlyCon = projectData.getEngine.chooseRandomlyExpr()
-      exceed += 1
+    if (parenCode.contains(chosenInsertlyCon.getJavaNode().toString)) {
+      chosenInsertlyCon = projectData.getEngine.chooseRandomlyExpr(NotBelongSeedCondition(parenCode))
+    }
+    if (chosenInsertlyCon == null) {
+      logger.debug("Could not find any satisfied condition from expr seed set to insert...")
+      return false
     }
 
     // choose a atomic bool to be combined with new condition, changed bool expressions in history are prioritized

@@ -14,7 +14,7 @@ import net.bqc.jrelifix.context.validation.{BugSwarmTestCaseValidator, TestCaseV
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.identifier.fault.Faulty
+import net.bqc.jrelifix.identifier.fault.{Faulty, PredefinedFaultIdentifier}
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
 import org.apache.log4j.Logger
 
@@ -95,7 +95,7 @@ object JRelifixMain {
       case f@(fault: Faulty) =>
         fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
         f.setJavaNode(projectData.identifier2ASTNode(f))
-//        if (f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
+        if (f.isInstanceOf[PredefinedFaultIdentifier] &&f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
     }
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")

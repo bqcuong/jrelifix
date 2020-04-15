@@ -7,8 +7,8 @@ import net.bqc.jrelifix.context.mutation.MutationType
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
-import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier}
-import net.bqc.jrelifix.search.{ConSeedForEngineCondition, Searcher, StmtSeedForEngineCondition}
+import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier, Seedy}
+import net.bqc.jrelifix.search.{ConSeedForEngineCondition, ISeedCondition, Searcher, StmtSeedForEngineCondition}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.Statement
@@ -58,10 +58,10 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     result
   }
 
-  def chooseRandomlyExpr(): Identifier = {
+  def chooseRandomlyExpr(condition: ISeedCondition = null): Identifier = {
     val faultFile = currentFault.getFileName()
     val conExprSet = this.conExprSet.filter(_.getFileName().equals(faultFile))
-    chooseRandomlySeed(conExprSet)
+    chooseRandomlySeed(conExprSet, condition)
   }
 
   def chooseRandomlyStmt(): Identifier = {
@@ -70,23 +70,31 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     chooseRandomlySeed(stmtSet)
   }
 
-  def chooseRandomlySeed(seedSet: mutable.HashSet[Identifier]): Identifier = {
-    var chosenSet: Identifier = null
-    if (seedSet.isEmpty) {
+  def chooseRandomlySeed(seedSet: mutable.HashSet[Identifier], condition: ISeedCondition = null): Identifier = {
+    val filteredSet = mutable.HashSet[Identifier]()
+    if (condition != null) {
+      filteredSet.addAll(seedSet.filter(s => condition.satisfied(s.asInstanceOf[Seedy])))
+    }
+    else {
+      filteredSet.addAll(seedSet)
+    }
+
+    var chosenSeed: Identifier = null
+    if (filteredSet.isEmpty) {
       logger.debug("Seed Set is empty!")
-      chosenSet = null
+      chosenSeed = null
     }
     else {
       var exceed = 0
       do {
-        val randDrop = projectData.randomizer.nextInt(seedSet.size)
-        chosenSet = seedSet.drop(randDrop).head
+        val randDrop = projectData.randomizer.nextInt(filteredSet.size)
+        chosenSeed = filteredSet.drop(randDrop).head
         exceed += 1
       }
-      while (exceed < 100 && tabu.contains(chosenSet))
-      logger.debug("[OPERATOR PARAM] Chosen Parameter Seed: " + chosenSet)
+      while (exceed < 1000 && tabu.contains(chosenSeed))
+      logger.debug("[OPERATOR PARAM] Chosen Parameter Seed: " + chosenSeed)
     }
-    chosenSet
+    chosenSeed
   }
 
   private def filterFault(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
