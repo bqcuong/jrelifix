@@ -113,12 +113,15 @@ case class DiffCollector(projectData: ProjectData) {
       val (srcRange, srcCodeIdentifier) = getSources(srcNode, changedFile, oldVersion = true)
       val (dstRange, dstCodeIdentifier) = getSources(dstNode, changedFile, oldVersion = false)
 
-      if (srcRange != null || dstRange != null) {
-        val wrongMovedAction = changeType == ChangeType.MOVED && srcRange.equals(dstRange) // this is a wrong move action detect of GumTree
-        if (!wrongMovedAction) {
-          val cs = ChangeSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
-          result.addOne(cs)
-        }
+      val validChangeSnippet =
+        changeType == ChangeType.ADDED && dstRange != null ||
+        changeType == ChangeType.REMOVED && srcRange != null ||
+        changeType == ChangeType.MODIFIED && srcRange != null && dstRange != null ||
+        changeType == ChangeType.MOVED && srcRange != null && dstRange != null && !srcRange.equals(dstRange) // this is to prevent a wrong move action detect of GumTree
+
+      if (validChangeSnippet) {
+        val cs = ChangeSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
+        result.addOne(cs)
       }
     }
     result

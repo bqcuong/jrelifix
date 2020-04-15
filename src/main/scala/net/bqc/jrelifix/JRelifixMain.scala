@@ -70,6 +70,7 @@ object JRelifixMain {
     }
     testValidator.loadTestsCasesFromOpts()
 //    testValidator.validateTestCases(testValidator.predefinedTests, projectData.config().projFolder, projectData.config().classpath())
+//    testValidator.validateAllTestCases()
     logger.info("Done initializing!")
 
     logger.info("Initializing Collectors...")

@@ -1,0 +1,369 @@
+Executing latest Jacoco+Badua (no empty probes): dataflow Coverage -> false
+2020-04-15 18:16:51 DEBUG JRelifixMain$:32 - classpath: /Users/cuong/bugswarm/code/tananaev/traccar/target/classes_temp:/Users/cuong/bugswarm/code/tananaev/traccar/target/test-classes:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/postgresql-9.4-1201-jdbc41.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/javax.json-1.0.4.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/netty-3.10.4.Final.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/junit-4.12.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-webapp-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/h2-1.4.187.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/javax.servlet-api-3.1.0.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/log4j-1.2.17.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-io-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-util-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-server-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/c3p0-0.9.5.1.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/async-http-client-1.9.30.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-jndi-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-servlet-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/hamcrest-core-1.3.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/joda-time-2.8.1.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-xml-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/slf4j-simple-1.7.12.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-http-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/slf4j-api-1.7.12.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/jetty-security-9.2.13.v20150730.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/mchange-commons-java-0.2.10.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs/mysql-connector-java-5.1.36.jar:/Users/cuong/bugswarm/tananaev-traccar-82839755-libs
+2020-04-15 18:16:51 INFO  JRelifixMain$:34 - Parsing AST ...
+2020-04-15 18:16:55 INFO  JRelifixMain$:39 - Done parsing AST!
+2020-04-15 18:16:55 INFO  JRelifixMain$:41 - Building source file contents (ASTRewriter) ...
+2020-04-15 18:16:55 INFO  JRelifixMain$:45 - Done building source file contents!
+2020-04-15 18:16:55 INFO  JRelifixMain$:47 - Initializing Compiler/TestCases Invoker ...
+2020-04-15 18:17:01 DEBUG TestCaseValidator:20 - Initially Reduced Tests: org.traccar.protocol.AquilaProtocolDecoderTest#testDecode
+2020-04-15 18:17:01 INFO  JRelifixMain$:74 - Done initializing!
+2020-04-15 18:17:01 INFO  JRelifixMain$:76 - Initializing Collectors...
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: (((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: (((((((((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],") + "(?:\\d+,){8}") + "([01]),") + "([01]),") + "([01]),") + "([01]),") + "\\*(\\p{XDigit}{2})")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: (((java.lang.Integer.parseInt(parser.group(index++)) << 3) + (java.lang.Integer.parseInt(parser.group(index++)) << 2)) + (java.lang.Integer.parseInt(parser.group(index++)) << 1))
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: ((((((((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],") + "(?:\\d+,){8}") + "([01]),") + "([01]),") + "([01]),") + "([01]),")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: ((java.lang.Integer.parseInt(parser.group(index++)) << 3) + (java.lang.Integer.parseInt(parser.group(index++)) << 2))
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: (((((((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],") + "(?:\\d+,){8}") + "([01]),") + "([01]),") + "([01]),")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: ((((((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],") + "(?:\\d+,){8}") + "([01]),") + "([01]),")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: (((((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],") + "(?:\\d+,){8}") + "([01]),")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: ((((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],") + "(?:\\d+,){8}")
+2020-04-15 18:17:07 DEBUG DiffCollector:161 - Not found ast node for changed node: (((((((((((((((((((((((("[^,]+," + "(\\d+),") + "(\\d+),") + "(-?\\d+\\.\\d+),") + "(-?\\d+\\.\\d+),") + "(\\d{2})(\\d{2})(\\d{2})") + "(\\d{2})(\\d{2})(\\d{2}),") + "([AV]),") + "(\\d+),") + "(\\d+),") + "(\\d+),") + "\\d+,") + "(\\d+),") + "([01]),") + "[01],") + "[01],") + "[01],") + "(?:\\d+,){3}") + "([01]),") + "([01]),") + "\\d+,") + "([01]),") + "[01],") + "(?:\\d+,){7}") + "[01],")
+2020-04-15 18:17:07 DEBUG SeedsCollector:77 - Collected seeds: HashSet([VariableSeedIdentifier] msg, [VariableSeedIdentifier] sentence, [ExpressionSeedIdentifier] !identify(id,channel), [VariableSeedIdentifier] channel, [VariableSeedIdentifier] index, [VariableSeedIdentifier] parser, [ExpressionSeedIdentifier] course > 0, [VariableSeedIdentifier] course, [VariableSeedIdentifier] id, [VariableSeedIdentifier] time, [VariableSeedIdentifier] position, [VariableSeedIdentifier] protocol, [VariableSeedIdentifier] remoteAddress, [ExpressionSeedIdentifier] !parser.matches())
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:63 - Update seed change status: [HashSet(ADDED)] index
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:63 - Update seed change status: [HashSet(ADDED)] parser
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:63 - Update seed change status: [HashSet(ADDED)] course > 0
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:63 - Update seed change status: [HashSet(ADDED)] course
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:63 - Update seed change status: [HashSet(ADDED)] position
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:137 - Additional seed from change history: [HashSet(ADDED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:137 - Additional seed from change history: [HashSet(ADDED)] if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:137 - Additional seed from change history: [HashSet(ADDED)] {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:137 - Additional seed from change history: [HashSet(ADDED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] position.setCourse((course - 1) * 45);
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+2020-04-15 18:17:08 DEBUG ChangedSeedsCollector:131 - Update seed change status: [HashSet(ADDED, MODIFIED)] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));
+x
+2020-04-15 18:17:08 INFO  JRelifixMain$:85 - Done Initializing Collectors!
+2020-04-15 18:17:08 INFO  JRelifixMain$:87 - Initializing Mutation Generator ...
+2020-04-15 18:17:08 INFO  JRelifixMain$:89 - Done initializing!
+2020-04-15 18:17:08 INFO  JRelifixMain$:91 - Trying to set up fault localization ...
+2020-04-15 18:17:08 INFO  JRelifixMain$:143 - Doing localization with predefined faults...
+2020-04-15 18:17:08 INFO  JRelifixMain$:180 - Done localization!
+2020-04-15 18:17:08 INFO  JRelifixMain$:183 - Considering top 10 fault locations
+2020-04-15 18:17:08 INFO  JRelifixMain$:93 - Finished fault localization!
+2020-04-15 18:17:08 INFO  JRelifixMain$:94 - Transforming faults to Java Nodes ...
+2020-04-15 18:17:08 INFO  JRelifixMain$:101 - Done Transforming!
+2020-04-15 18:17:08 INFO  JRelifixMain$:102 - Faults after transforming to Java Nodes:
+2020-04-15 18:17:08 INFO  JRelifixMain$:103 - net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier@68bc174e -> if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 INFO  JRelifixMain$:106 - Running Repair Engine ...
+2020-04-15 18:17:08 DEBUG JRelifixEngine:115 - Condition Expression Seed Set for Engine: HashSet([ExpressionSeedIdentifier] course > 0)
+2020-04-15 18:17:08 DEBUG JRelifixEngine:116 - Statement Seed Set for Engine: HashSet([StatementSeedIdentifier] {
+  position.setCourse((course - 1) * 45);
+}, [StatementSeedIdentifier] int course=(Integer.parseInt(parser.group(index++)) << 3) + (Integer.parseInt(parser.group(index++)) << 2) + (Integer.parseInt(parser.group(index++)) << 1)+ (Integer.parseInt(parser.group(index++)));, [StatementSeedIdentifier] position.setCourse((course - 1) * 45);, [StatementSeedIdentifier] if (course > 0) {
+  position.setCourse((course - 1) * 45);
+})
+2020-04-15 18:17:08 DEBUG JRelifixEngine:134 - Primary Operators: Queue(DELETE, NEGATE, SWAP, REVERT, CONVERT, ADDIF, ADDCON, ADDSTMT)
+2020-04-15 18:17:08 DEBUG JRelifixEngine:135 - Secondary Operators: Queue(NEGATE, CONVERT, ADDIF, ADDCON)
+2020-04-15 18:17:08 DEBUG JRelifixEngine:143 - Filtered Faults:
+2020-04-15 18:17:08 INFO  JRelifixEngine:144 - net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier@68bc174e -> if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG JRelifixEngine:147 - [FAULT] Try: net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier@68bc174e -> if (course > 0) {
+  position.setCourse((course - 1) * 45);
+}
+2020-04-15 18:17:08 DEBUG JRelifixEngine:155 - [OPERATOR] Candidates: Queue(ADDIF, ADDCON, NEGATE, ADDSTMT, CONVERT, DELETE, SWAP, REVERT)
+2020-04-15 18:17:08 DEBUG JRelifixEngine:159 - [OPERATOR] Try: ADDIF
+2020-04-15 18:17:08 DEBUG JRelifixEngine:164 - [OPERATOR PARAM] Picking a parameter seed for parameterizable operator ADDIF...
+2020-04-15 18:17:08 DEBUG JRelifixEngine:95 - [OPERATOR PARAM] Chosen Parameter Seed: [ExpressionSeedIdentifier] course > 0
+2020-04-15 18:17:08 DEBUG JRelifixEngine:84 - Seed Set is empty!
+2020-04-15 18:17:08 DEBUG AddIfMutation:52 - Could not find any satisfied condition from expr seed set to replace for current condition...
+2020-04-15 18:17:08 DEBUG JRelifixEngine:182 - [OPERATOR] Applied: ×
+2020-04-15 18:17:08 DEBUG JRelifixEngine:159 - [OPERATOR] Try: ADDCON
+2020-04-15 18:17:08 DEBUG JRelifixEngine:164 - [OPERATOR PARAM] Picking a parameter seed for parameterizable operator ADDCON...
+2020-04-15 18:17:08 DEBUG JRelifixEngine:95 - [OPERATOR PARAM] Chosen Parameter Seed: [ExpressionSeedIdentifier] course > 0
+2020-04-15 18:17:08 DEBUG JRelifixEngine:84 - Seed Set is empty!
+2020-04-15 18:17:08 DEBUG AddCon2ConStmtMutation:51 - Could not find any satisfied condition from expr seed set to insert...
+2020-04-15 18:17:08 DEBUG JRelifixEngine:182 - [OPERATOR] Applied: ×
+2020-04-15 18:17:08 DEBUG JRelifixEngine:159 - [OPERATOR] Try: NEGATE
+2020-04-15 18:17:08 DEBUG NegateMutation:36 - List of added conditions: HashSet([ExpressionSeedIdentifier] course > 0)
+2020-04-15 18:17:08 DEBUG NegateMutation:42 - Chosen code to negate: course > 0
+2020-04-15 18:17:08 DEBUG NegateMutation:44 - Negated code: !(course > 0)
+2020-04-15 18:17:08 DEBUG JRelifixEngine:182 - [OPERATOR] Applied: ✓
+2020-04-15 18:17:08 DEBUG JRelifixEngine:193 - ==========> AFTER MUTATING
+2020-04-15 18:17:10 DEBUG JRelifixEngine:196 - [COMPILE] Status: COMPILED
+2020-04-15 18:17:10 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.AquilaProtocolDecoderTest#testDecode |
+2020-04-15 18:17:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:11 DEBUG JRelifixEngine:200 -  ==> [VALIDATION] REDUCED TS: ✓
+2020-04-15 18:17:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.AquilaProtocolDecoderTest#testDecode |
+2020-04-15 18:17:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.FilterHandlerTest#testFilterInvalid |
+2020-04-15 18:17:12 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------/
+2020-04-15 18:17:12 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.DistanceHandlerTest#testCalculateDistance |
+2020-04-15 18:17:13 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------/
+2020-04-15 18:17:13 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.web.WebServerInitialContextTest#smokeTest |
+2020-04-15 18:17:13 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------/
+2020-04-15 18:17:13 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.web.JsonConverterTest#primitiveConversion |
+2020-04-15 18:17:13 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------/
+2020-04-15 18:17:13 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Jt600ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:14 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:14 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Stl060ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:15 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:15 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Ardi01ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:15 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:15 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.ManPowerProtocolDecoderTest#testDecode |
+2020-04-15 18:17:16 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:16 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.KhdProtocolDecoderTest#testDecode |
+2020-04-15 18:17:16 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:17:16 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Xt013ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:17 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:17 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.NavisProtocolDecoderTest#testDecode |
+2020-04-15 18:17:18 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:18 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.CarTrackProtocolDecoderTest#testDecode |
+2020-04-15 18:17:18 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:18 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.MiniFinderProtocolDecoderTest#testDecode |
+2020-04-15 18:17:19 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------------/
+2020-04-15 18:17:19 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.T55ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:20 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:17:20 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Pt502ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:20 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:20 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TeltonikaProtocolDecoderTest#testDecode |
+2020-04-15 18:17:21 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:17:21 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.BceProtocolDecoderTest#testDecode |
+2020-04-15 18:17:22 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:17:22 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Gps103ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:22 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:22 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.AplicomProtocolDecoderTest#testDecode |
+2020-04-15 18:17:23 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:23 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Gl100ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:23 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:23 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.KhdProtocolEncoderTest#testEncode |
+2020-04-15 18:17:24 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:17:24 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.SanavProtocolDecoderTest#testDecode |
+2020-04-15 18:17:24 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:24 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.NavigilProtocolDecoderTest#testDecode |
+2020-04-15 18:17:25 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:25 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.CarscopProtocolDecoderTest#testDecode |
+2020-04-15 18:17:26 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:26 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.RitiProtocolDecoderTest#testDecode |
+2020-04-15 18:17:26 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:17:26 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.MtxProtocolDecoderTest#testDecode |
+2020-04-15 18:17:27 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:17:27 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.XirgoProtocolDecoderTest#testDecode |
+2020-04-15 18:17:27 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:27 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.AtrackProtocolDecoderTest#testDecode |
+2020-04-15 18:17:28 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:28 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GotopProtocolDecoderTest#testDecode |
+2020-04-15 18:17:29 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:29 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.YwtProtocolDecoderTest#testDecode |
+2020-04-15 18:17:29 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:17:29 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GoSafeProtocolDecoderTest#testDecode |
+2020-04-15 18:17:30 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:30 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.XexunProtocolDecoderTest#testDecode |
+2020-04-15 18:17:31 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:31 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.EnforaProtocolDecoderTest#testDecode |
+2020-04-15 18:17:31 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:31 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.MegastekProtocolDecoderTest#testDecode |
+2020-04-15 18:17:32 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:32 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Tr20ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:33 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:17:33 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TopflytechProtocolDecoderTest#testDecode |
+2020-04-15 18:17:33 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------------/
+2020-04-15 18:17:33 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.SkypatrolProtocolDecoderTest#testDecode |
+2020-04-15 18:17:34 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:17:34 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.PiligrimProtocolDecoderTest#testDecode |
+2020-04-15 18:17:34 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:34 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.SuntechProtocolDecoderTest#testDecode |
+2020-04-15 18:17:35 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:35 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GlobalSatProtocolDecoderTest#testDecode |
+2020-04-15 18:17:36 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:17:36 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.ProgressProtocolDecoderTest#testDecode |
+2020-04-15 18:17:36 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:36 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TelikProtocolDecoderTest#testDecode |
+2020-04-15 18:17:37 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:37 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.AutoFon45ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:38 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:17:38 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.CastelProtocolDecoderTest#testDecode |
+2020-04-15 18:17:38 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:38 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Gl200ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:39 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:39 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.ApelProtocolDecoderTest#testDecode |
+2020-04-15 18:17:39 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:17:39 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GpsmtaProtocolDecoderTest#testDecode |
+2020-04-15 18:17:40 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:40 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Tr900ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:41 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:41 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.EelinkProtocolDecoderTest#testDecode |
+2020-04-15 18:17:41 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:41 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TrackboxProtocolDecoderTest#testDecode |
+2020-04-15 18:17:42 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:42 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Tlt2hProtocolDecoderTest#testDecode |
+2020-04-15 18:17:43 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:43 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.CityeasyProtocolDecoderTest#testDecode |
+2020-04-15 18:17:43 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:43 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GalileoProtocolDecoderTest#testDecode |
+2020-04-15 18:17:44 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:44 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.IntellitracProtocolDecoderTest#testDecode |
+2020-04-15 18:17:44 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------------/
+2020-04-15 18:17:44 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TramigoProtocolDecoderTest#testDecode |
+2020-04-15 18:17:45 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:45 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.MeiligaoProtocolDecoderTest#testDecode |
+2020-04-15 18:17:46 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:46 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.FreedomProtocolDecoderTest#testDecode |
+2020-04-15 18:17:46 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:46 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.LaipacProtocolDecoderTest#testDecode |
+2020-04-15 18:17:47 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:47 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.AutoFonProtocolDecoderTest#testDecode |
+2020-04-15 18:17:48 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:48 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.WondexProtocolDecoderTest#testDecode |
+2020-04-15 18:17:48 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:48 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Tk102ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:49 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:49 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Avl301ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:50 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:50 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.OrionProtocolDecoderTest#testDecode |
+2020-04-15 18:17:50 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:50 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Pt3000ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:51 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:51 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TzoneProtocolDecoderTest#testDecode |
+2020-04-15 18:17:51 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:51 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TotemProtocolDecoderTest#testDecode |
+2020-04-15 18:17:52 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:52 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.NoranProtocolDecoderTest#testDecode |
+2020-04-15 18:17:53 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:53 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.CellocatorProtocolDecoderTest#testDecode |
+2020-04-15 18:17:53 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------------/
+2020-04-15 18:17:53 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GpsGateProtocolDecoderTest#testDecode |
+2020-04-15 18:17:54 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:54 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.RuptelaProtocolDecoderTest#testDecode |
+2020-04-15 18:17:55 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------------------------/
+2020-04-15 18:17:55 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Tk103ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:55 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:55 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TaipProtocolDecoderTest#testDecode |
+2020-04-15 18:17:56 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:17:56 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.TytanProtocolDecoderTest#testDecode |
+2020-04-15 18:17:56 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:17:56 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.OsmAndProtocolDecoderTest#testDecode |
+2020-04-15 18:17:57 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:17:57 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Gt02ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:58 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:17:58 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Gt06ProtocolDecoderTest#testDecode |
+2020-04-15 18:17:58 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:17:58 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.MeitrackProtocolDecoderTest#testDecode |
+2020-04-15 18:17:59 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:17:59 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.WialonProtocolDecoderTest#testDecode |
+2020-04-15 18:18:00 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:18:00 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.V680ProtocolDecoderTest#testDecode |
+2020-04-15 18:18:00 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:18:00 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.MxtProtocolDecoderTest#testDecode |
+2020-04-15 18:18:01 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:18:01 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Gt06ProtocolEncoderTest#testEncode |
+2020-04-15 18:18:01 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------/
+2020-04-15 18:18:01 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.HaicomProtocolDecoderTest#testDecode |
+2020-04-15 18:18:02 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:18:02 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.M2mProtocolDecoderTest#testDecode |
+2020-04-15 18:18:02 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:18:02 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.UlbotechProtocolDecoderTest#testDecode |
+2020-04-15 18:18:03 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:18:03 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.EasyTrackProtocolDecoderTest#testDecode |
+2020-04-15 18:18:04 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:18:04 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.CalAmpProtocolDecoderTest#testDecode |
+2020-04-15 18:18:04 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------------/
+2020-04-15 18:18:04 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.BlackKiteProtocolDecoderTest#testDecode |
+2020-04-15 18:18:05 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:18:05 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GatorProtocolDecoderTest#testDecode |
+2020-04-15 18:18:05 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:18:05 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.VisiontekProtocolDecoderTest#testDecode |
+2020-04-15 18:18:06 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:18:06 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.BoxProtocolDecoderTest#testDecode |
+2020-04-15 18:18:07 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:18:07 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.FlextrackProtocolDecoderTest#testDecode |
+2020-04-15 18:18:07 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:18:07 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.GpsMarkerProtocolDecoderTest#testDecode |
+2020-04-15 18:18:08 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:18:08 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.Ev603ProtocolDecoderTest#testDecode |
+2020-04-15 18:18:09 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------/
+2020-04-15 18:18:09 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.protocol.H02ProtocolDecoderTest#testDecode |
+2020-04-15 18:18:09 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:18:09 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.DetectorHandlerTest#testCheckPipeline |
+2020-04-15 18:18:09 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------/
+2020-04-15 18:18:09 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.model.MiscFormatterTest#testToString |
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------/
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.DistanceCalculatorTest#testDistance |
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------/
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.LogTest#testLog |
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------/
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.CrcTest#testLuhnChecksum |
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------/
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.BitUtilTest#testCheck |
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------/
+2020-04-15 18:18:10 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.BitUtilTest#testRange |
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <--------------------------------------------/
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.PatternUtilTest#testCheckPattern |
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-------------------------------------------------------/
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.ChannelBufferToolsTest#convertHexByteArray |
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <-----------------------------------------------------------------/
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.ChannelBufferToolsTest#testReadHexInteger |
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------------------/
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.ChannelBufferToolsTest#convertHexStringTest |
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <------------------------------------------------------------------/
+2020-04-15 18:18:11 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.helper.ChannelBufferToolsTest#testReadHexString |
+2020-04-15 18:18:12 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------/
+2020-04-15 18:18:12 INFO  TestExecutionProcessLauncher:59 - [Running] org.traccar.geocode.AddressFormatTest#testFormat |
+2020-04-15 18:18:12 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <----------------------------------------------------/
+2020-04-15 18:18:12 DEBUG JRelifixEngine:203 - ==> [VALIDATION] WHOLE TS: ✓
+2020-04-15 18:18:12 DEBUG JRelifixEngine:205 - ==========================================
+2020-04-15 18:18:12 DEBUG JRelifixEngine:206 - FOUND A REPAIR (See below patch):
+2020-04-15 18:18:12 DEBUG JRelifixEngine:216 - ------------------------------------------
+--- src/org/traccar/protocol/AquilaProtocolDecoder.java
++++ src/org/traccar/protocol/AquilaProtocolDecoder.java
+@@ -124,7 +124,7 @@
+                 (Integer.parseInt(parser.group(index++)) << 1) +
+                 (Integer.parseInt(parser.group(index++)));
+
+-        if (course > 0) {
++        if (!(course > 0)) {
+             position.setCourse((course - 1) * 45);
+         }
+
+
+2020-04-15 18:18:12 DEBUG JRelifixEngine:219 - ==========================================
+2020-04-15 18:18:12 INFO  JRelifixMain$:111 - Done Repair!

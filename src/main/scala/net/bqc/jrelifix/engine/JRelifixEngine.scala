@@ -222,7 +222,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
               else if (secondaryDoc == null) { // introduce new regression, allow maximum 2 operators to be applied
                 // start using current variant as a faulty program to be repaired
                 // this secondary document will be used to be applied for secondary operators
-                secondaryDoc = projectData.sourceFileContents.get(faultFile).generateModifiedDocument()
+                /*secondaryDoc = projectData.sourceFileContents.get(faultFile).generateModifiedDocument()
                 // update new location, new java node for fault statement
                 val astNode = ASTUtils.searchNodeByLineNumber(secondaryDoc.cu, currentFault.getLine())
                 if (astNode != null) { // new faulty node is able to be identified in new variant
@@ -233,8 +233,9 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
                   currentFault.setJavaNode(astNode)
                   // construct secondary operator set
                   operators = projectData.randomizer.shuffle(SECONDARY_OPERATORS)
+                  logger.debug("[OPERATOR] Secondary candidates: " + operators)
                 }
-                else secondaryDoc = null // could not identify new fault statement, ignore
+                else secondaryDoc = null // could not identify new fault statement, ignore*/
               }
             }
             else {
