@@ -4,6 +4,7 @@ import java.io.File
 
 import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, ICompiler}
 import net.bqc.jrelifix.context.mutation.MutationType
+import net.bqc.jrelifix.context.validation.TestCase
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
@@ -200,6 +201,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
             if (reducedTSValidation._1) {
               val wholeTSValidation = this.context.testValidator.validateAllTestCases()
+//              val wholeTSValidation = (true, ArrayBuffer[TestCase]())
               logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
               if (wholeTSValidation._1) {
                 logger.debug("==========================================")
