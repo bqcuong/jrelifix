@@ -93,7 +93,7 @@ case class ProjectData() {
     val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
     if (srcClassTemp.exists()) FileUtils.deleteDirectory(srcClassTemp)
     FileUtils.copyDirectory(srcClass, srcClassTemp)
-    this.configData.sourceClassFolder = srcClassTemp.getAbsolutePath
+    this.configData.sourceClassFolder = srcClassTemp.getCanonicalPath
   }
 
   /**

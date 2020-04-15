@@ -89,10 +89,10 @@ object OptParser {
   def parseOpts(args: Array[String]): Config = {
     builder.parse(args, Config()) match {
       case Some(config) =>
-        config.sourceFolder = config.projFolder + File.separator + config.sourceFolder
-        config.testFolder = config.projFolder + File.separator + config.testFolder
-        config.sourceClassFolder = config.projFolder + File.separator + config.sourceClassFolder
-        config.testClassFolder = config.projFolder + File.separator + config.testClassFolder
+        config.sourceFolder = new File(config.projFolder + File.separator + config.sourceFolder).getCanonicalPath
+        config.testFolder = new File(config.projFolder + File.separator + config.testFolder).getCanonicalPath
+        config.sourceClassFolder = new File(config.projFolder + File.separator + config.sourceClassFolder).getCanonicalPath
+        config.testClassFolder = new File(config.projFolder + File.separator + config.testClassFolder).getCanonicalPath
         config
       case _ => throw new RuntimeException("Parsing arguments error!")
       // arguments are bad, error message will have been displayed

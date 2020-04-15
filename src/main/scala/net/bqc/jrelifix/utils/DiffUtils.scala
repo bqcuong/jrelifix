@@ -108,7 +108,7 @@ object DiffUtils {
       val p_stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream))
 
       try { // Set up the timezone
-        val command = "diff -w -b -u " + " --label=" + filePathLabel + " --label=" + filePathLabel + " " + original.getAbsolutePath + " " + current.getAbsolutePath
+        val command = "diff -w -b -u " + " --label=" + filePathLabel + " --label=" + filePathLabel + " " + original.getCanonicalPath + " " + current.getCanonicalPath
 //        logger.debug("diff command : " + command)
         p_stdin.write(command)
         p_stdin.newLine()

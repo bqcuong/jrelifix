@@ -18,7 +18,7 @@ case class TestCaseFilter(ignoredTestCases: Seq[String]) {
   def acceptClass(clazz: Class[_]): Boolean = {
     if (ignoredTestCases != null) {
       for (ignoredTC <- this.ignoredTestCases) {
-        if (clazz.getCanonicalName.contains(ignoredTC)) return false
+        if (ignoredTC.contains(clazz.getCanonicalName)) return false
       }
     }
 

@@ -4,7 +4,7 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{ExactlySnippetCondition, SameCodeSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.{ChildSnippetCondition, ExactlySnippetCondition, SameCodeSnippetCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, Block}
@@ -71,48 +71,35 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
     if (isParameterizable) assert(paramSeed != null)
     var applied = false
     val faultLineNumber = faultStatement.getLine()
-
-//    val faultFile = faultStatement.getFileName()
-//    val cs = Searcher.searchChangeSnippets(
-//      projectData.changedSourcesMap(faultFile),
-//      ExactlySnippetCondition(faultStatement))
-//
-//    if (cs.size == 1) {
-//      applied = revertStatementAsWhole(faultStatement, cs(0))
-//    }
+    val faultFile = faultStatement.getFileName()
+    val faultCode = faultStatement.getJavaNode().toString
 
     var changedSnippet = DiffUtils.searchChangeSnippetOutside(projectData.changedSourcesMap, faultStatement)
-    if (changedSnippet != null && changedSnippet.changeType != ChangeType.ADDED && changedSnippet.changeType != ChangeType.REMOVED) {
-      val prevCode = changedSnippet.srcSource
-      val currCode = changedSnippet.dstSource
-      assert(prevCode != null)
-      assert(currCode != null)
+    if (changedSnippet != null) {
       if (changedSnippet.changeType == ChangeType.MODIFIED) {
-        val currASTNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
-        ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
-        applied = true
+        applied = revertModifiedCode(changedSnippet)
       }
-      else if (changedSnippet.changeType == ChangeType.MOVED && currCode.getBeginLine() == faultLineNumber) {
-        val prevLine = prevCode.getBeginLine()
-        val currentNodeAtPrevLine = ASTUtils.searchNodeByLineNumber(document.cu, prevLine)
-        if (currentNodeAtPrevLine == null) return false
-        val currentNode = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
-
-        // Step 1: Remove the current block of code
-        ASTUtils.removeNode(astRewrite, currentNode)
-
-        // Step 2: Put it again at the previous line number
-        if (prevLine < currCode.getBeginLine()) { // move down
-          ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode(), insertAfter = false)
-        }
-        else { // move up
-          ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode())
-        }
-
+      else if (changedSnippet.changeType == ChangeType.MOVED) {
+        applied = revertMovedStatement(changedSnippet)
+      }
+      else if (changedSnippet.changeType == ChangeType.ADDED) {
+        ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), this.astRewrite.getAST.createInstance(classOf[Block]))
         applied = true
       }
     }
-    else {
+
+    if (!applied) {
+      val insideCSs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultCode))
+      // revert all or partial the inside changes??
+      if (insideCSs.nonEmpty) {
+        val cs = insideCSs(0)
+        if (cs.changeType == ChangeType.MODIFIED) {
+          applied = revertModifiedCode(cs)
+        }
+      }
+    }
+
+    if (!applied) {
       changedSnippet = DiffUtils.searchChangeSnippetOutside(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
       // TODO: Support removed minor expression in a statement
       if (changedSnippet != null && changedSnippet.changeType == ChangeType.REMOVED) {
@@ -137,6 +124,42 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
       true
     }
     else false
+  }
+
+  private def revertMovedStatement(cs: ChangeSnippet): Boolean = {
+    val prevCode = cs.srcSource
+    val currCode = cs.dstSource
+    assert(prevCode != null)
+    assert(currCode != null)
+    if (currCode.getBeginLine() != faultStatement.getLine()) return false
+    val prevLine = prevCode.getBeginLine()
+    val currentNodeAtPrevLine = ASTUtils.searchNodeByLineNumber(document.cu, prevLine)
+    if (currentNodeAtPrevLine == null) return false
+    val currentNode = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
+    assert(currentNode != null)
+
+    // Step 1: Remove the current block of code
+    ASTUtils.removeNode(astRewrite, currentNode)
+
+    // Step 2: Put it again at the previous line number
+    if (prevLine < currCode.getBeginLine()) { // move down
+      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode(), insertAfter = false)
+    }
+    else { // move up
+      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode())
+    }
+
+    true
+  }
+
+  private def revertModifiedCode(cs: ChangeSnippet): Boolean = {
+    val prevCode = cs.srcSource
+    val currCode = cs.dstSource
+    assert(prevCode != null)
+    assert(currCode != null)
+    val currASTNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
+    ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
+    true
   }
 
   override def applicable(): Boolean = ???

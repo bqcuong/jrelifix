@@ -55,7 +55,7 @@ case class Config(
       if (cpFile.exists() && cpFile.isDirectory) { // if the given cp is a folder, try to collect all jars inside it
         val jars: java.util.List[File] = FileFolderUtils.walk(cp, ".jar", new java.util.ArrayList[File])
         import scala.jdk.CollectionConverters._
-        if (!jars.isEmpty) realCps.addAll(jars.asScala.map(_.getAbsolutePath))
+        if (!jars.isEmpty) realCps.addAll(jars.asScala.map(_.getCanonicalPath))
         realCps.addOne(cp)
       }
     }

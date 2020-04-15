@@ -17,7 +17,7 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
 
     import scala.jdk.CollectionConverters._
     val sourceFilePaths = files.asScala.collect {
-      case f: File if f.isFile => f.getAbsolutePath
+      case f: File if f.isFile => f.getCanonicalPath
     }
 
     val astParser = ASTParser.newParser(API_LEVEL)

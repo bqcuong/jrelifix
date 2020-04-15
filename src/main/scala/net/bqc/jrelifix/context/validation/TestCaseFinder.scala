@@ -7,6 +7,7 @@ import java.util.concurrent._
 
 import br.usp.each.saeg.jaguar.core.utils.FileUtils
 import org.junit.Test
+import org.junit.runner.RunWith
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -16,12 +17,20 @@ case class TestCaseFinder(classpath: Array[URL], testFolder: String, testFilter:
     val testCases = ArrayBuffer[TestCase]()
 
     for (c <- classes) {
-      for (method <- c.getMethods) {
-        if (method.getAnnotation(classOf[Test]) != null) {
-          val methodName = method.getName
-          val tc = new TestCase(c.getCanonicalName, methodName)
-          if (testFilter.acceptTestCase(tc, c)) {
-            testCases += tc
+      // Treat the whole class as a single testcase if it is annotated with @RunWith
+      if (c.getAnnotation(classOf[RunWith]) != null) {
+        val tc = new TestCase(c.getCanonicalName)
+        testCases += tc
+      }
+      else {
+        // find testcase by traversal all the method inside
+        for (method <- c.getMethods) {
+          if (method.getAnnotation(classOf[Test]) != null) {
+            val methodName = method.getName
+            val tc = new TestCase(c.getCanonicalName, methodName)
+            if (testFilter.acceptTestCase(tc, c)) {
+              testCases += tc
+            }
           }
         }
       }
@@ -63,7 +72,7 @@ class CustomClassLoaderThreadFactory(val classLoader: ClassLoader) extends Threa
 
 object TestCaseFinderUtils {
   def findTestClasses(testDir: File, testFilter: TestCaseFilter): Array[Class[_]] = {
-    val  testClassFiles: util.List[File] = FileUtils.findFilesEndingWith(testDir, Array[String]("Test.class"))
+    val  testClassFiles: util.List[File] = FileUtils.findFilesEndingWith(testDir, Array[String]("Test.class", "TestCase.class", "Tests.class"))
     val classes: util.List[Class[_]] = convertToClasses(testClassFiles, testDir, testFilter)
     val classesArr = new Array[Class[_]](classes.size)
     for(i <- 0 until classes.size()) {
