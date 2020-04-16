@@ -19,6 +19,10 @@ object OptParser {
       .action((cp, c) => c.copy(javaHome = cp))
       .text("Java Home Folder")
 
+    opt[String]( "testDriver")
+      .action((cp, c) => c.copy(testDriver = cp.toLowerCase()))
+      .text("Test Driver. e.g., JUnit, TestNG. Default: JUnit")
+
     opt[String]( "sourceFolder")
       .action((source, c) => c.copy(sourceFolder = source))
       .text("Folder of source code, e.g., blah/src")

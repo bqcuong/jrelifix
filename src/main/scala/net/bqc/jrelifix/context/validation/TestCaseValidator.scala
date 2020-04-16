@@ -1,7 +1,7 @@
 package net.bqc.jrelifix.context.validation
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.context.validation.executor.{JUnitTestExecutor, TestExecutionProcessLauncher}
+import net.bqc.jrelifix.context.validation.executor.{JUnitTestExecutor, TestExecutionProcessLauncher, TestNGExecutor}
 import net.bqc.jrelifix.utils.ClassPathUtils
 import org.apache.log4j.Logger
 
@@ -90,11 +90,12 @@ class TestCaseValidator(projectData: ProjectData) {
 
   def validateTestCase(testCase: TestCase, projectFolder: String, classpath: String) : Boolean = {
     val process = new TestExecutionProcessLauncher()
+    val testDriver = if ("testng".equals(projectData.config().testDriver)) classOf[TestNGExecutor] else classOf[JUnitTestExecutor]
     val testResult = process.execute(
       projectFolder,
       classpath,
       testCase.getFullName,
-      classOf[JUnitTestExecutor],
+      testDriver,
       projectData.config().javaHome,
       projectData.config().testTimeout,
       Array[String]()

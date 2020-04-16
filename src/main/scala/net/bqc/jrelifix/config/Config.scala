@@ -29,6 +29,7 @@ case class Config(
                    topNFaults: Int = 100,
 
                    javaHome: String = null,
+                   testDriver: String = null,
 
                    iterationPeriod: Int = 1, // Specific for JRelifix Engine
                    bugInducingCommit: String = "HEAD",

@@ -110,7 +110,7 @@ public class TestExecutionProcessLauncher {
                 e.printStackTrace();
             }
         }
-        else if (p.exitValue() == JUnitTestExecutor.NOT_FOUND) tr.ignoredTest.add(testToExecute);
+        else if (p.exitValue() == JUnitTestExecutor.SKIP) tr.ignoredTest.add(testToExecute);
         return tr;
     }
 
