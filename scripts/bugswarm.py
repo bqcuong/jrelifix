@@ -6,16 +6,20 @@ from shell_wrapper import ShellWrapper
 
 DOCKER_HUB_REPO="bugswarm/images"
 SCRIPT_DEFAULT = '/bin/bash'
-RUN_VALIDATION = '/home/travis/run_failed_clone.sh'
+RUN_VALIDATION_ALL = '/home/travis/run_all.sh'
 RUN_VALIDATION_REDUCED = '/home/travis/run_reduced.sh'
 RUN_COMPILATION = '/home/travis/compile.sh'
 RUN_VALIDATION_ORIGINAL = '/usr/local/bin/run_failed.sh'
+
+ORIGINAL_BUILD_FOLDER_NAME = 'failed'
+CLONED_BUILD_FOLDER_NAME = 'failed_clone'
+ORIGINAL_BUILD_FOLDER_PATH = '/home/travis/build/{0}'.format(ORIGINAL_BUILD_FOLDER_NAME)
 
 HOST_M2 = '~/.m2'
 CONTAINER_M2 = '/home/travis/.m2'
 
 HOST_SOURCE_CODE = '~/bugswarm/code'
-CONTAINER_SOURCE_CODE = '/home/travis/build/failed_clone'
+CONTAINER_SOURCE_CODE = '/home/travis/build/{0}'.format(CLONED_BUILD_FOLDER_NAME)
 
 
 def docker_run_container(image_tag, use_m2_cache, binding_source_code, interactive):
@@ -75,14 +79,14 @@ def docker_run_container(image_tag, use_m2_cache, binding_source_code, interacti
 
 
 def _docker_clone_validation_script(container_name):
-    res = _docker_execute_script(container_name, 'cp /usr/local/bin/run_failed.sh /home/travis/run_failed_clone.sh')
+    res = _docker_execute_script(container_name, 'cp {0} {1}'.format(RUN_VALIDATION_ORIGINAL, RUN_VALIDATION_ALL))
     if res:
-        res = _docker_execute_script(container_name, "sed -i 's/failed\//failed_clone\//g' /home/travis/run_failed_clone.sh")
+        res = _docker_execute_script(container_name, "sed -i 's/{0}\//{1}\//g' {2}".format(ORIGINAL_BUILD_FOLDER_NAME, CLONED_BUILD_FOLDER_NAME, RUN_VALIDATION_ALL))
     return res
 
 
 def docker_clone_code(container_name):
-    res = _docker_execute_script(container_name, 'rm -rf /home/travis/build/failed_clone/*;cp -r /home/travis/build/failed/* /home/travis/build/failed_clone')
+    res = _docker_execute_script(container_name, 'rm -rf {0}/*;cp -r {1}/* {0}'.format(CONTAINER_SOURCE_CODE, ORIGINAL_BUILD_FOLDER_PATH))
     return res
 
 
@@ -104,7 +108,7 @@ def docker_run_validation(reduced_ts, container_name):
     if reduced_ts:
         res = _docker_execute_script(container_name, RUN_VALIDATION_REDUCED)
     else:
-        res = _docker_execute_script(container_name, RUN_VALIDATION)
+        res = _docker_execute_script(container_name, RUN_VALIDATION_ALL)
     return res
 
 

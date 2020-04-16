@@ -188,10 +188,17 @@ object ASTUtils {
   }
 
   def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
-    val c1 = toCheck.getBeginLine() >= (range.beginLine - lineDistance) && toCheck.getEndLine() <= (range.endLine + lineDistance)
-    val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
-      (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
-    c1 && c2
+    if (lineDistance == 0) {
+      val c1 = toCheck.getBeginLine() >= range.beginLine && toCheck.getEndLine() <= range.endLine
+      val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
+        (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
+      c1 && c2
+    }
+    else {
+      val c1 = Math.abs(toCheck.getBeginLine() - range.endLine) <= lineDistance
+      val c2 = Math.abs(range.beginLine - toCheck.getEndLine()) <= lineDistance
+      c1 && c2
+    }
   }
 
   /**

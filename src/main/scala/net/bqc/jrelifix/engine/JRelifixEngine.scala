@@ -101,7 +101,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
   private def filterFault(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
     val filteredList = ArrayBuffer[Identifier]()
     for (f <- faults) {
-      val isChanged = DiffUtils.isChanged(projectData.changedSourcesMap, f)
+      val isChanged = DiffUtils.isChanged(projectData.changedSourcesMap, f, 2)
       val isStmt = f.getJavaNode().isInstanceOf[Statement]
       if (isChanged && isStmt) {
         filteredList.addOne(f)

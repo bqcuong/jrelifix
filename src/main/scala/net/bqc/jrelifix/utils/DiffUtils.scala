@@ -84,8 +84,8 @@ object DiffUtils {
   }
 
   def isChanged(changedSourcesMap: mutable.HashMap[String, ChangedFile],
-                toCheck: Identifier): Boolean = {
-    searchChangeSnippetOutside(changedSourcesMap, toCheck) != null ||
+                toCheck: Identifier, distance: Int = 0): Boolean = {
+    searchChangeSnippetOutside(changedSourcesMap, toCheck, distance) != null ||
     searchChangeSnippets(changedSourcesMap, InsideSnippetCondition(toCheck.toSourceRange()),
       toCheck.getFileName()).nonEmpty
   }
