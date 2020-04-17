@@ -3,7 +3,7 @@ package net.bqc.jrelifix.context.mutation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{NotBelongSeedCondition, NotEqualSeedCondition, NotEqualingConSeedCondition}
+import net.bqc.jrelifix.search.seed.NotEqualSeedCondition
 import net.bqc.jrelifix.utils.ASTUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{IfStatement, Statement, VariableDeclarationStatement}

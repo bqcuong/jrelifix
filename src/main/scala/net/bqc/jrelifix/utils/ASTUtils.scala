@@ -12,8 +12,6 @@ import org.eclipse.jface.text.Document
 
 import scala.collection.mutable.ArrayBuffer
 
-
-
 object ASTUtils {
   private val logger: Logger = Logger.getLogger(ASTUtils.getClass)
 
@@ -187,17 +185,25 @@ object ASTUtils {
     }
   }
 
-  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
+  def isInRangeForId(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
+    isInRange(toCheck.toSourceRange(), range, lineDistance)
+  }
+
+  def isInRange(toCheck: SourceRange, range: SourceRange, lineDistance: Int = 0, overlapped: Boolean = false) : Boolean = {
     if (lineDistance == 0) {
-      val c1 = toCheck.getBeginLine() >= range.beginLine && toCheck.getEndLine() <= range.endLine
-      val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
-        (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
+      val c1 = toCheck.beginLine >= range.beginLine && toCheck.endLine <= range.endLine
+      val c2 = toCheck.beginColumn == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
+        (range.beginLine == range.endLine && toCheck.beginColumn >= range.beginColumn && toCheck.endColumn <= range.endColumn)
       c1 && c2
     }
+    else if (overlapped) {
+      val c1 = Math.abs(toCheck.beginLine - range.beginLine) <= lineDistance
+      c1
+    }
     else {
-      val c1 = Math.abs(toCheck.getBeginLine() - range.endLine) <= lineDistance
-      val c2 = Math.abs(range.beginLine - toCheck.getEndLine()) <= lineDistance
-      c1 && c2
+      val c1 = Math.abs(toCheck.beginLine - range.endLine) <= lineDistance
+      val c2 = Math.abs(range.beginLine - toCheck.endLine) <= lineDistance
+      c1 || c2
     }
   }
 

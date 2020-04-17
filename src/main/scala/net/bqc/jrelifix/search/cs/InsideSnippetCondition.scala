@@ -1,13 +1,13 @@
-package net.bqc.jrelifix.search
+package net.bqc.jrelifix.search.cs
 
-import net.bqc.jrelifix.context.diff.{ChangeType, ChangeSnippet, SourceRange}
+import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType, SourceRange}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
 
 /**
  * Condition for a valid added snippet
  */
-case class ExactlySnippetCondition(to_check: Identifier)
+case class InsideSnippetCondition(insideSourceRange: SourceRange)
   extends IChangeSnippetCondition {
 
   override def satisfied(cs: ChangeSnippet): Boolean = {
@@ -18,6 +18,6 @@ case class ExactlySnippetCondition(to_check: Identifier)
       source = cs.srcSource
 
     assert(source != null)
-    source.equals(to_check)
+    ASTUtils.isInRangeForId(source, insideSourceRange)
   }
 }

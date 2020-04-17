@@ -1,8 +1,10 @@
-package net.bqc.jrelifix.search
+package net.bqc.jrelifix.search.cs
+
 import net.bqc.jrelifix.context.diff.ChangeSnippet
 
 /**
  * Check if a changed snippet is a child of the given parent code
+ *
  * @param parentCode
  */
 case class ChildSnippetCondition(parentCode: String) extends IChangeSnippetCondition {

@@ -8,9 +8,9 @@ import org.eclipse.text.edits.{TextEdit, UndoEdit}
 
 abstract class Mutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite) {
   /**
-   * Line Margin for Fault Localization (±2)
+   * Line Margin for Fault Localization (±3)
    */
-  protected val MAX_LINE_DISTANCE: Int = 1
+  protected val MAX_LINE_DISTANCE: Int = 3
   /**
    * If no document is provided, use the original document in sourceFileContents map
    */

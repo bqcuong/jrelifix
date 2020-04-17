@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.search
+package net.bqc.jrelifix.search.cs
 
 import net.bqc.jrelifix.context.diff.ChangeSnippet
 

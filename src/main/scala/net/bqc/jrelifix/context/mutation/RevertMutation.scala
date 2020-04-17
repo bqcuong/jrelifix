@@ -4,7 +4,8 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{ChildSnippetCondition, ExactlySnippetCondition, SameCodeSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.cs.{ChildSnippetCondition, CurrentOutsideSnippetCondition, IChangeSnippetCondition, RemovedOutsideSnippetCondition}
+import net.bqc.jrelifix.search.Searcher
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, Block, Statement}
@@ -74,22 +75,72 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
     val faultFile = faultStatement.getFileName()
     val faultCode = faultStatement.getJavaNode().toString
 
-    var changedSnippet = DiffUtils.searchChangeSnippetOutside(projectData.changedSourcesMap, faultStatement)
-    if (changedSnippet != null) {
-      if (changedSnippet.changeType == ChangeType.MODIFIED) {
-        applied = revertModifiedCode(changedSnippet)
+    // Revert change snippets at statement level
+    val css = Searcher.searchChangeSnippets(
+      projectData.changedSourcesMap(faultFile),
+      CurrentOutsideSnippetCondition(faultStatement.toSourceRange()),
+      onlyRoot = true)
+
+    if (css.nonEmpty) {
+      val changeSnippet = css(0)
+      if (changeSnippet.changeType == ChangeType.MODIFIED) {
+        applied = revertModifiedCode(changeSnippet)
       }
-      else if (changedSnippet.changeType == ChangeType.MOVED) {
-        applied = revertMovedStatement(changedSnippet)
+      else if (changeSnippet.changeType == ChangeType.MOVED) {
+        applied = revertMovedStatement(changeSnippet)
       }
-      else if (changedSnippet.changeType == ChangeType.ADDED) {
-        ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), this.astRewrite.getAST.createInstance(classOf[Block]))
+      else if (changeSnippet.changeType == ChangeType.ADDED) {
+        val removedCss = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile),
+          RemovedOutsideSnippetCondition(faultStatement.toSourceRange(), changeSnippet.mappingParentId,
+            MAX_LINE_DISTANCE, overlapped = true),
+          onlyRoot = true)
+
+        if (removedCss.nonEmpty) {
+          // check if there were any removed snippets near the added faulty stmt
+          // it is possible that: removed old stmt -> added new stmt => we need revert this big change action
+          val changeSnippet = removedCss(0)
+          val prevCode = changeSnippet.srcSource
+          assert(prevCode != null)
+          ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
+          logger.debug("REVERT: Replace added statement with nearby removed stmt: %s\n-->\n%s"
+            .format(faultStatement.getJavaNode().toString.trim, prevCode.getJavaNode().toString.trim))
+        }
+        else {
+          ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), this.astRewrite.getAST.createInstance(classOf[Block]))
+          logger.debug("REVERT: Remove added statement: " + faultStatement.getJavaNode().toString.trim)
+        }
         applied = true
       }
     }
 
+    if (!applied) { // only removed stmt
+      val condition = RemovedOutsideSnippetCondition(
+        faultStatement.toSourceRange(), null, MAX_LINE_DISTANCE, overlapped = false)
+      val css = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), condition, onlyRoot = true)
+
+      if (css.nonEmpty) {
+        val changeSnippet = css(0)
+        val prevCode = changeSnippet.srcSource
+        assert(prevCode != null)
+
+        if (changeSnippet.srcRange.beginLine > faultStatement.getBeginLine()) {
+          // insert after fault statement
+          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
+        }
+        else {
+          // insert before fault statement
+          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
+        }
+
+        logger.debug("REVERT: Add removed statement: " + prevCode.getJavaNode().toString.trim)
+        applied = true
+      }
+    }
+
+
+    // Revert change snippets at expression level
     if (!applied) {
-      val insideCSs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultCode))
+      val insideCSs = Searcher.searchChangeSnippets2(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultCode))
       // revert all or partial the inside changes?? -> Try to revert whole stmt at first
       if (insideCSs.nonEmpty) {
         val armCss = insideCSs.filter(
@@ -112,26 +163,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
           }
         }
 
-        // TODO: support for remove addedly expression here
-      }
-    }
-
-    if (!applied) {
-      changedSnippet = DiffUtils.searchChangeSnippetOutside(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
-      if (changedSnippet != null && changedSnippet.changeType == ChangeType.REMOVED) {
-        val prevCode = changedSnippet.srcSource
-        assert(prevCode != null)
-
-        if (changedSnippet.srcRange.beginLine > faultStatement.getBeginLine()) {
-          // insert after fault statement
-          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
-        }
-        else {
-          // insert before fault statement
-          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
-        }
-        logger.debug("REVERT: Add removedly statement: " + prevCode.getJavaNode().toString.trim)
-        applied = true
+        // TODO: support for remove added expression here
       }
     }
 

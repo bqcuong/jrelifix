@@ -4,7 +4,8 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.diff.ChangeType
 import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier}
 import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, Seedy, StatementSeedIdentifier}
-import net.bqc.jrelifix.search.{ChildSnippetCondition, SameCodeSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.cs.{ChildSnippetCondition, SameCodeSnippetCondition}
+import net.bqc.jrelifix.search.Searcher
 import net.bqc.jrelifix.utils.ASTUtils
 import net.bqc.jrelifix.utils.ASTUtils.{getNodePosition, searchNodeByIdentifier}
 import org.apache.log4j.Logger

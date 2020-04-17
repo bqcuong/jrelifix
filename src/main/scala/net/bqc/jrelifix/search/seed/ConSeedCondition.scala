@@ -1,4 +1,4 @@
-package net.bqc.jrelifix.search
+package net.bqc.jrelifix.search.seed
 
 import net.bqc.jrelifix.identifier.seed.{ExpressionSeedIdentifier, Seedy}
 

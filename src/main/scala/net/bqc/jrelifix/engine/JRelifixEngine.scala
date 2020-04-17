@@ -9,7 +9,8 @@ import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
 import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier, Seedy}
-import net.bqc.jrelifix.search.{ConSeedForEngineCondition, ISeedCondition, Searcher, StmtSeedForEngineCondition}
+import net.bqc.jrelifix.search.seed.{ConSeedForEngineCondition, ISeedCondition, StmtSeedForEngineCondition}
+import net.bqc.jrelifix.search.Searcher
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.Statement

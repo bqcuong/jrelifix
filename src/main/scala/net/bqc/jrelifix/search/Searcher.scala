@@ -3,6 +3,8 @@ package net.bqc.jrelifix.search
 import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType, ChangedFile}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.seed.Seedy
+import net.bqc.jrelifix.search.cs.IChangeSnippetCondition
+import net.bqc.jrelifix.search.seed.ISeedCondition
 import org.apache.log4j.Logger
 
 import scala.collection.mutable
@@ -50,8 +52,14 @@ object Searcher {
     result
   }
 
-  def searchChangeSnippets(changedFile: ChangedFile, condition: IChangeSnippetCondition)
-    : ArrayBuffer[ChangeSnippet] = {
+  /**
+   * Find more removed change snippets which has the same mapping parent as found added change snippets
+   * @param changedFile
+   * @param condition
+   * @return
+   */
+  def searchChangeSnippets2(changedFile: ChangedFile, condition: IChangeSnippetCondition)
+  : ArrayBuffer[ChangeSnippet] = {
     val result = ArrayBuffer[ChangeSnippet]()
     val css = changedFile.allCS
     val parentMappingIds = mutable.HashSet[String]() // very complex meaning
@@ -76,6 +84,18 @@ object Searcher {
       }
     }
 
+    result
+  }
+
+  def searchChangeSnippets(changedFile: ChangedFile, condition: IChangeSnippetCondition, onlyRoot: Boolean = false)
+    : ArrayBuffer[ChangeSnippet] = {
+    val result = ArrayBuffer[ChangeSnippet]()
+    val css = if (onlyRoot) changedFile.rootCS else changedFile.allCS
+    for (cs <- css) {
+      if (condition.satisfied(cs)) {
+        result.addOne(cs)
+      }
+    }
     result
   }
 }

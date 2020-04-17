@@ -1,4 +1,5 @@
-package net.bqc.jrelifix.search
+package net.bqc.jrelifix.search.seed
+
 import net.bqc.jrelifix.identifier.seed.{AssignmentSeedIdentifier, ExpressionSeedIdentifier, MethodInvocationSeedIdentifier, Seedy}
 
 case class ConSeedForEngineCondition() extends ISeedCondition {

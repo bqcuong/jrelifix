@@ -4,9 +4,9 @@ import java.io._
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-import net.bqc.jrelifix.context.diff.{ChangedFile, ChangeSnippet, ChangeType}
+import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType, ChangedFile}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{InsideSnippetCondition, IChangeSnippetCondition}
+import net.bqc.jrelifix.search.cs.{IChangeSnippetCondition, InsideSnippetCondition}
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 
@@ -69,13 +69,13 @@ object DiffUtils {
     for (cs <- css) {
       cs.changeType match {
         case ChangeType.ADDED =>
-          changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
+          changed = ASTUtils.isInRangeForId(toCheck, cs.dstRange, distance)
         case ChangeType.REMOVED =>
-          changed = ASTUtils.isInRange(toCheck, cs.srcRange, distance)
+          changed = ASTUtils.isInRangeForId(toCheck, cs.srcRange, distance)
         case ChangeType.MODIFIED =>
-          changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
+          changed = ASTUtils.isInRangeForId(toCheck, cs.dstRange, distance)
         case ChangeType.MOVED =>
-          changed = ASTUtils.isInRange(toCheck, cs.dstRange, distance)
+          changed = ASTUtils.isInRangeForId(toCheck, cs.dstRange, distance)
       }
 
       if (changed) return cs

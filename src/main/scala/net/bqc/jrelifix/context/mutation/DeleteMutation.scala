@@ -3,7 +3,8 @@ package net.bqc.jrelifix.context.mutation
 import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{AddedSnippetCondition, Searcher}
+import net.bqc.jrelifix.search.Searcher
+import net.bqc.jrelifix.search.cs.AddedSnippetCondition
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.eclipse.jdt.core.dom.{ASTNode, Block}
 
