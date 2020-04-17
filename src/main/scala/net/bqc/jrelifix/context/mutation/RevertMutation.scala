@@ -159,10 +159,10 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
 
     // Step 2: Put it again at the previous line number
     if (prevLine < currCode.getBeginLine()) { // move down
-      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode(), insertAfter = false)
+      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, prevCode.getJavaNode(), insertAfter = false)
     }
     else { // move up
-      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, currCode.getJavaNode())
+      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, prevCode.getJavaNode())
     }
 
     true

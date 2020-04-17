@@ -201,8 +201,8 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
             val reducedTSValidation = this.context.testValidator.validateReducedTestCases()
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
             if (reducedTSValidation._1) {
-              val wholeTSValidation = this.context.testValidator.validateAllTestCases()
-//              val wholeTSValidation = (true, ArrayBuffer[TestCase]())
+//              val wholeTSValidation = this.context.testValidator.validateAllTestCases()
+              val wholeTSValidation = (true, ArrayBuffer[TestCase]())
               logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
               if (wholeTSValidation._1) {
                 logger.debug("==========================================")
