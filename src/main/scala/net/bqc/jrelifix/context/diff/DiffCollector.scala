@@ -120,7 +120,9 @@ case class DiffCollector(projectData: ProjectData) {
         changeType == ChangeType.MOVED && srcRange != null && dstRange != null && !srcRange.equals(dstRange) // this is to prevent a wrong move action detect of GumTree
 
       if (validChangeSnippet) {
-        val cs = ChangeSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType)
+        val mappingParent = op.getAction.getNode.getParent
+        val mappingParentId = if (mappingParent != null) mappingParent.toShortString else null
+        val cs = ChangeSnippet(srcRange, dstRange, srcCodeIdentifier, dstCodeIdentifier, changeType, mappingParentId)
         result.addOne(cs)
       }
     }

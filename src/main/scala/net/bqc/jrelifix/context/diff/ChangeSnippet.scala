@@ -19,6 +19,7 @@ case class ChangeSnippet(srcRange: SourceRange,
                          dstRange: SourceRange,
                          srcSource: Identifier,
                          dstSource: Identifier,
-                         changeType: ChangeType.Value) {
+                         changeType: ChangeType.Value,
+                         mappingParentId: String) {
 
 }

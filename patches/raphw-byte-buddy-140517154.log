@@ -1,0 +1,85 @@
+Executing latest Jacoco+Badua (no empty probes): dataflow Coverage -> false
+2020-04-17 16:17:18 DEBUG JRelifixMain$:32 - classpath: /Users/cuong/bugswarm/code/raphw/byte-buddy/byte-buddy-dep/target/classes_temp:/Users/cuong/bugswarm/code/raphw/byte-buddy/byte-buddy-dep/target/test-classes:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/junit-4.12.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/asm-util-5.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/objenesis-2.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/byte-buddy-agent-1.4.6-SNAPSHOT.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/mockito-core-1.10.19.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/annotations-3.0.1u2.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/asm-commons-5.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/asm-5.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/hamcrest-core-1.3.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/asm-tree-5.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/asm-analysis-5.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/jcip-annotations-1.0.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs/jsr305-3.0.1.jar:/Users/cuong/bugswarm/raphw-byte-buddy-140517154-libs
+2020-04-17 16:17:18 INFO  JRelifixMain$:34 - Parsing AST ...
+2020-04-17 16:17:26 INFO  JRelifixMain$:39 - Done parsing AST!
+2020-04-17 16:17:26 INFO  JRelifixMain$:41 - Building source file contents (ASTRewriter) ...
+2020-04-17 16:17:27 INFO  JRelifixMain$:45 - Done building source file contents!
+2020-04-17 16:17:27 INFO  JRelifixMain$:47 - Initializing Compiler/TestCases Invoker ...
+2020-04-17 16:17:38 DEBUG TestCaseValidator:20 - Initially Reduced Tests: net.bytebuddy.dynamic.ClassFileLocatorForClassLoaderTest#testReadTypeBootstrapClassLoader
+2020-04-17 16:17:39 INFO  JRelifixMain$:74 - Done initializing!
+2020-04-17 16:17:39 INFO  JRelifixMain$:76 - Initializing Collectors...
+2020-04-17 16:18:12 DEBUG SeedsCollector:77 - Collected seeds: HashSet([ExpressionSeedIdentifier] classLoader == null, [MethodInvocationSeedIdentifier] ForClassLoader.locate(classLoader,typeName), [VariableSeedIdentifier] types, [MethodInvocationSeedIdentifier] classLoadingDelegate.getClassLoader(), [AssignmentSeedIdentifier] this.jarFile=jarFile, [MethodInvocationSeedIdentifier] classFileLocator.locate(typeName), [ExpressionSeedIdentifier] classLoader != null, [AssignmentSeedIdentifier] classes=DISPATCHER.initialize(accessControlContext).extract(classLoader), [MethodInvocationSeedIdentifier] fallbackDelegate.getClassLoader(), [MethodInvocationSeedIdentifier] fallbackDelegate.locate(name), [AssignmentSeedIdentifier] this.binaryRepresentation=binaryRepresentation, [VariableSeedIdentifier] jarFile, [MethodInvocationSeedIdentifier] Default.of(classLoader), [VariableSeedIdentifier] aDefault, [VariableSeedIdentifier] exception, [VariableSeedIdentifier] classLoader, [MethodInvocationSeedIdentifier] classFileTransformer.getBinaryRepresentation(), [AssignmentSeedIdentifier] this.field=field, [VariableSeedIdentifier] zipEntry, [ExpressionSeedIdentifier] getClass() != object.getClass(), [ExpressionSeedIdentifier] binaryRepresentation != null, [MethodInvocationSeedIdentifier] locate(classLoader,typeName), [ExpressionSeedIdentifier] zipEntry == null, [ExpressionSeedIdentifier] instrumentation == null, [ExpressionSeedIdentifier] !super.equals(other), [VariableSeedIdentifier] internalName, [AssignmentSeedIdentifier] dispatcher=new Dispatcher.Resolved(ClassLoader.class.getDeclaredField("classes")), [MethodInvocationSeedIdentifier] locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type)), [MethodInvocationSeedIdentifier] of(classLoader,AccessController.getContext()), [VariableSeedIdentifier] illegal, [ExpressionSeedIdentifier] binaryRepresentation == null, [ExpressionSeedIdentifier] nonAnonymous(type.getName()).equals(name), [ExpressionSeedIdentifier] this.classLoader == null, [MethodInvocationSeedIdentifier] DISPATCHER.initialize(accessControlContext).extract(classLoader), [AssignmentSeedIdentifier] result=31 * result + accessControlContext.hashCode(), [VariableSeedIdentifier] object, [VariableSeedIdentifier] fallback, [AssignmentSeedIdentifier] this.fallbackDelegate=fallbackDelegate, [VariableSeedIdentifier] resolution, [AssignmentSeedIdentifier] DISPATCHER=dispatcher, [VariableSeedIdentifier] type, [VariableSeedIdentifier] classFileLocator, [VariableSeedIdentifier] result, [ExpressionSeedIdentifier] classLoader == this.classLoader, [AssignmentSeedIdentifier] this.accessControlContext=accessControlContext, [AssignmentSeedIdentifier] this.typeName=typeName, [AssignmentSeedIdentifier] this.instrumentation=instrumentation, [ExpressionSeedIdentifier] classLoader == ClassLoader.getSystemClassLoader(), [ExpressionSeedIdentifier] classes.size() != 1, [VariableSeedIdentifier] dispatcher, [VariableSeedIdentifier] other, [MethodInvocationSeedIdentifier] DISPATCHER.initialize(accessControlContext), [VariableSeedIdentifier] ignored, [ExpressionSeedIdentifier] !instrumentation.isRetransformClassesSupported(), [ExpressionSeedIdentifier] type == null, [AssignmentSeedIdentifier] this.classLoadingDelegate=classLoadingDelegate, [VariableSeedIdentifier] name, [MethodInvocationSeedIdentifier] ForClassLoader.of(classLoader), [VariableSeedIdentifier] binaryRepresentation, [ExpressionSeedIdentifier] isChild(classLoader), [VariableSeedIdentifier] redefinedType, [AssignmentSeedIdentifier] this.classFileLocator=classFileLocator, [VariableSeedIdentifier] classes, [ExpressionSeedIdentifier] this == other, [VariableSeedIdentifier] classFileTransformer, [VariableSeedIdentifier] typeName, [ExpressionSeedIdentifier] other == null, [VariableSeedIdentifier] classFiles, [ExpressionSeedIdentifier] ForDelegatingClassLoader.isDelegating(classLoader), [VariableSeedIdentifier] file, [MethodInvocationSeedIdentifier] nonAnonymous(type.getName()), [ExpressionSeedIdentifier] inputStream != null, [AssignmentSeedIdentifier] this.exception=exception, [VariableSeedIdentifier] anonymousLoaderIndex, [VariableSeedIdentifier] protectionDomain, [ExpressionSeedIdentifier] resolution.isResolved(), [MethodInvocationSeedIdentifier] ClassLoadingDelegate.Default.of(classLoader), [VariableSeedIdentifier] inputStream, [AssignmentSeedIdentifier] dispatcher=new Dispatcher.Unresolved(exception), [AssignmentSeedIdentifier] classLoader=classLoader.getParent(), [AssignmentSeedIdentifier] result=31 * result + types.hashCode(), [AssignmentSeedIdentifier] this.folder=folder, [AssignmentSeedIdentifier] this.types=new HashMap<String,Class<?>>(), [VariableSeedIdentifier] folder, [ExpressionSeedIdentifier] object == null, [VariableSeedIdentifier] fallbackDelegate, [ExpressionSeedIdentifier] getClass() != other.getClass(), [VariableSeedIdentifier] field, [AssignmentSeedIdentifier] this.classLoader=classLoader, [ExpressionSeedIdentifier] anonymousLoaderIndex == -1, [ExpressionSeedIdentifier] file.exists(), [ExpressionSeedIdentifier] internalName != null, [ExpressionSeedIdentifier] this == object, [MethodInvocationSeedIdentifier] classLoadingDelegate.locate(typeName), [VariableSeedIdentifier] accessControlContext, [VariableSeedIdentifier] classLoadingDelegate, [ExpressionSeedIdentifier] typeName.equals(internalName.replace('/','.')), [VariableSeedIdentifier] that, [AssignmentSeedIdentifier] this.classFiles=classFiles, [AssignmentSeedIdentifier] hashCode=System.identityHashCode(classLoader), [MethodInvocationSeedIdentifier] ClassLoadingDelegate.Explicit.of(type), [VariableSeedIdentifier] instrumentation)
+2020-04-17 16:18:12 DEBUG ChangedSeedsCollector:60 - Update seed change status: [HashSet(MODIFIED)] locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type))
+2020-04-17 16:18:12 DEBUG ChangedSeedsCollector:133 - Additional seed from change history: [HashSet(MODIFIED)] return ClassFileLocator.ForClassLoader.of(type.getClassLoader()).locate(type.getName());
+2020-04-17 16:18:12 DEBUG ChangedSeedsCollector:133 - Additional seed from change history: [HashSet(MODIFIED)] return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));
+2020-04-17 16:18:12 DEBUG ChangedSeedsCollector:127 - Update seed change status: [HashSet(MODIFIED)] return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));
+2020-04-17 16:18:12 DEBUG ChangedSeedsCollector:127 - Update seed change status: [HashSet(MODIFIED)] return ClassFileLocator.ForClassLoader.of(type.getClassLoader()).locate(type.getName());
+2020-04-17 16:18:12 DEBUG ChangedSeedsCollector:127 - Update seed change status: [HashSet(MODIFIED)] return ClassFileLocator.ForClassLoader.of(type.getClassLoader()).locate(type.getName());
+2020-04-17 16:18:12 INFO  JRelifixMain$:85 - Done Initializing Collectors!
+2020-04-17 16:18:12 INFO  JRelifixMain$:87 - Initializing Mutation Generator ...
+2020-04-17 16:18:12 INFO  JRelifixMain$:89 - Done initializing!
+2020-04-17 16:18:12 INFO  JRelifixMain$:91 - Trying to set up fault localization ...
+2020-04-17 16:18:12 INFO  JRelifixMain$:143 - Doing localization with predefined faults...
+2020-04-17 16:18:12 INFO  JRelifixMain$:180 - Done localization!
+2020-04-17 16:18:12 INFO  JRelifixMain$:183 - Considering top 10 fault locations
+2020-04-17 16:18:12 INFO  JRelifixMain$:93 - Finished fault localization!
+2020-04-17 16:18:12 INFO  JRelifixMain$:94 - Transforming faults to Java Nodes ...
+2020-04-17 16:18:12 INFO  JRelifixMain$:101 - Done Transforming!
+2020-04-17 16:18:12 INFO  JRelifixMain$:102 - Faults after transforming to Java Nodes:
+2020-04-17 16:18:12 INFO  JRelifixMain$:103 - net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier@2f896237 -> return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));
+2020-04-17 16:18:12 INFO  JRelifixMain$:106 - Running Repair Engine ...
+2020-04-17 16:18:12 DEBUG JRelifixEngine:116 - Condition Expression Seed Set for Engine: HashSet()
+2020-04-17 16:18:12 DEBUG JRelifixEngine:117 - Statement Seed Set for Engine: HashSet([StatementSeedIdentifier] return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));, [StatementSeedIdentifier] return ClassFileLocator.ForClassLoader.of(type.getClassLoader()).locate(type.getName());)
+2020-04-17 16:18:12 DEBUG JRelifixEngine:136 - Primary Operators: Queue(DELETE, NEGATE, SWAP, REVERT, CONVERT, ADDIF, ADDCON, ADDSTMT)
+2020-04-17 16:18:12 DEBUG JRelifixEngine:137 - Secondary Operators: Queue(NEGATE, CONVERT, ADDIF, ADDCON)
+2020-04-17 16:18:12 DEBUG JRelifixEngine:145 - Filtered Faults:
+2020-04-17 16:18:12 INFO  JRelifixEngine:146 - net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier@2f896237 -> return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));
+2020-04-17 16:18:12 DEBUG JRelifixEngine:149 - [FAULT] Try: net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier@2f896237 -> return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));
+2020-04-17 16:18:12 DEBUG JRelifixEngine:157 - [OPERATOR] Candidates: Queue(ADDIF, ADDCON, NEGATE, ADDSTMT, CONVERT, DELETE, SWAP, REVERT)
+2020-04-17 16:18:12 DEBUG JRelifixEngine:161 - [OPERATOR] Try: ADDIF
+2020-04-17 16:18:12 DEBUG JRelifixEngine:166 - [OPERATOR PARAM] Picking a parameter seed for parameterizable operator ADDIF...
+2020-04-17 16:18:12 DEBUG JRelifixEngine:85 - Seed Set is empty!
+2020-04-17 16:18:12 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ×
+2020-04-17 16:18:12 DEBUG JRelifixEngine:161 - [OPERATOR] Try: ADDCON
+2020-04-17 16:18:12 DEBUG JRelifixEngine:166 - [OPERATOR PARAM] Picking a parameter seed for parameterizable operator ADDCON...
+2020-04-17 16:18:12 DEBUG JRelifixEngine:85 - Seed Set is empty!
+2020-04-17 16:18:12 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ×
+2020-04-17 16:18:12 DEBUG JRelifixEngine:161 - [OPERATOR] Try: NEGATE
+2020-04-17 16:18:12 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ×
+2020-04-17 16:18:12 DEBUG JRelifixEngine:161 - [OPERATOR] Try: ADDSTMT
+2020-04-17 16:18:12 DEBUG JRelifixEngine:166 - [OPERATOR PARAM] Picking a parameter seed for parameterizable operator ADDSTMT...
+2020-04-17 16:18:12 DEBUG JRelifixEngine:96 - [OPERATOR PARAM] Chosen Parameter Seed: [StatementSeedIdentifier] return locate(type.getClassLoader(),TypeDescription.ForLoadedType.getName(type));
+2020-04-17 16:18:12 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ✓
+2020-04-17 16:18:12 DEBUG JRelifixEngine:195 - ==========> AFTER MUTATING
+2020-04-17 16:18:16 DEBUG JRelifixEngine:198 - [COMPILE] Status: NOT_COMPILED
+2020-04-17 16:18:16 DEBUG JRelifixEngine:161 - [OPERATOR] Try: CONVERT
+2020-04-17 16:18:16 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ×
+2020-04-17 16:18:16 DEBUG JRelifixEngine:161 - [OPERATOR] Try: DELETE
+2020-04-17 16:18:16 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ×
+2020-04-17 16:18:16 DEBUG JRelifixEngine:161 - [OPERATOR] Try: SWAP
+2020-04-17 16:18:16 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ×
+2020-04-17 16:18:16 DEBUG JRelifixEngine:161 - [OPERATOR] Try: REVERT
+2020-04-17 16:18:16 DEBUG JRelifixEngine:184 - [OPERATOR] Applied: ✓
+2020-04-17 16:18:16 DEBUG JRelifixEngine:195 - ==========> AFTER MUTATING
+2020-04-17 16:18:20 DEBUG JRelifixEngine:198 - [COMPILE] Status: COMPILED
+2020-04-17 16:18:20 INFO  TestExecutionProcessLauncher:59 - [Running] net.bytebuddy.dynamic.ClassFileLocatorForClassLoaderTest#testReadTypeBootstrapClassLoader |
+2020-04-17 16:18:20 INFO  TestExecutionProcessLauncher:81 - [ ✓ ] <---------------------------------------------------------------------------------------------/
+2020-04-17 16:18:20 DEBUG JRelifixEngine:202 -  ==> [VALIDATION] REDUCED TS: ✓
+2020-04-17 16:18:20 DEBUG JRelifixEngine:206 - ==> [VALIDATION] WHOLE TS: ✓
+2020-04-17 16:18:20 DEBUG JRelifixEngine:208 - ==========================================
+2020-04-17 16:18:20 DEBUG JRelifixEngine:209 - FOUND A REPAIR (See below patch):
+2020-04-17 16:18:20 DEBUG JRelifixEngine:219 - ------------------------------------------
+--- src/main/java/net/bytebuddy/dynamic/ClassFileLocator.java
++++ src/main/java/net/bytebuddy/dynamic/ClassFileLocator.java
+@@ -298,7 +298,7 @@
+          */
+         public static Resolution read(Class<?> type) {
+             try {
+-                return locate(type.getClassLoader(), TypeDescription.ForLoadedType.getName(type));
++                return ClassFileLocator.ForClassLoader.of(type.getClassLoader()).locate(type.getName());
+             } catch (IOException exception) {
+                 throw new IllegalStateException("Cannot read class file for " + type, exception);
+             }
+
+2020-04-17 16:18:20 DEBUG JRelifixEngine:222 - ==========================================
+2020-04-17 16:18:20 INFO  JRelifixMain$:111 - Done Repair!

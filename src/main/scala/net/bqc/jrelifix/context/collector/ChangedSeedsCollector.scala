@@ -30,9 +30,6 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
         for (s <- seedCodes) {
           val seed = s.asInstanceOf[Seedy]
           val seedAsIdentifier = s.asInstanceOf[PositionBasedIdentifier]
-          if (seedAsIdentifier.getJavaNode().toString.trim == "channel != null") {
-            println("z")
-          }
 
           // find the changed snippet that exactly equals to seed
           var changedRes = Searcher.searchChangeSnippets(changedFile, SameCodeSnippetCondition(seedAsIdentifier.getJavaNode().toString))
@@ -98,7 +95,6 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
         addOrUpdateSeedToSeedSet(parentStmtSeed2, seedSet, ChangeType.MODIFIED)
 
       }
-      println("x")
     }
   }
 

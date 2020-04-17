@@ -7,7 +7,7 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.search.{ChildSnippetCondition, ExactlySnippetCondition, SameCodeSnippetCondition, Searcher}
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
-import org.eclipse.jdt.core.dom.{ASTNode, Block}
+import org.eclipse.jdt.core.dom.{ASTNode, Block, Statement}
 
 /**
  * To revert the modified statement/expression to old ones in previous version:
@@ -90,18 +90,34 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
 
     if (!applied) {
       val insideCSs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultCode))
-      // revert all or partial the inside changes??
+      // revert all or partial the inside changes?? -> Try to revert whole stmt at first
       if (insideCSs.nonEmpty) {
-        val cs = insideCSs(0)
-        if (cs.changeType == ChangeType.MODIFIED) {
-          applied = revertModifiedCode(cs)
+        val armCss = insideCSs.filter(
+            cs => cs.changeType == ChangeType.MODIFIED ||
+            cs.changeType == ChangeType.MOVED ||
+            cs.changeType == ChangeType.REMOVED)
+
+        if (armCss.nonEmpty) { // try to revert the whole stmt thanks to modification/movement/removal operations
+          var prevStmt: Statement = null
+          var idx = 0
+          while (prevStmt == null && idx < armCss.size) {
+            val cs = armCss(idx)
+            prevStmt = ASTUtils.getParentStmt(cs.srcSource.getJavaNode())
+            idx += 1
+          }
+
+          if (prevStmt != null) {
+            ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), prevStmt)
+            applied = true
+          }
         }
+
+        // TODO: support for remove addedly expression here
       }
     }
 
     if (!applied) {
       changedSnippet = DiffUtils.searchChangeSnippetOutside(projectData.changedSourcesMap, faultStatement, MAX_LINE_DISTANCE)
-      // TODO: Support removed minor expression in a statement
       if (changedSnippet != null && changedSnippet.changeType == ChangeType.REMOVED) {
         val prevCode = changedSnippet.srcSource
         assert(prevCode != null)
