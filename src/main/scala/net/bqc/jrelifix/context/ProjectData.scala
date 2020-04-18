@@ -101,7 +101,7 @@ case class ProjectData() {
    */
   def cleanTemp(): Unit = {
     if (config().BugSwarmValidation) return // no need to use temp when use BugSwarm Validation
-    val srcClassTemp = new File(config().sourceClassFolder + TEMP_POSTFIX)
+    val srcClassTemp = new File(config().sourceClassFolder)
     FileUtils.deleteDirectory(srcClassTemp)
   }
 

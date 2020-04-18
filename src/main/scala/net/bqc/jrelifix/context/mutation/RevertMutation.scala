@@ -4,7 +4,7 @@ import net.bqc.jrelifix.context.ProjectData
 import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.context.diff.{ChangeSnippet, ChangeType}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.cs.{ChildSnippetCondition, CurrentOutsideSnippetCondition, IChangeSnippetCondition, RemovedOutsideSnippetCondition}
+import net.bqc.jrelifix.search.cs.{ChildSnippetCondition, CurrentOutsideSnippetCondition, IChangeSnippetCondition, RemovedOutsideSnippetCondition, RemovedOutsideStmtSnippetCondition}
 import net.bqc.jrelifix.search.Searcher
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
@@ -114,7 +114,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData, 
     }
 
     if (!applied) { // only removed stmt
-      val condition = RemovedOutsideSnippetCondition(
+      val condition = RemovedOutsideStmtSnippetCondition(
         faultStatement.toSourceRange(), null, MAX_LINE_DISTANCE, overlapped = false)
       val css = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), condition, onlyRoot = true)
 
