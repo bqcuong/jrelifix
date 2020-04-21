@@ -11,8 +11,8 @@ import org.eclipse.jdt.core.dom.ASTNode
 
 import scala.util.Random
 
-case class NegateMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
-  extends Mutation(faultStatement, projectData, doc) {
+case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends Mutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
   private var replacedCon: ASTNode = _

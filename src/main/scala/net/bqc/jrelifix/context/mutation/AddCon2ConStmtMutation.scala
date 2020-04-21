@@ -13,8 +13,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, IfStatement, Statement, VariableDeclar
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
-  extends Mutation(faultStatement, projectData, doc) {
+case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends Mutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 

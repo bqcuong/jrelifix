@@ -2,16 +2,14 @@ package net.bqc.jrelifix.engine
 
 import java.io.File
 
-import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, ICompiler}
+import net.bqc.jrelifix.context.compiler.ICompiler
 import net.bqc.jrelifix.context.mutation.MutationType
-import net.bqc.jrelifix.context.validation.TestCase
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
 import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier, Seedy}
-import net.bqc.jrelifix.search.seed.{ConSeedForEngineCondition, ISeedCondition, StmtSeedForEngineCondition}
 import net.bqc.jrelifix.search.Searcher
-import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
+import net.bqc.jrelifix.search.seed.{ConSeedForEngineCondition, ISeedCondition, StmtSeedForEngineCondition}
+import net.bqc.jrelifix.utils.DiffUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.Statement
 
@@ -151,17 +149,16 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       val faultFile = currentFault.getFileName()
       var changedCount = 0
       var iter = 0
-      var secondaryDoc: DocumentASTRewrite = null
       this.tabu.clear()
 
-      var operators = projectData.randomizer.shuffle(PRIMARY_OPERATORS)
+      val operators = projectData.randomizer.shuffle(PRIMARY_OPERATORS)
       logger.debug("[OPERATOR] Candidates: " + operators)
 
       while(iter <= P && operators.nonEmpty) {
         val nextOperator = operators.dequeue()
         logger.debug("[OPERATOR] Try: " + nextOperator)
 
-        val mutation = this.context.mutationGenerator.getMutation(currentFault, nextOperator, secondaryDoc)
+        val mutation = this.context.mutationGenerator.getMutation(currentFault, nextOperator)
         var applied: Boolean = false
         if (mutation.isParameterizable) {
           logger.debug("[OPERATOR PARAM] Picking a parameter seed for parameterizable operator %s...".format(nextOperator))
@@ -185,14 +182,6 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
         logger.debug("[OPERATOR] Applied: " + (if (applied) "\u2713" else "\u00D7"))
 
         if (applied) {
-          // Try to compile
-          if (secondaryDoc != null) { // update new doc for compiler
-            this.context.compiler.updateSourceFileContents(faultFile, secondaryDoc)
-          }
-          else { // set the original doc for compiler
-            this.context.compiler.updateSourceFileContents(faultFile, projectData.sourceFileContents.get(faultFile))
-          }
-
           logger.debug("==========> AFTER MUTATING")
           projectData.updateChangedSourceFiles()
           val compileStatus = this.context.compiler.compile()
@@ -223,7 +212,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
                 logger.debug("==========================================")
                 return
               }
-              else if (secondaryDoc == null) { // introduce new regression, allow maximum 2 operators to be applied
+              else if (false) { // introduce new regression, allow maximum 2 operators to be applied
                 // start using current variant as a faulty program to be repaired
                 // this secondary document will be used to be applied for secondary operators
                 /*secondaryDoc = projectData.sourceFileContents.get(faultFile).generateModifiedDocument()

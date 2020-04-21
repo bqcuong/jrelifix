@@ -28,7 +28,7 @@ class NegateMutationTest extends BaseTest {
   }
 
   def testMutate(): Unit = {
-    val negateMutation = NegateMutation(topNFaults(0), projectData, null)
+    val negateMutation = NegateMutation(topNFaults(0), projectData)
     negateMutation.mutate()
     val rewriter: ASTRewrite = negateMutation.getRewriter()
   }

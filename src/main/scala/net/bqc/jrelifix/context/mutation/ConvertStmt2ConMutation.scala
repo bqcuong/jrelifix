@@ -10,8 +10,8 @@ import org.eclipse.jdt.core.dom.ExpressionStatement
 
 import scala.collection.mutable
 
-case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
-  extends AddIfMutation(faultStatement, projectData, doc) {
+case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends AddIfMutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 

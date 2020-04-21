@@ -13,8 +13,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
  * @param faultStatement
  * @param projectData
  */
-case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite)
-  extends Mutation(faultStatement, projectData, doc) {
+case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
+  extends Mutation(faultStatement, projectData) {
 
   private var emptyBlock: ASTNode = _
 

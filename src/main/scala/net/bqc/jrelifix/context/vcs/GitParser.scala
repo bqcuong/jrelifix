@@ -76,29 +76,26 @@ class GitParser extends VCSParser {
 
     val tree = commit.getTree
     // now try to find a specific file
+    val treeWalk: TreeWalk = new TreeWalk(repository)
     try {
-      val treeWalk: TreeWalk = new TreeWalk(repository)
-      try {
-        treeWalk.addTree(tree)
-        treeWalk.setRecursive(true)
-        treeWalk.setFilter(PathFilter.create(filePath))
-        if (!treeWalk.next) {
-          throw new IllegalStateException("Git Parser Error!")
-        }
-        val objectId = treeWalk.getObjectId(0)
-        val loader: ObjectLoader = repository.open(objectId)
-        // and then one can the loader to read the file
-        new String(loader.getBytes)
+      treeWalk.addTree(tree)
+      treeWalk.setRecursive(true)
+      treeWalk.setFilter(PathFilter.create(filePath))
+      if (!treeWalk.next) {
+        throw new IllegalStateException("Git Parser Error!")
       }
-      catch {
-        case e: Exception => {
-          e.printStackTrace()
-          ""
-        }
-      }
-      finally {
-        if (treeWalk != null) treeWalk.close()
-      }
+      val objectId = treeWalk.getObjectId(0)
+      val loader: ObjectLoader = repository.open(objectId)
+      // and then one can the loader to read the file
+      new String(loader.getBytes)
+    }
+    catch {
+      case e: Exception =>
+        e.printStackTrace()
+        ""
+    }
+    finally {
+      if (treeWalk != null) treeWalk.close()
     }
   }
 

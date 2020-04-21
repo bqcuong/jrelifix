@@ -12,8 +12,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
  * @param faultStatement
  * @param projectData
  */
-case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite, swapDirection: Int)
-  extends Mutation(faultStatement, projectData, doc) {
+case class SwapMutation(faultStatement: Identifier, projectData: ProjectData, swapDirection: Int)
+  extends Mutation(faultStatement, projectData) {
 
   private var emptyBlock: ASTNode = _
   private var chosenSibNode: ASTNode = _

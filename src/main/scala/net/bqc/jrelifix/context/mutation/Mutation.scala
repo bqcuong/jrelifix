@@ -6,7 +6,7 @@ import net.bqc.jrelifix.identifier.Identifier
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite
 import org.eclipse.text.edits.{TextEdit, UndoEdit}
 
-abstract class Mutation(faultStatement: Identifier, projectData: ProjectData, doc: DocumentASTRewrite) {
+abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
   /**
    * Line Margin for Fault Localization (±3)
    */
@@ -14,8 +14,7 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData, do
   /**
    * If no document is provided, use the original document in sourceFileContents map
    */
-  protected val document: DocumentASTRewrite = if (doc != null) doc
-                                               else projectData.sourceFileContents.get(faultStatement.getFileName())
+  protected val document: DocumentASTRewrite = projectData.sourceFileContents.get(faultStatement.getFileName())
   protected val astRewrite: ASTRewrite = document.generateASTRewrite
   protected var undo: UndoEdit = _
 
