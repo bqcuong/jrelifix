@@ -4,6 +4,7 @@ import java.io.File
 
 import net.bqc.jrelifix.context.compiler.ICompiler
 import net.bqc.jrelifix.context.mutation.MutationType
+import net.bqc.jrelifix.context.validation.TestCase
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier, Seedy}
@@ -136,6 +137,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Secondary Operators: " + SECONDARY_OPERATORS)
 
     val P = 20
+    var iter = 0
 
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
 
@@ -148,7 +150,6 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       logger.debug("[FAULT] Try: " + currentFault)
       val faultFile = currentFault.getFileName()
       var changedCount = 0
-      var iter = 0
       this.tabu.clear()
 
       val operators = projectData.randomizer.shuffle(PRIMARY_OPERATORS)
@@ -180,19 +181,20 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
         }
 
         logger.debug("[OPERATOR] Applied: " + (if (applied) "\u2713" else "\u00D7"))
-
+        var reducedTSValidation: (Boolean, ArrayBuffer[TestCase]) = null
+        var compileStatus: ICompiler.Status = null
         if (applied) {
           logger.debug("==========> AFTER MUTATING")
           projectData.updateChangedSourceFiles()
-          val compileStatus = this.context.compiler.compile()
+          compileStatus = this.context.compiler.compile()
           logger.debug("[COMPILE] Status: " + compileStatus)
 
           if (compileStatus == ICompiler.Status.COMPILED) {
-            val reducedTSValidation = this.context.testValidator.validateReducedTestCases()
+            reducedTSValidation = this.context.testValidator.validateReducedTestCases()
             logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
             if (reducedTSValidation._1) {
-              val wholeTSValidation = this.context.testValidator.validateAllTestCases()
-//              val wholeTSValidation = (true, ArrayBuffer[TestCase]())
+//              val wholeTSValidation = this.context.testValidator.validateAllTestCases()
+              val wholeTSValidation = (true, ArrayBuffer[TestCase]())
               logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
               if (wholeTSValidation._1) {
                 logger.debug("==========================================")
@@ -212,43 +214,28 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
                 logger.debug("==========================================")
                 return
               }
-              else if (false) { // introduce new regression, allow maximum 2 operators to be applied
-                // start using current variant as a faulty program to be repaired
-                // this secondary document will be used to be applied for secondary operators
-                /*secondaryDoc = projectData.sourceFileContents.get(faultFile).generateModifiedDocument()
-                // update new location, new java node for fault statement
-                val astNode = ASTUtils.searchNodeByLineNumber(secondaryDoc.cu, currentFault.getLine())
-                if (astNode != null) { // new faulty node is able to be identified in new variant
-                  logger.debug("[FAULT] Update to: " + currentFault)
-                  val (bl, el, bc, ec) = ASTUtils.getNodePosition(astNode, secondaryDoc.cu)
-                  currentFault = PredefinedFaultIdentifier(bl, el, bc, ec, null)
-                  currentFault.asInstanceOf[PredefinedFaultIdentifier].setFileName(faultFile)
-                  currentFault.setJavaNode(astNode)
-                  // construct secondary operator set
-                  operators = projectData.randomizer.shuffle(SECONDARY_OPERATORS)
-                  logger.debug("[OPERATOR] Secondary candidates: " + operators)
-                }
-                else secondaryDoc = null // could not identify new fault statement, ignore*/
-              }
-            }
-            else {
-              changedCount += 1
-              iter += 1
-              if (mutation.isParameterizable) {
-                val newFailedTSNames: Set[String] = reducedTSValidation._2.map(_.getFullName).toSet
-                if (diffResults(reducedTSNames, newFailedTSNames)) {
-                  logger.debug("[OPERATOR] Reuse: " + nextOperator)
-                  operators.enqueue(nextOperator)
-                }
-              }
             }
           }
 
           mutation.unmutate()
           projectData.updateChangedSourceFiles()
         }
-        else if (currentChosenCon != null) {
-          tabu.addOne(currentChosenCon)
+
+        if (applied && compileStatus == ICompiler.Status.COMPILED && !reducedTSValidation._1) {
+          changedCount += 1
+          iter += 1
+          if (mutation.isParameterizable) {
+            val newFailedTSNames: Set[String] = reducedTSValidation._2.map(_.getFullName).toSet
+            if (diffResults(reducedTSNames, newFailedTSNames)) {
+              logger.debug("[OPERATOR] Reuse: " + nextOperator)
+              operators.enqueue(nextOperator)
+            }
+          }
+        }
+        else if (!applied || (applied && compileStatus != ICompiler.Status.COMPILED)) {
+          if (currentChosenCon != null) {
+            tabu.addOne(currentChosenCon)
+          }
         }
       }
     }

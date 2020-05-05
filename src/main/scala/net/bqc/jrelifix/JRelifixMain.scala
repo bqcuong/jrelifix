@@ -69,7 +69,7 @@ object JRelifixMain {
       testValidator = new TestCaseValidator(projectData)
     }
     testValidator.loadTestsCasesFromOpts()
-//    testValidator.validateTestCases(testValidator.predefinedTests, projectData.config().projFolder, projectData.config().classpath())
+//    testValidator.validateReducedTestCases()
 //    testValidator.validateAllTestCases()
     logger.info("Done initializing!")
 

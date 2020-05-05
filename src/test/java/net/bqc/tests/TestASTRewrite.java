@@ -35,11 +35,14 @@ public class TestASTRewrite {
         UndoEdit undo_1 = edit_1.apply(document, TextEdit.CREATE_UNDO);
 
         Assert.assertEquals("class X {\npublic static int f(int a, int b){\nint d=b;\nreturn c+d;\n}\n}\n", document.get());
+        undo_1.apply(document);
 
         // Mutate 2, update return c+d; -> return a+d;
         ASTNode newNode_2 = createStmtNodeFromString("return a + d;");
         rewriter.replace(faultyStmt_2, newNode_2, null);
         TextEdit edit_2 = rewriter.rewriteAST(document, null);
+
+        undo_1 = edit_1.apply(document, TextEdit.CREATE_UNDO);
         UndoEdit undo_2 = edit_2.apply(document, TextEdit.CREATE_UNDO);
 
         Assert.assertEquals("class X {\npublic static int f(int a, int b){\nint d=b;\nreturn a + d;\n}\n}\n", document.get());
