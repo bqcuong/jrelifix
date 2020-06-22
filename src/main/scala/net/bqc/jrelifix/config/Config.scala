@@ -15,8 +15,8 @@ case class Config(
                    var sourceClassFolder: String = "target/classes",
                    var testClassFolder: String = "target/test-classes",
 
-                   projFolder: String = "",
-                   rootProjFolder: String = null,
+                   var projFolder: String = "",
+                   var rootProjFolder: String = null,
 
                    reducedTests: Seq[String] = null,
 

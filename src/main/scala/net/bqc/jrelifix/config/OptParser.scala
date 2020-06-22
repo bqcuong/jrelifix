@@ -93,6 +93,8 @@ object OptParser {
   def parseOpts(args: Array[String]): Config = {
     builder.parse(args, Config()) match {
       case Some(config) =>
+        if (config.rootProjFolder != null) config.rootProjFolder = new File(config.rootProjFolder).getCanonicalPath
+        config.projFolder = new File(config.projFolder).getCanonicalPath
         config.sourceFolder = new File(config.projFolder + File.separator + config.sourceFolder).getCanonicalPath
         config.testFolder = new File(config.projFolder + File.separator + config.testFolder).getCanonicalPath
         config.sourceClassFolder = new File(config.projFolder + File.separator + config.sourceClassFolder).getCanonicalPath
