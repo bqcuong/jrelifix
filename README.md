@@ -6,7 +6,7 @@ Next, specific repair operators are used to generate patches for buggy locations
 JRelifix is supported by the [Google Summer of Code 2020](https://summerofcode.withgoogle.com/projects/#5961790384504832) program.
 
 ### Installation
-####Clone
+#### Clone
 First, clone the source code of JRelifix:
 ```
 git clone https://github.com/bqcuong/jrelifix
@@ -16,7 +16,7 @@ You also need to obtain the source code of samples program (a git submodule) if 
 git submodule init
 git submodule update
 ```
-####Build
+#### Build
 Please make sure your machine is satisfied with below requirements:
 - Java 8 installed
 - Maven 3.6.0 installed
@@ -25,8 +25,8 @@ Then, just simply run:
 ```bash
 mvn -DskipTests package
 ```
-##Usage
-*The below instructions are shown to run repair for the samples program. Running repair for other programs is in the same way.
+## Usage
+*The below instructions are shown to run repair for the samples program. Running repair for other programs is in the same way.*
 
 Compile the tests source code of examined program first:
 ```
