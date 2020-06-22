@@ -1,9 +1,10 @@
 package net.bqc.jrelifix.context.vcs
 
-import java.io.{ByteArrayOutputStream, File, IOException}
+import java.io.{ByteArrayOutputStream, File, FileNotFoundException, IOException}
 
 import ch.qos.logback.classic.Level
 import net.bqc.jrelifix.context.diff.ChangedFile
+import net.bqc.jrelifix.utils.FileFolderUtils
 import org.eclipse.jgit.diff.{DiffEntry, DiffFormatter, RenameDetector}
 import org.eclipse.jgit.lib.{Config, ObjectLoader, Repository}
 import org.eclipse.jgit.revwalk.RevWalk
@@ -24,11 +25,23 @@ class GitParser extends VCSParser {
     LoggerFactory.getLogger("org.eclipse.jgit").asInstanceOf[ch.qos.logback.classic.Logger].setLevel(Level.OFF);
 
     val builder = new FileRepositoryBuilder()
-    this.repository = builder.setGitDir(new File(path + File.separator + ".git"))
+    this.repository = builder.setGitDir(getGitFolder(path))
       .readEnvironment()
       .findGitDir()
       .setMustExist(true)
       .build()
+  }
+
+  def getGitFolder(projectFolder: String): File = {
+    var dotGit = new File(projectFolder + File.separator + ".git")
+    if (dotGit.isFile) {
+      val content = FileFolderUtils.readFile(dotGit.getAbsolutePath)
+      val dotGitPath = content.replace("gitdir:", "").trim
+      dotGit = new File(projectFolder + File.separator + dotGitPath)
+    }
+
+    if (dotGit.isDirectory) return dotGit
+    else throw new FileNotFoundException("Not found .git folder for the input project")
   }
 
   def getCommit(commitHash: String): RevCommit = {

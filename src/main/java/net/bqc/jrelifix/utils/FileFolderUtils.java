@@ -1,6 +1,8 @@
 package net.bqc.jrelifix.utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -30,6 +32,11 @@ public class FileFolderUtils {
 
             return found;
         }
+    }
+
+    public static String readFile(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        return new String(Files.readAllBytes(path));
     }
 
     public static String relativePath(String base, String absolutePath) {

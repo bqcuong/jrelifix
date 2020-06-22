@@ -3,7 +3,7 @@
 # Build JRelifix
 #mvn package
 
-# Run repair with sample project
+# Run repair with samples project
 PROJECT_DIR=samples
 JACOCO_JAR=libs/jacocoagent.jar
 JAGUAR_JAR=libs/br.usp.each.saeg.jaguar.core-1.0.0-jar-with-dependencies.jar
@@ -18,9 +18,11 @@ if [ "$1" ]; then PROJECT_DIR=$1; fi
 
 java -javaagent:$JACOCO_JAR=output=tcpserver -cp $JAGUAR_JAR:$JRELIFIX_JAR \
         net.bqc.jrelifix.JRelifixMain \
-                --projectFolder $PROJECT_DIR \
+                --projectFolder "$PROJECT_DIR" \
                 --sourceFolder $SRC_PATH \
                 --testFolder $TEST_PATH \
                 --sourceClassFolder $SRC_CLASS \
                 --testClassFolder $TEST_CLASS \
-                --topNFaults 10
+                --topNFaults 10 \
+                --reducedTests \
+                "net.bqc.sampleapr.MainTest#test5,net.bqc.sampleapr.MainTest#test6,net.bqc.sampleapr.MainTest#test7"
