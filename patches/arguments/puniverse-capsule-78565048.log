@@ -1,0 +1,24 @@
+--projectFolder
+/Users/cuong/bugswarm/code/puniverse/capsule/capsule
+--rootProjectFolder
+/Users/cuong/bugswarm/code/dependency
+--depClasspath
+"/Users/cuong/bugswarm/code/dependency:/Users/cuong/bugswarm/code/puniverse/capsule/capsule-util/build/classes/main:/Users/cuong/bugswarm/code/puniverse/capsule/capsule-util/build/classes/test"
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+build/classes/main
+--testClassFolder
+build/classes/test
+--bugInducingCommit
+HEAD
+--topNFaults
+10
+--ignoredTests
+CapsuleTest#testJDKClassPath,CapsuleTest#testPrintHelp,CapsuleTest#testTrampoline,CapsuleTest#testMerge
+--reducedTests
+"CapsuleTest#testAgents,CapsuleTest#testApplicationArtifact,CapsuleTest#testBootClassPath1,CapsuleTest#testBootClassPath2,CapsuleTest#testBootClassPathWithDeps,CapsuleTest#testBootClassPathWithEmbeddedDeps,CapsuleTest#testCapsuleInClassPath,CapsuleTest#testCapsuleJavaCmd,CapsuleTest#testCapsuleJavaHome,CapsuleTest#testClassPath,CapsuleTest#testDependencies1,CapsuleTest#testEmbeddedArtifact,CapsuleTest#testEmbeddedCaplet,CapsuleTest#testExpandVars1,CapsuleTest#testJVMArgs,CapsuleTest#testLogLevel,CapsuleTest#testMode,CapsuleTest#testNatives1,CapsuleTest#testNatives2,CapsuleTest#testNativesWithDeps,CapsuleTest#testNoExtract,CapsuleTest#testPlatformSepcific,CapsuleTest#testPrintCapsuleVersion,CapsuleTest#testPrintModes,CapsuleTest#testReallyExecutableCapsule,CapsuleTest#testScript,CapsuleTest#testSimpleCaplet1,CapsuleTest#testSimpleCaplet2,CapsuleTest#testSimpleExtract,CapsuleTest#testSystemProperties,CapsuleTest#testWrapperCapsule,CapsuleTest#testWrapperCapsuleNonCapsuleApp"
+--faultLines
+"Capsule:2700 2702 9 72"

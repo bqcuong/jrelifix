@@ -1,0 +1,24 @@
+--rootProjectFolder
+/Users/cuong/bugswarm/code/yamcs/yamcs
+--projectFolder
+/Users/cuong/bugswarm/code/yamcs/yamcs/yamcs-core
+--depClasspath
+/Users/cuong/bugswarm/code/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+b099d44587d7
+--topNFaults
+10
+--reducedTests
+org.yamcs.xtceproc.XtceCommandEncodingTest#cgsLikeStringCommand
+--ignoredTests
+org.yamcs.ArchiveIntegrationTest#testIndex
+--faultLines
+"org.yamcs.xtce.SpreadsheetLoader:1217 1217 9 19"

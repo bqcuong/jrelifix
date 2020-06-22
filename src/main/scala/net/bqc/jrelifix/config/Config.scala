@@ -1,8 +1,11 @@
 package net.bqc.jrelifix.config
 
+import java.io.File
 import java.net.URL
 
-import net.bqc.jrelifix.utils.ClassPathUtils
+import net.bqc.jrelifix.utils.{ClassPathUtils, FileFolderUtils}
+
+import scala.collection.mutable.ArrayBuffer
 
 case class Config(
                    var depClasspath: String = "",
@@ -13,13 +16,12 @@ case class Config(
                    var testClassFolder: String = "target/test-classes",
 
                    projFolder: String = "",
+                   rootProjFolder: String = null,
 
-                   passingTests: Seq[String] = null,
-                   failingTests: Seq[String] = null,
-                   onlyFailTests: Boolean = false,
+                   reducedTests: Seq[String] = null,
 
-                   testTimeout: Int = 100,
-                   testsIgnored: Seq[String] = null,
+                   testTimeout: Int = 30,
+                   ignoredTests: Seq[String] = null,
 
                    isDataFlow: Boolean = false,
                    locHeuristic: String = "Ochiai",
@@ -27,16 +29,37 @@ case class Config(
                    topNFaults: Int = 100,
 
                    javaHome: String = null,
+                   testDriver: String = null,
 
                    iterationPeriod: Int = 1, // Specific for JRelifix Engine
-                   bugInducingCommits: Seq[String] = Array[String]("HEAD"),
+                   bugInducingCommit: String = "HEAD",
+                   BugSwarmValidation: Boolean = false,
+                   BugSwarmImageTag: String = null,
                  ) {
 
   def classpath(): String = {
-    String.join(ClassPathUtils.CP_DELIMITER, sourceClassFolder, testClassFolder, depClasspath)
+
+    val realDepCps = parseDependencyCp(depClasspath).mkString(ClassPathUtils.CP_DELIMITER)
+    String.join(ClassPathUtils.CP_DELIMITER, sourceClassFolder, testClassFolder, realDepCps)
   }
 
   def classpathURLs(): Array[URL] = {
-    ClassPathUtils.parseClassPaths(String.join(ClassPathUtils.CP_DELIMITER, sourceClassFolder, testClassFolder, depClasspath))
+    ClassPathUtils.parseClassPaths(classpath())
+  }
+
+  private def parseDependencyCp(depClasspath: String): ArrayBuffer[String] = {
+    val cpsFromArgs = depClasspath.split(":")
+    val realCps = ArrayBuffer[String]()
+
+    for (cp <- cpsFromArgs) {
+      val cpFile = new File(cp)
+      if (cpFile.exists() && cpFile.isDirectory) { // if the given cp is a folder, try to collect all jars inside it
+        val jars: java.util.List[File] = FileFolderUtils.walk(cp, ".jar", new java.util.ArrayList[File])
+        import scala.jdk.CollectionConverters._
+        if (!jars.isEmpty) realCps.addAll(jars.asScala.map(_.getCanonicalPath))
+        realCps.addOne(cp)
+      }
+    }
+    realCps
   }
 }

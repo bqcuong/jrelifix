@@ -17,7 +17,7 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
 
     import scala.jdk.CollectionConverters._
     val sourceFilePaths = files.asScala.collect {
-      case f: File if f.isFile => f.getAbsolutePath
+      case f: File if f.isFile => f.getCanonicalPath
     }
 
     val astParser = ASTParser.newParser(API_LEVEL)
@@ -52,12 +52,13 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
       override def acceptAST(sourceFilePath: String, cu: CompilationUnit): Unit = {
         compilationUnitMap.put(sourceFilePath, cu)
 
-        val packageName = if (cu.getPackage != null) cu.getPackage.getName.getFullyQualifiedName else ""
+        val packageName = if (cu.getPackage != null) cu.getPackage.getName.getFullyQualifiedName else null
 
         cu.accept(new ASTVisitor() {
           override def visit(node: TypeDeclaration): Boolean = {
             val className = node.getName.toString
-            class2FilePathMap.put("%s.%s".format(packageName, className), sourceFilePath)
+            if (packageName != null) class2FilePathMap.put("%s.%s".format(packageName, className), sourceFilePath)
+            else class2FilePathMap.put(className, sourceFilePath)
             super.visit(node)
           }
         })
@@ -72,7 +73,7 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     (compilationUnitMap, class2FilePathMap)
   }
 
-  def genASTFromSource(source: String): ASTNode = {
+  def genASTFromSource(source: String): CompilationUnit = {
     val astParser = ASTParser.newParser(API_LEVEL)
     val options = JavaCore.getOptions
     JavaCore.setComplianceOptions(COMPLIANCE_LEVEL, options)
@@ -80,12 +81,12 @@ case class JavaParser(projectPath: String, sourcePath: String, classPath: String
     astParser.setSource(source.toCharArray)
     astParser.setResolveBindings(true)
     astParser.setBindingsRecovery(true)
-    astParser.createAST(null)
+    astParser.createAST(null).asInstanceOf[CompilationUnit]
   }
 }
 
 object JavaParser {
-  def parseAST(source: String): ASTNode = {
+  def parseAST(source: String): CompilationUnit = {
     JavaParser.apply(null, null, null).genASTFromSource(source)
   }
 }

@@ -13,11 +13,15 @@ object OptParser {
 
     opt[String]( "depClasspath")
       .action((cp, c) => c.copy(depClasspath = cp))
-      .text("Dependencies Classpath (external libs,...)")
+      .text("Dependencies Classpath (external libs,...). Accept both folder and jar path. Format: /libs1/:/lib2/common.jar:...")
 
     opt[String]( "javaHome")
       .action((cp, c) => c.copy(javaHome = cp))
       .text("Java Home Folder")
+
+    opt[String]( "testDriver")
+      .action((cp, c) => c.copy(testDriver = cp.toLowerCase()))
+      .text("Test Driver. e.g., JUnit, TestNG. Default: JUnit")
 
     opt[String]( "sourceFolder")
       .action((source, c) => c.copy(sourceFolder = source))
@@ -27,15 +31,8 @@ object OptParser {
       .action((source, c) => c.copy(sourceClassFolder = source))
       .text("Folder of classes of compiled source code, e.g., blah/target/classes")
 
-    opt[Seq[String]]("passingTests")
-      .action((p, c) => c.copy(passingTests = p))
-
-    opt[Seq[String]]("failingTests")
-      .action((p, c) => c.copy(failingTests = p))
-
-    opt[Boolean]("onlyFailTests")
-      .action((o, c) => c.copy(onlyFailTests = o))
-      .text("Run only fail tests")
+    opt[Seq[String]]("reducedTests")
+      .action((p, c) => c.copy(reducedTests = p))
 
     opt[String]( "testFolder")
       .action((t, c) => c.copy(testFolder = t))
@@ -47,14 +44,18 @@ object OptParser {
 
     opt[String]( "projectFolder")
       .action((t, c) => c.copy(projFolder = t))
-      .text("Folder of project, e.g., blah")
+      .text("Folder of project, if there are multiple modules, please fill in the path to the module, e.g., jrelifix/core")
+
+    opt[String]( "rootProjectFolder")
+      .action((t, c) => c.copy(rootProjFolder = t))
+      .text("Root folder of project in case there are more than one module in a project, e.g., jrelifix")
 
     opt[Int]("testTimeout")
       .action((t, c) => c.copy(testTimeout = t))
       .text("Timeout for running tests, in seconds")
 
-    opt[Seq[String]]("testsIgnored")
-      .action((p, c) => c.copy(testsIgnored = p))
+    opt[Seq[String]]("ignoredTests")
+      .action((p, c) => c.copy(ignoredTests = p))
 
     opt[String]("locHeuristic")
       .action((o, c) => c.copy(locHeuristic = o))
@@ -76,18 +77,26 @@ object OptParser {
       .action((o, c) => c.copy(iterationPeriod = o))
       .text("Number of max iterations for considering each fault location")
 
-    opt[Seq[String]]("bugInducingCommits")
-      .action((o, c) => c.copy(bugInducingCommits = o))
-      .text("The hash of bug inducing commits. If not being set, it'll be the current commit.")
+    opt[String]("bugInducingCommit")
+      .action((o, c) => c.copy(bugInducingCommit = o))
+      .text("The hash of bug inducing commit. If not being set, it'll be the current commit.")
+
+    opt[Boolean]("bgValidation")
+      .action((o, c) => c.copy(BugSwarmValidation = o))
+      .text("Specify if use bugswarm scripts to execute and validate the whole test suite")
+
+    opt[String]("bgImageTag")
+      .action((o, c) => c.copy(BugSwarmImageTag = o))
+      .text("The image tag of BugSwam artifact which you want to evaluate on")
   }
 
   def parseOpts(args: Array[String]): Config = {
     builder.parse(args, Config()) match {
       case Some(config) =>
-        config.sourceFolder = config.projFolder + File.separator + config.sourceFolder
-        config.testFolder = config.projFolder + File.separator + config.testFolder
-        config.sourceClassFolder = config.projFolder + File.separator + config.sourceClassFolder
-        config.testClassFolder = config.projFolder + File.separator + config.testClassFolder
+        config.sourceFolder = new File(config.projFolder + File.separator + config.sourceFolder).getCanonicalPath
+        config.testFolder = new File(config.projFolder + File.separator + config.testFolder).getCanonicalPath
+        config.sourceClassFolder = new File(config.projFolder + File.separator + config.sourceClassFolder).getCanonicalPath
+        config.testClassFolder = new File(config.projFolder + File.separator + config.testClassFolder).getCanonicalPath
         config
       case _ => throw new RuntimeException("Parsing arguments error!")
       // arguments are bad, error message will have been displayed

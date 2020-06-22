@@ -3,6 +3,7 @@
  */
 package net.bqc.jrelifix.context.compiler;
 
+import net.bqc.jrelifix.context.parser.JavaParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jface.text.Document;
@@ -20,15 +21,13 @@ public class DocumentASTRewrite {
     public File backingFile;
     public IDocument document;
     public IDocument modifiedDocument;
-    public ASTRewrite rewriter;
     public CompilationUnit cu;
     private boolean modified;
     private boolean tainted;
 
-    public DocumentASTRewrite(IDocument document, File backingFile, ASTRewrite rewriter, CompilationUnit cu){
+    public DocumentASTRewrite(IDocument document, File backingFile, CompilationUnit cu) {
         this.backingFile = backingFile;
         this.document = document;
-        this.rewriter = rewriter;
         this.tainted = false;
         this.modified = false;
         this.cu = cu;
@@ -39,6 +38,16 @@ public class DocumentASTRewrite {
     public void taintDocument(){
         this.modified = true;
         this.tainted = true;
+    }
+
+    public DocumentASTRewrite generateModifiedDocument() {
+        IDocument newDoc = new Document(this.modifiedDocument.get());
+        CompilationUnit newCu = JavaParser.parseAST(newDoc.get());
+        return new DocumentASTRewrite(newDoc, this.backingFile, newCu);
+    }
+
+    public ASTRewrite generateASTRewrite() {
+        return ASTRewrite.create(cu.getAST());
     }
 
     public void untaintDocument(){

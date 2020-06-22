@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/bugswarm/code/tananaev/traccar
+--depClasspath
+/Users/cuong/bugswarm/code/dependency
+--sourceFolder
+src
+--testFolder
+test
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+HEAD
+--topNFaults
+10
+--reducedTests
+org.traccar.protocol.CastelProtocolDecoderTest#testDecode
+--faultLines
+"org.traccar.protocol.CastelProtocolDecoder:83 96 17 18"

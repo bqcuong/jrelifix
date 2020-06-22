@@ -1,0 +1,22 @@
+--rootProjectFolder
+/Users/cuong/bugswarm/code/stagemonitor/stagemonitor
+--projectFolder
+/Users/cuong/bugswarm/code/stagemonitor/stagemonitor/stagemonitor-core
+--depClasspath
+/Users/cuong/bugswarm/code/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+build/classes/main
+--testClassFolder
+build/classes/test
+--bugInducingCommit
+HEAD
+--topNFaults
+10
+--reducedTests
+org.stagemonitor.core.metrics.metrics2.ElasticsearchReporterTest#testReportTimers,org.stagemonitor.core.metrics.metrics2.ElasticsearchReporterTest#testReportHistograms
+--faultLines
+"org.stagemonitor.core.metrics.metrics2.Metric2RegistryModule:169 169 3 74"

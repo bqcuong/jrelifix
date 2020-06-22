@@ -1,9 +1,12 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.search.Searcher
+import net.bqc.jrelifix.search.cs.AddedSnippetCondition
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
-import org.eclipse.text.edits.TextEdit
+import org.eclipse.jdt.core.dom.{ASTNode, Block}
 
 /**
  * To delete incorrectly added statement/expression in previous version
@@ -13,16 +16,25 @@ import org.eclipse.text.edits.TextEdit
 case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
-  override def mutate(): Unit = {
-    // delete only when the fault line is modified in examining commit
-    if (DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) {
+  private var emptyBlock: ASTNode = _
+
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
+    // delete only when the fault line is added in previous commit
+    if (!faultStatement.isStatement()) return false
+    val faultFile = faultStatement.getFileName()
+    val cs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), AddedSnippetCondition(faultStatement))
+    if (cs.nonEmpty) {
       // Modify source code on ASTRewrite
-      ASTUtils.removeNode(this.astRewrite, faultStatement.getJavaNode())
+      this.emptyBlock = this.astRewrite.getAST.createInstance(classOf[Block])
+      ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), this.emptyBlock)
       doMutating()
+      true
     }
+    else false
   }
 
-  override def unmutate(): Unit = ???
-
   override def applicable(): Boolean = ???
+
+  override def isParameterizable: Boolean = false
 }

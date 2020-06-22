@@ -4,13 +4,14 @@ import junit.framework.TestCase
 import net.bqc.jrelifix.JRelifixMain.{faultLocalization, initializeCompiler}
 import net.bqc.jrelifix.config.{Config, OptParser}
 import net.bqc.jrelifix.context.collector.{ChangedSeedsCollector, SeedsCollector}
-import net.bqc.jrelifix.context.compiler.JavaJDKCompiler
+import net.bqc.jrelifix.context.compiler.ICompiler
 import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.mutation.MutationGenerator
 import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.validation.TestCaseValidator
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
-import net.bqc.jrelifix.identifier.{Faulty, Identifier}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.utils.SourceUtils
 import org.apache.log4j.Logger
 
@@ -24,7 +25,7 @@ abstract class BaseTest extends TestCase {
   protected var context: EngineContext = _
   protected var astParser: JavaParser = _
   protected var differ: DiffCollector = _
-  protected var compiler: JavaJDKCompiler = _
+  protected var compiler: ICompiler = _
   protected var testValidator: TestCaseValidator = _
   protected var mutationGenerator: MutationGenerator = _
   protected var topNFaults: ArrayBuffer[Identifier] = _
@@ -59,7 +60,7 @@ abstract class BaseTest extends TestCase {
 
   protected def initCompiler(): Unit = {
     compiler = initializeCompiler(projectData.sourceFileContents, projectData)
-    val compilable = compiler.compile() == JavaJDKCompiler.Status.COMPILED
+    val compilable = compiler.compile() == ICompiler.Status.COMPILED
     if (!compilable) {
       logger.error("Please make sure your project compilable first!")
       System.exit(1)
@@ -67,7 +68,7 @@ abstract class BaseTest extends TestCase {
   }
 
   protected def initTestValidator(): Unit = {
-    testValidator = TestCaseValidator(projectData)
+    testValidator = new TestCaseValidator(projectData)
     testValidator.loadTestsCasesFromOpts()
   }
 

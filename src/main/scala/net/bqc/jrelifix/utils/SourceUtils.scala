@@ -4,7 +4,8 @@ import java.io.File
 import java.util
 
 import net.bqc.jrelifix.context.ProjectData
-import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, Utilities}
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
+import net.bqc.jrelifix.context.compiler.inmemory.Utilities
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.{SuffixFileFilter, TrueFileFilter}
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite
@@ -42,7 +43,7 @@ object SourceUtils {
       val encoded = Utilities.readFromFile(backingFile)
       val contents = new Document(new String(encoded))
       val cu = projectData.filePath2CU(sourceFile)
-      val docrw = new DocumentASTRewrite(contents, backingFile, ASTRewrite.create(cu.getAST), cu)
+      val docrw = new DocumentASTRewrite(contents, backingFile, cu)
       map.put(sourceFile, docrw)
     }
     map

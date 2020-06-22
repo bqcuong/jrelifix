@@ -4,15 +4,17 @@ import java.io.File
 
 import net.bqc.jrelifix.config.OptParser
 import net.bqc.jrelifix.context.collector.{ChangedSeedsCollector, SeedsCollector}
-import net.bqc.jrelifix.context.compiler.{DocumentASTRewrite, JavaJDKCompiler}
+import net.bqc.jrelifix.context.compiler.inmemory.JavaJDKCompiler
+import net.bqc.jrelifix.context.compiler.{BugSwarmCompiler, DocumentASTRewrite, ICompiler}
 import net.bqc.jrelifix.context.diff.DiffCollector
 import net.bqc.jrelifix.context.faultlocalization.{JaguarConfig, JaguarLocalizationLibrary, PredefinedFaultLocalization}
 import net.bqc.jrelifix.context.mutation.MutationGenerator
 import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.context.validation.TestCaseValidator
+import net.bqc.jrelifix.context.validation.{BugSwarmTestCaseValidator, TestCaseValidator}
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
-import net.bqc.jrelifix.identifier.{Faulty, Identifier}
+import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.fault.{Faulty, PredefinedFaultIdentifier}
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
 import org.apache.log4j.Logger
 
@@ -27,6 +29,7 @@ object JRelifixMain {
     val projectData = ProjectData()
     projectData.setConfig(cfg)
     projectData.makeTemp()
+    logger.debug("classpath: " + cfg.classpath())
 
     logger.info("Parsing AST ...")
     val astParser = JavaParser(projectData.config().projFolder, projectData.config().sourceFolder, projectData.config().classpath())
@@ -34,16 +37,6 @@ object JRelifixMain {
     projectData.compilationUnitMap.addAll(path2CuMap)
     projectData.class2FilePathMap.addAll(class2PathMap)
     logger.info("Done parsing AST!")
-
-    logger.info("Initializing Diff Collector...")
-    val differ = DiffCollector(projectData)
-    val changedSources = differ.collectChangedSources()
-    projectData.initChangedSourcesMap(changedSources)
-    val seedsCollector = SeedsCollector(projectData)
-    val changedSeedsCollector = ChangedSeedsCollector(projectData)
-    seedsCollector.collect()
-    changedSeedsCollector.collect()
-    logger.info("Done Initializing Diff Collector!")
 
     logger.info("Building source file contents (ASTRewriter) ...")
     val sourcePath: Array[String] = Array[String](projectData.config().sourceFolder)
@@ -53,14 +46,43 @@ object JRelifixMain {
 
     logger.info("Initializing Compiler/TestCases Invoker ...")
     val compiler = initializeCompiler(projectData.sourceFileContents, projectData)
-    val compilable = compiler.compile() == JavaJDKCompiler.Status.COMPILED
-    if (!compilable) {
-      logger.error("Please make sure your project compilable first!")
-      System.exit(1)
+    if (!projectData.config().BugSwarmValidation) {
+      val compilable = compiler.compile() == ICompiler.Status.COMPILED
+      if (!compilable) {
+        logger.error("Please make sure your project compilable first!\n" +
+          "----------------COMPILATION LOG----------------\n" +
+          compiler.dequeueCompileError())
+        System.exit(1)
+      }
     }
-    val testValidator = TestCaseValidator(projectData)
+    var testValidator: TestCaseValidator = null
+    if (projectData.config().BugSwarmValidation) {
+      if (projectData.config().BugSwarmImageTag != null) {
+        testValidator = new BugSwarmTestCaseValidator(projectData)
+      }
+      else {
+        logger.error("Please provide the BugSwarm image tag!")
+        System.exit(1)
+      }
+    }
+    else {
+      testValidator = new TestCaseValidator(projectData)
+    }
     testValidator.loadTestsCasesFromOpts()
+//    testValidator.validateReducedTestCases()
+//    testValidator.validateAllTestCases()
     logger.info("Done initializing!")
+
+    logger.info("Initializing Collectors...")
+    val differ = DiffCollector(projectData)
+    val changedSources = differ.collectChangedSources()
+    projectData.initChangedSourcesMap(changedSources)
+    val seedsCollector = SeedsCollector(projectData)
+    val changedSeedsCollector = ChangedSeedsCollector(projectData)
+    seedsCollector.collect()
+    changedSeedsCollector.collect()
+    projectData.mergeSeeds()
+    logger.info("Done Initializing Collectors!")
 
     logger.info("Initializing Mutation Generator ...")
     val mutationGenerator = new MutationGenerator(projectData)
@@ -74,6 +96,7 @@ object JRelifixMain {
       case f@(fault: Faulty) =>
         fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
         f.setJavaNode(projectData.identifier2ASTNode(f))
+        if (f.isInstanceOf[PredefinedFaultIdentifier] && f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
     }
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
@@ -83,18 +106,23 @@ object JRelifixMain {
     logger.info("Running Repair Engine ...")
     val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)
     val engine: APREngine = JRelifixEngine(topNFaults, projectData, context)
+    projectData.setEngine(engine.asInstanceOf[JRelifixEngine])
     engine.repair()
     logger.info("Done Repair!")
     projectData.cleanTemp()
   }
 
-  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): JavaJDKCompiler  = {
+  def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): ICompiler  = {
+    if (projectData.config().BugSwarmValidation) {
+      return new BugSwarmCompiler(projectData.config().BugSwarmImageTag)
+    }
+
     val cpArr = projectData.config().classpathURLs().map(_.toString)
     val srcArr = Array[String] {projectData.config().sourceFolder}
     val copyIncludes: Array[String] = Array[String]{""}
     val copyExcludes: Array[String] = Array[String]{""}
 
-    val compiler = new JavaJDKCompiler(
+    val compiler: ICompiler = new JavaJDKCompiler(
       projectData.config().sourceClassFolder,
       cpArr,
       sourceFileContents,
@@ -130,7 +158,7 @@ object JRelifixMain {
           new File(projectData.config().projFolder),
           new File(projectData.config().sourceClassFolder),
           new File(projectData.config().testClassFolder),
-          projectData.config().testsIgnored,
+          projectData.config().ignoredTests,
           projectData.config().isDataFlow)
 
         val locLib = JaguarLocalizationLibrary(locConfig, ClassPathUtils.parseClassPaths(projectData.config().classpath()))

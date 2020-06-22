@@ -1,15 +1,16 @@
 package net.bqc.jrelifix.utils
 
 import net.bqc.jrelifix.context.diff.SourceRange
-import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, PredefinedFaultIdentifier, SeedIdentifier, SeedType, SimpleIdentifier}
+import net.bqc.jrelifix.context.parser.JavaParser
+import net.bqc.jrelifix.identifier.fault.PredefinedFaultIdentifier
+import net.bqc.jrelifix.identifier.node.VariableIdentifier
+import net.bqc.jrelifix.identifier.{Identifier, PositionBasedIdentifier, SimpleIdentifier}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom._
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
 import org.eclipse.jface.text.Document
 
 import scala.collection.mutable.ArrayBuffer
-
-
 
 object ASTUtils {
   private val logger: Logger = Logger.getLogger(ASTUtils.getClass)
@@ -30,8 +31,15 @@ object ASTUtils {
     this.replaceNode(rew, toRemoved, rew.getAST.createInstance(classOf[Block]))
   }
 
+  def appendNode(rew: ASTRewrite, parentNode: ASTNode, newNode: ASTNode): ASTRewrite = {
+    val to_add: ASTNode = ASTNode.copySubtree(parentNode.getAST, newNode)
+    val bl: Block = parentNode.getParent.asInstanceOf[Block]
+    val rewrite: ListRewrite = rew.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
+    rewrite.insertAfter(to_add, parentNode, null)
+    rew
+  }
+
   def insertNode(rew: ASTRewrite, currentNode: ASTNode, newNode: ASTNode, insertAfter: Boolean = true): ASTRewrite = {
-    if (newNode == null) throw new Exception("This should never happen")
     val to_add: ASTNode = ASTNode.copySubtree(currentNode.getAST, newNode)
     val bl: Block = currentNode.getParent.asInstanceOf[Block]
     val rewrite: ListRewrite = rew.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
@@ -46,58 +54,50 @@ object ASTUtils {
    * ============================
    */
   def createFaultIdentifierNoClassName(node: ASTNode): PositionBasedIdentifier = {
-    val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val nodeLength: Int = node.getLength
-
-    val bl: Int = cu.getLineNumber(node.getStartPosition)
-    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
-    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
-    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val (bl, el, bc, ec) = getNodePosition(node)
     PredefinedFaultIdentifier(bl, el, bc, ec, null)
   }
 
   def createIdentifierForASTNode(node: ASTNode, fileName: String = null): PositionBasedIdentifier = {
     val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val nodeLength: Int = node.getLength
-
-    val bl: Int = cu.getLineNumber(node.getStartPosition)
-    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
-    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
-    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    val (bl, el, bc, ec) = getNodePosition(node, cu)
     val p = SimpleIdentifier(bl, el, bc, ec, fileName)
     p.setJavaNode(searchNodeByIdentifier(cu, p))
     p
   }
 
-  def createSeedIdentifierForASTNode(node: ASTNode, seedType: SeedType.Value, fileName: String = null): SeedIdentifier = {
-    val cu: CompilationUnit = node.getRoot.asInstanceOf[CompilationUnit]
-    val nodeLength: Int = node.getLength
-
-    val bl: Int = cu.getLineNumber(node.getStartPosition)
-    val el: Int = cu.getLineNumber(node.getStartPosition + nodeLength)
-    val bc: Int = cu.getColumnNumber(node.getStartPosition) + 1
-    val ec: Int = cu.getColumnNumber(node.getStartPosition + nodeLength) + 1
-    val p = SeedIdentifier(bl, el, bc, ec, seedType, fileName)
-    p.setJavaNode(searchNodeByIdentifier(cu, p))
-    p
-  }
-
-  def createNodeFromString(toRep: String): ASTNode = {
-    // Note that we need to create stub code for JDT to parse appropriately and then get back
-    // the JDT ASTNode we want to create from the return statement
-    val document = new Document("public class X{ public void replace(){return "+toRep+";}}")
-    val parser = ASTParser.newParser(8)
-    parser.setSource(document.get().toCharArray)
-    val cu = parser.createAST(null).asInstanceOf[CompilationUnit]
+  def createStmtNodeFromString(toTransform: String): ASTNode = {
+    val document = new Document("public class X{public void replace(){" + toTransform + "}}")
+    val cu = getCuFromDocument(document)
     val visitor = new ASTVisitor() {
-      var toRepNode : ASTNode = _
-      override def visit(node: ReturnStatement): Boolean = {
-        toRepNode = node.getExpression
+      var toTransNode : ASTNode = _
+      override def visit(node: MethodDeclaration): Boolean = {
+        val methodBody = node.getBody
+        toTransNode = methodBody.statements().get(0).asInstanceOf[ASTNode]
         false
       }
     }
     cu.accept(visitor)
-    visitor.toRepNode
+    visitor.toTransNode
+  }
+
+  def createExprNodeFromString(toTransform: String): ASTNode = {
+    val document = new Document("public class X{public void replace(){return " + toTransform + ";}}")
+    val cu = getCuFromDocument(document)
+    val visitor = new ASTVisitor() {
+      var toTransNode : ASTNode = _
+      override def visit(node: ReturnStatement): Boolean = {
+        toTransNode = node.getExpression
+        false
+      }
+    }
+    cu.accept(visitor)
+    visitor.toTransNode
+  }
+
+  private def getCuFromDocument(doc: Document): CompilationUnit = {
+    val astNode = JavaParser.parseAST(doc.get())
+    astNode.asInstanceOf[CompilationUnit]
   }
 
   /**
@@ -131,6 +131,11 @@ object ASTUtils {
       }
     }
     null
+  }
+
+  def isExistedNode(cu: CompilationUnit, node: ASTNode): Boolean = {
+    val code = ASTUtils.createIdentifierForASTNode(node)
+    searchNodeByIdentifier(cu, code) != null
   }
 
   def searchNodeByIdentifier(cu: CompilationUnit, identifier: Identifier): ASTNode = {
@@ -180,18 +185,35 @@ object ASTUtils {
     }
   }
 
-  def isInRange(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
-    val c1 = toCheck.getBeginLine() >= (range.beginLine - lineDistance) && toCheck.getEndLine() <= (range.endLine + lineDistance)
-    val c2 = toCheck.getBeginColumn() == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
-      (range.beginLine == range.endLine && toCheck.getBeginColumn() >= range.beginColumn && toCheck.getEndColumn() <= range.endColumn)
-    c1 && c2
+  def isInRangeForId(toCheck: Identifier, range: SourceRange, lineDistance: Int = 0) : Boolean = {
+    isInRange(toCheck.toSourceRange(), range, lineDistance)
+  }
+
+  def isInRange(toCheck: SourceRange, range: SourceRange, lineDistance: Int = 0, overlapped: Boolean = false) : Boolean = {
+    if (lineDistance == 0) {
+      val c1 = toCheck.beginLine >= range.beginLine && toCheck.endLine <= range.endLine
+      val c2 = toCheck.beginColumn == -1 || range.beginColumn == -1 || range.beginLine < range.endLine ||
+        (range.beginLine == range.endLine && toCheck.beginColumn >= range.beginColumn && toCheck.endColumn <= range.endColumn)
+      c1 && c2
+    }
+    else if (overlapped) {
+      val c1 = Math.abs(toCheck.beginLine - range.beginLine) <= lineDistance
+      c1
+    }
+    else {
+      val c1 = Math.abs(toCheck.beginLine - range.endLine) <= lineDistance
+      val c2 = Math.abs(range.beginLine - toCheck.endLine) <= lineDistance
+      c1 || c2
+    }
   }
 
   /**
    * Check if the given node is inside the condition of a conditional statement
+   *
    * @param node
    * @return
    */
+  @scala.annotation.tailrec
   def belongsToConditionStatement(node: ASTNode): Boolean = {
     if (node == null) false
     else if (ASTUtils.isConditionalStatement(node)) true
@@ -205,6 +227,34 @@ object ASTUtils {
       case _: WhileStatement => true
       case _: IfStatement => true
       case _ => false
+    }
+  }
+
+  @scala.annotation.tailrec
+  def getParentStmt(node: ASTNode): Statement = {
+    if (node == null) null
+    else node match {
+      case n: MethodDeclaration => null
+      case n: Statement => n
+      case _ => getParentStmt(node.getParent)
+    }
+  }
+
+  def containsStmt(node: ASTNode): Boolean = {
+    if (node.isInstanceOf[Statement]) return true
+    val visitor = new CheckContainStmts()
+    node.accept(visitor)
+    visitor.contained
+  }
+
+  private class CheckContainStmts() extends ASTVisitor {
+    var contained = false
+    override def preVisit2(node: ASTNode): Boolean = {
+      if (node.isInstanceOf[Statement]) {
+        contained = true
+        return false
+      }
+      true
     }
   }
 
@@ -233,12 +283,7 @@ object ASTUtils {
     outerNode match {
       case o: InfixExpression =>
         val op = o.getOperator
-        if (op.equals(InfixExpression.Operator.CONDITIONAL_AND) ||
-            op.equals(InfixExpression.Operator.CONDITIONAL_OR) ||
-            op.equals(InfixExpression.Operator.AND) ||
-            op.equals(InfixExpression.Operator.OR) ||
-            op.equals(InfixExpression.Operator.XOR)) {
-
+        if (isConditionalOperator(op)) {
           result.addAll(getBoolNodes(o.getLeftOperand))
           result.addAll(getBoolNodes(o.getRightOperand))
         }
@@ -249,5 +294,58 @@ object ASTUtils {
       case _ => result.addOne(outerNode)
     }
     result
+  }
+
+  def isConditionalOperator(op: InfixExpression.Operator): Boolean = {
+    op.equals(InfixExpression.Operator.CONDITIONAL_AND) ||
+      op.equals(InfixExpression.Operator.CONDITIONAL_OR) ||
+      op.equals(InfixExpression.Operator.AND) ||
+      op.equals(InfixExpression.Operator.OR) ||
+      op.equals(InfixExpression.Operator.XOR)
+  }
+
+  def isEqualityOperator(op: InfixExpression.Operator): Boolean = {
+    op.equals(InfixExpression.Operator.EQUALS) ||
+    op.equals(InfixExpression.Operator.NOT_EQUALS)
+  }
+
+  /**
+   * Parse a VariableDeclarationStatement to obtain information about variables
+   * @param varDecl
+   * @return
+   */
+  def getVariableCodes(varDecl: VariableDeclarationStatement): ArrayBuffer[VariableIdentifier] = {
+    val cu: CompilationUnit = varDecl.getRoot.asInstanceOf[CompilationUnit]
+    val declType = varDecl.getType
+    val result = ArrayBuffer[VariableIdentifier]()
+    val frags = varDecl.fragments()
+    for(i <- 0 until frags.size()) {
+      val frag = frags.get(i)
+      frag match {
+        case f: VariableDeclarationFragment =>
+          val varNameNode = f.getName
+          val (bl, el, bc, ec) = getNodePosition(varNameNode, cu)
+          val variable = new VariableIdentifier(bl, el, bc, ec, null, declType, f.getInitializer)
+          variable.setJavaNode(varNameNode)
+          result.addOne(variable)
+      }
+    }
+    result
+  }
+
+  /**
+   *
+   * @param node
+   * @return (beginLine, endLine, beginCol, endCol)
+   */
+  def getNodePosition(node: ASTNode, cu: CompilationUnit = null): (Int, Int, Int, Int) = {
+    var cunit = cu;
+    if (cunit == null) cunit = node.getRoot.asInstanceOf[CompilationUnit]
+    val nodeLength: Int = node.getLength
+    val bl: Int = cunit.getLineNumber(node.getStartPosition)
+    val el: Int = cunit.getLineNumber(node.getStartPosition + nodeLength)
+    val bc: Int = cunit.getColumnNumber(node.getStartPosition) + 1
+    val ec: Int = cunit.getColumnNumber(node.getStartPosition + nodeLength) + 1
+    (bl, el, bc, ec)
   }
 }

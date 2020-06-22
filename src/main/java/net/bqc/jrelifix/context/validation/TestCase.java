@@ -1,5 +1,7 @@
 package net.bqc.jrelifix.context.validation;
 
+import java.util.Objects;
+
 public class TestCase {
 
     public final String SEPARATOR = "#";
@@ -43,5 +45,15 @@ public class TestCase {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    @Override
+    public String toString() {
+        return getFullName();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getFullName());
     }
 }

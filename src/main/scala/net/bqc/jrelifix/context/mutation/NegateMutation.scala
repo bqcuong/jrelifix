@@ -1,8 +1,10 @@
 package net.bqc.jrelifix.context.mutation
 
 import net.bqc.jrelifix.context.ProjectData
+import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.search.{AddedConSeedCondition, Searcher}
+import net.bqc.jrelifix.search.Searcher
+import net.bqc.jrelifix.search.seed.AddedConSeedCondition
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.ASTNode
@@ -13,12 +15,15 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
+  private var replacedCon: ASTNode = _
+  private var negatedCon: ASTNode = _
 
-  override def mutate(): Unit = {
+  override def mutate(paramSeed: Identifier = null): Boolean = {
+    if (isParameterizable) assert(paramSeed != null)
     // only applicable to conditional statement
-    if (!faultStatement.isConditionalStatement()) return
+    if (!faultStatement.isConditionalStatement()) return false
     // check if faulty statement is changed
-    if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return
+    if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return false
 
     val faultFile = faultStatement.getFileName()
     val addedAtomicCodes = Searcher.searchSeeds(projectData.seedsMap, faultFile,
@@ -26,30 +31,31 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
 
     if (addedAtomicCodes.isEmpty) {
       logger.error("Not found any added atomic conditions in the fault statement! Give up...")
-      return
+      return false
     }
     else {
       logger.debug("List of added conditions: " + addedAtomicCodes)
     }
     // if there are many added condition, try to randomly choose one
-    val randomTaken = Random.nextInt(addedAtomicCodes.size + 1)
-    val chosenCode = addedAtomicCodes.takeRight(randomTaken).head
-    val chosenNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
+    val randomTaken = projectData.randomizer.nextInt(addedAtomicCodes.size) + 1
+    val chosenCode = addedAtomicCodes.takeRight(randomTaken).head.asInstanceOf[Identifier]
+    this.replacedCon = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
     logger.debug("Chosen code to negate: " + chosenCode.getJavaNode())
-    val negatedCode = getNegatedNode(chosenCode)
-    logger.debug("Negated code: " + negatedCode.toString)
+    this.negatedCon = getNegatedNode(chosenCode)
+    logger.debug("Negated code: " + negatedCon.toString)
 
-    ASTUtils.replaceNode(this.document.rewriter, chosenNodeOnDocument, negatedCode)
+    ASTUtils.replaceNode(this.astRewrite, this.replacedCon, negatedCon)
     doMutating()
+    true
   }
 
   private def getNegatedNode(boolCode: Identifier): ASTNode = {
     val source = boolCode.getJavaNode().toString
     val negatedStr: String = "!(%s)".format(source)
-    ASTUtils.createNodeFromString(negatedStr)
+    ASTUtils.createExprNodeFromString(negatedStr)
   }
 
-  override def unmutate(): Unit = ???
-
   override def applicable(): Boolean = ???
+
+  override def isParameterizable: Boolean = false
 }

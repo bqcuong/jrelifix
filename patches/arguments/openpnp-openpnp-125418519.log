@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/bugswarm/code/openpnp/openpnp
+--depClasspath
+/Users/cuong/bugswarm/code/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+HEAD
+--topNFaults
+10
+--reducedTests
+BasicJobTest#testSimpleJob,SampleJobTest#testSampleJob
+--faultLines
+"org.openpnp.machine.reference.vision.ReferenceBottomVision:111 117 9 10"

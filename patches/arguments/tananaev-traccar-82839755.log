@@ -1,0 +1,22 @@
+--projectFolder
+/Users/cuong/bugswarm/code/tananaev/traccar
+--depClasspath
+/Users/cuong/bugswarm/code/dependency
+--sourceFolder
+src
+--testFolder
+test
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+HEAD
+--topNFaults
+10
+--ignoredTests
+org.traccar.protocol.TotemProtocolEncoderTest#testEncode,org.traccar.protocol.Gps103ProtocolEncoderTest#testEncode
+--reducedTests
+org.traccar.protocol.AquilaProtocolDecoderTest#testDecode
+--faultLines
+"org.traccar.protocol.AquilaProtocolDecoder:127 129 9 10"
