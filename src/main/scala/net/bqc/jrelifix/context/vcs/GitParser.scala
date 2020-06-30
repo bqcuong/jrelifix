@@ -127,9 +127,9 @@ class GitParser extends VCSParser {
       val v1 = getFileContent(f._1, parentRevCommit)
       val v2 = getFileContent(f._2, currentRevCommit)
       modifiedFiles.append(ChangedFile(
-        projectPath + File.separator + f._2,
-        projectPath + File.separator + f._1,
-        projectPath + File.separator + f._2,
+        new File(projectPath + File.separator + f._2).getCanonicalPath,
+        new File(projectPath + File.separator + f._1).getCanonicalPath,
+        new File(projectPath + File.separator + f._2).getCanonicalPath,
         v1, v2))
     }
 
