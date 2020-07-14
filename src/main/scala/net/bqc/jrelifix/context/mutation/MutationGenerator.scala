@@ -5,7 +5,7 @@ import net.bqc.jrelifix.context.compiler.DocumentASTRewrite
 import net.bqc.jrelifix.identifier.Identifier
 
 object MutationType extends Enumeration {
-  val DELETE, NEGATE, SWAP, REVERT, ADDIF, CONVERT, ADDCON, ADDSTMT = Value
+  val DELETE, NEGATE, SWAP, REVERT, ADDIF, CONVERT, ADDCON, ADDSTMT, ADDTRYCATCH = Value
 }
 
 class MutationGenerator(projectData: ProjectData) {
@@ -20,6 +20,7 @@ class MutationGenerator(projectData: ProjectData) {
       case MutationType.CONVERT => ConvertStmt2ConMutation(faultStatement, projectData)
       case MutationType.ADDCON => AddCon2ConStmtMutation(faultStatement, projectData)
       case MutationType.ADDSTMT => AddStmtMutation(faultStatement, projectData)
+      case MutationType.ADDTRYCATCH => AddTryCatchMutation(faultStatement, projectData)
     }
   }
 }
