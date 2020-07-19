@@ -125,7 +125,8 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
       MutationType.ADDIF,
       MutationType.ADDCON,
       MutationType.ADDSTMT,
-      MutationType.ADDTRYCATCH
+      MutationType.ADDTRYCATCH,
+//      MutationType.MI,
       )
 
     val SECONDARY_OPERATORS = mutable.Queue[MutationType.Value](
