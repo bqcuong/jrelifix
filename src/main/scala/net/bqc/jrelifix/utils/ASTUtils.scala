@@ -41,6 +41,7 @@ object ASTUtils {
 
   def insertNode(rew: ASTRewrite, currentNode: ASTNode, newNode: ASTNode, insertAfter: Boolean = true): ASTRewrite = {
     val to_add: ASTNode = ASTNode.copySubtree(currentNode.getAST, newNode)
+    if (!currentNode.getParent.isInstanceOf[Block]) return rew
     val bl: Block = currentNode.getParent.asInstanceOf[Block]
     val rewrite: ListRewrite = rew.getListRewrite(bl, Block.STATEMENTS_PROPERTY)
     if (insertAfter) rewrite.insertAfter(to_add, currentNode, null)
