@@ -40,7 +40,7 @@ case class DiffCollector(projectData: ProjectData) {
     val sourcePath = projectData.config().sourceFolder
     var gitProjectPath = projectData.config().rootProjFolder
     if (gitProjectPath == null) gitProjectPath = projectData.config().projFolder
-    val changedFiles = gitParser.getModifiedFiles(gitProjectPath, "HEAD", bugInducingCommit)
+    val changedFiles = gitParser.getModifiedFiles(gitProjectPath, bugInducingCommit, bugInducingCommit)
     for (changedFile <- changedFiles) {
       // only process java file in the source path
       if (changedFile.filePath.startsWith(sourcePath)) {

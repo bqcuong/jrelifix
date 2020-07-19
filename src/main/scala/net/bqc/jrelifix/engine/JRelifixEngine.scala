@@ -7,6 +7,7 @@ import net.bqc.jrelifix.context.mutation.MutationType
 import net.bqc.jrelifix.context.validation.TestCase
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.identifier.Identifier
+import net.bqc.jrelifix.identifier.fault.Faulty
 import net.bqc.jrelifix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier, Seedy}
 import net.bqc.jrelifix.search.Searcher
 import net.bqc.jrelifix.search.seed.{ConSeedForEngineCondition, ISeedCondition, StmtSeedForEngineCondition}
@@ -110,6 +111,18 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     filteredList
   }
 
+  private def filterFaultFileScope(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
+    val filteredList = ArrayBuffer[Identifier]()
+    for (f <- faults) {
+      val isChanged = projectData.changedSourcesMap.contains(f.getFileName())
+      val isStmt = f.getJavaNode().isInstanceOf[Statement]
+      if (f.asInstanceOf[Faulty].getSuspiciousness() > 0.5f && isChanged && isStmt) {
+        filteredList.addOne(f)
+      }
+    }
+    filteredList
+  }
+
   override def repair(): Unit = {
     conExprSet.addAll(collectConditionExpressions())
     stmtSet.addAll(collectStatements())
@@ -144,7 +157,7 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
 
     // only support fix on changed-faulty statements
-    val stmtFaults = filterFault(faults)
+    val stmtFaults = filterFaultFileScope(faults)
     logger.debug("Filtered Faults:")
     stmtFaults.foreach(logger.info(_))
     for(f <- stmtFaults) {
