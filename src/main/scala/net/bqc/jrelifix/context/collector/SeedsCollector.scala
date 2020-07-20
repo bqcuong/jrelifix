@@ -6,6 +6,7 @@ import net.bqc.jrelifix.identifier.seed.{AssignmentSeedIdentifier, ExpressionSee
 import net.bqc.jrelifix.utils.ASTUtils
 import net.bqc.jrelifix.utils.ASTUtils.{getNodePosition, searchNodeByIdentifier}
 import org.apache.log4j.Logger
+import org.eclipse.jdt.core.dom.Assignment.Operator
 import org.eclipse.jdt.core.dom._
 
 import scala.collection.mutable
@@ -119,7 +120,9 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
      * @return
      */
     override def visit(node: Assignment): Boolean = {
-      alist.addOne(node)
+      if (node.getOperator == Operator.ASSIGN) {
+        alist.addOne(node)
+      }
       true
     }
 
