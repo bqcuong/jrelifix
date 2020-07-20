@@ -77,8 +77,15 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     logger.debug("Add if condition for: " + faultNode.toString.trim)
 
     val variableCodes = ASTUtils.getVariableCodes(faultNode)
+    var chosenCon2 = chosenCon
     assert(variableCodes.nonEmpty)
     logger.debug("Affected Variables: " + variableCodes)
+    for (variable <- variableCodes) {
+      val varName = variable.getJavaNode().toString
+      if (chosenCon.getJavaNode().toString.contains(varName)) {
+        chosenCon2 = ASTUtils.createIdentifierForASTNode(ASTUtils.createExprNodeFromString("false"))
+      }
+    }
     var hasInitializer = false
 
     val varSet = mutable.HashSet[String]()
@@ -99,7 +106,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
 
     // create and insert the if-statement after the original declaration
     val assignListStr = assignList.mkString("")
-    val ifStr = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, assignListStr)
+    val ifStr = "if (%s) {%s}".format(chosenCon2.getJavaNode().toString, assignListStr)
     val ifNode = ASTUtils.createStmtNodeFromString(ifStr)
     ASTUtils.insertNode(this.astRewrite, faultNode, ifNode)
 
