@@ -49,7 +49,7 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
       if (dollarIdx > 0) className = className.substring(0, dollarIdx)
       val ej = JaguarFaultIdentifier(e.asInstanceOf[LineTestRequirement].getLineNumber, className, e.getSuspiciousness)
       this.rankedList.append(ej)
-    }
+    })
   }
 
   override def run(): Unit = {
