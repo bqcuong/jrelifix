@@ -44,9 +44,12 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
     client.close()
     val rankedList = jaguar.generateRank(config.heuristic)
     rankedList.forEach(e => {
-      val ej = JaguarFaultIdentifier(e.asInstanceOf[LineTestRequirement].getLineNumber, e.getClassName.replace("/", "."), e.getSuspiciousness)
+      var className = e.getClassName.replace("/", ".")
+      val dollarIdx = className.indexOf("$") // inner class
+      if (dollarIdx > 0) className = className.substring(0, dollarIdx)
+      val ej = JaguarFaultIdentifier(e.asInstanceOf[LineTestRequirement].getLineNumber, className, e.getSuspiciousness)
       this.rankedList.append(ej)
-    })
+    }
   }
 
   override def run(): Unit = {
