@@ -73,7 +73,8 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     var applied = false
     val faultLineNumber = faultStatement.getLine()
     val faultFile = faultStatement.getFileName()
-    val faultCode = faultStatement.getJavaNode().toString
+    val faultAst = faultStatement.getJavaNode()
+    val faultCode = faultAst.toString
 
     // Revert change snippets at statement level
     val css = Searcher.searchChangeSnippets(
@@ -140,7 +141,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
 
     // Revert change snippets at expression level
     if (!applied) {
-      val insideCSs = Searcher.searchChangeSnippets2(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultCode))
+      val insideCSs = Searcher.searchChangeSnippets2(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultStatement))
       // revert all or partial the inside changes?? -> Try to revert whole stmt at first
       if (insideCSs.nonEmpty) {
         val armCss = insideCSs.filter(

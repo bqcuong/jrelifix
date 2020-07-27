@@ -52,7 +52,7 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
           }
           else {
             // try to check if there are any changed snippets inside this seed
-            changedRes = Searcher.searchChangeSnippets(changedFile, ChildSnippetCondition(seedAsIdentifier.getJavaNode().toString))
+            changedRes = Searcher.searchChangeSnippets(changedFile, ChildSnippetCondition(seedAsIdentifier))
             if (changedRes.nonEmpty) {
               seed.addChangeType(ChangeType.MODIFIED)
               alreadySet = true
