@@ -4,6 +4,7 @@
 package net.bqc.jrelifix.context.compiler;
 
 import net.bqc.jrelifix.context.parser.JavaParser;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jface.text.Document;
@@ -22,6 +23,7 @@ public class DocumentASTRewrite {
     public IDocument document;
     public IDocument modifiedDocument;
     public CompilationUnit cu;
+    public AST ast;
     private boolean modified;
     private boolean tainted;
 
@@ -47,7 +49,8 @@ public class DocumentASTRewrite {
     }
 
     public ASTRewrite generateASTRewrite() {
-        return ASTRewrite.create(cu.getAST());
+        ast = cu.getAST();
+        return ASTRewrite.create(ast);
     }
 
     public void untaintDocument(){

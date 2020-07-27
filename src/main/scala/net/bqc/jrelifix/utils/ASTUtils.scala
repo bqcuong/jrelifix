@@ -174,6 +174,10 @@ object ASTUtils {
     var found: ASTNode = _
 
     override def preVisit2(node: ASTNode): Boolean = {
+      val pos = getNodePosition(node)
+//      if (pos._1 == 566) {
+//        print(node)
+//      }
       if (toFind.sameLocation(node)) {
         found = node
         return false
