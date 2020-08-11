@@ -20,24 +20,19 @@ case class AddTryCatchMutation(faultStatement: Identifier, projectData: ProjectD
     val faultAST = faultStatement.getJavaNode()
 
     val parentTryStmt = tryToGetTryCatchBlock(faultAST)
+    val patch = new Patch(this.document)
     if (parentTryStmt != null) {
-      val catchClause = parentTryStmt.catchClauses().get(0).asInstanceOf[CatchClause]
-      val ast = this.document.ast
-      val newCatchClause = ast.newCatchClause()
-      val decl = ast.newSingleVariableDeclaration
-      decl.setName(ast.newSimpleName("e"))
-      decl.setType(ast.newSimpleType(ast.newName("java.lang.Throwable")))
-      newCatchClause.setException(decl)
-      val listRewrite = this.astRewrite.getListRewrite(parentTryStmt, TryStatement.CATCH_CLAUSES_PROPERTY)
-      listRewrite.insertAfter(newCatchClause, catchClause, null)
+      val addCatchAction = ASTActionFactory.generateAddCatchClauseAction(parentTryStmt, "java.lang.Throwable")
+      patch.addAction(addCatchAction)
     }
     else {
       val faultStr = faultAST.toString
       val tryCatchBlockStr = "try {\n  %s\n} catch(Throwable e){}".format(faultStr)
       val tryCatchBlock = ASTUtils.createStmtNodeFromString(tryCatchBlockStr)
-      ASTUtils.replaceNode(this.astRewrite, faultAST, tryCatchBlock)
+      val replaceAction = ASTActionFactory.generateReplaceAction(faultAST, tryCatchBlock)
+      patch.addAction(replaceAction)
     }
-    doMutating()
+    addPatch(patch)
     true
   }
 

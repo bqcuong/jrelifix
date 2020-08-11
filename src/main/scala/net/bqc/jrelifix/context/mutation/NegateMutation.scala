@@ -15,8 +15,6 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
-  private var replacedCon: ASTNode = _
-  private var negatedCon: ASTNode = _
 
   override def mutate(paramSeed: Identifier = null): Boolean = {
     if (isParameterizable) assert(paramSeed != null)
@@ -36,16 +34,19 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
     else {
       logger.debug("List of added conditions: " + addedAtomicCodes)
     }
-    // if there are many added condition, try to randomly choose one
-    val randomTaken = projectData.randomizer.nextInt(addedAtomicCodes.size) + 1
-    val chosenCode = addedAtomicCodes.takeRight(randomTaken).head.asInstanceOf[Identifier]
-    this.replacedCon = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
-    logger.debug("Chosen code to negate: " + chosenCode.getJavaNode())
-    this.negatedCon = getNegatedNode(chosenCode)
-    logger.debug("Negated code: " + negatedCon.toString)
 
-    ASTUtils.replaceNode(this.astRewrite, this.replacedCon, negatedCon)
-    doMutating()
+    for (chosenCon <- addedAtomicCodes) {
+      val chosenCode = chosenCon.asInstanceOf[Identifier]
+      val replacedCon = ASTUtils.searchNodeByIdentifier(document.cu, chosenCode)
+      logger.debug("Chosen code to negate: " + chosenCode.getJavaNode())
+      val negatedCon = getNegatedNode(chosenCode)
+      logger.debug("Negated code: " + negatedCon.toString)
+
+      val negateAction = ASTActionFactory.generateReplaceAction(replacedCon, negatedCon)
+      val patch = new Patch(document)
+      patch.addAction(negateAction)
+      addPatch(patch)
+    }
     true
   }
 

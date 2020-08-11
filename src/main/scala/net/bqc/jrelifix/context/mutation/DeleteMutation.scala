@@ -16,8 +16,6 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
 case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
-  private var emptyBlock: ASTNode = _
-
   override def mutate(paramSeed: Identifier = null): Boolean = {
     if (isParameterizable) assert(paramSeed != null)
     // delete only when the fault line is added in previous commit
@@ -26,9 +24,10 @@ case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
     val cs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), AddedSnippetCondition(faultStatement))
     if (cs.nonEmpty) {
       // Modify source code on ASTRewrite
-      this.emptyBlock = this.astRewrite.getAST.createInstance(classOf[Block])
-      ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), this.emptyBlock)
-      doMutating()
+      val patch = new Patch(this.document)
+      val astAction = ASTActionFactory.generateRemoveAction(faultStatement.getJavaNode())
+      patch.addAction(astAction)
+      addPatch(patch)
       true
     }
     else false

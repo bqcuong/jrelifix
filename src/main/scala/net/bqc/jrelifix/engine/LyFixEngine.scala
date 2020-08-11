@@ -18,9 +18,9 @@ import org.eclipse.jdt.core.dom.Statement
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
-                          override val projectData: ProjectData,
-                          override val context: EngineContext)
+case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
+                       override val projectData: ProjectData,
+                       override val context: EngineContext)
   extends APREngine(faults, projectData, context) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
@@ -157,9 +157,10 @@ case class JRelifixEngine(override val faults: ArrayBuffer[Identifier],
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
 
     // only support fix on changed-faulty statements
-    val stmtFaults = filterFaultFileScope(faults)
+    val stmtFaults = filterFault(faults)
     logger.debug("Filtered Faults:")
     stmtFaults.foreach(logger.info(_))
+
     for(f <- stmtFaults) {
       currentFault = f
       logger.debug("[FAULT] Try: " + currentFault)

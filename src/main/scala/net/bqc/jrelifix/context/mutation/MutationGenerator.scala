@@ -10,11 +10,11 @@ object MutationType extends Enumeration {
 
 class MutationGenerator(projectData: ProjectData) {
 
-  def getMutation(faultStatement: Identifier, mutationType: MutationType.Value, coinUp: Boolean = false): Mutation = {
+  def getMutation(faultStatement: Identifier, mutationType: MutationType.Value): Mutation = {
     mutationType match {
       case MutationType.DELETE => DeleteMutation(faultStatement, projectData)
       case MutationType.NEGATE => NegateMutation(faultStatement, projectData)
-      case MutationType.SWAP => SwapMutation(faultStatement, projectData, if (coinUp) SwapMutation.SWAP_UP else SwapMutation.SWAP_DOWN)
+      case MutationType.SWAP => SwapMutation(faultStatement, projectData)
       case MutationType.REVERT => RevertMutation(faultStatement, projectData)
       case MutationType.ADDIF => new AddIfMutation(faultStatement, projectData)
       case MutationType.CONVERT => ConvertStmt2ConMutation(faultStatement, projectData)

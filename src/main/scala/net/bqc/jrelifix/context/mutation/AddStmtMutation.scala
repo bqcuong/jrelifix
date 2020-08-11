@@ -18,8 +18,10 @@ case class AddStmtMutation(faultStatement: Identifier, projectData: ProjectData)
     val paramASTNode = paramSeed.getJavaNode()
     assert(paramASTNode.isInstanceOf[Statement])
     val faultyASTNode = faultStatement.getJavaNode()
-    ASTUtils.insertNode(this.astRewrite, faultyASTNode, paramASTNode)
-    doMutating()
+    val patch = new Patch(document)
+    val insertAction = ASTActionFactory.generateInsertAction(faultyASTNode, paramASTNode)
+    patch.addAction(insertAction)
+    addPatch(patch)
     true
   }
 

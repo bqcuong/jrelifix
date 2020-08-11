@@ -96,20 +96,24 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
             MAX_LINE_DISTANCE, overlapped = true),
           onlyRoot = true)
 
+        val patch = new Patch(document)
         if (removedCss.nonEmpty) {
           // check if there were any removed snippets near the added faulty stmt
           // it is possible that: removed old stmt -> added new stmt => we need revert this big change action
           val changeSnippet = removedCss(0)
           val prevCode = changeSnippet.srcSource
           assert(prevCode != null)
-          ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
+          val action = ASTActionFactory.generateReplaceAction(faultStatement.getJavaNode(), prevCode.getJavaNode())
+          patch.addAction(action)
           logger.debug("REVERT: Replace added statement with nearby removed stmt: %s\n-->\n%s"
             .format(faultStatement.getJavaNode().toString.trim, prevCode.getJavaNode().toString.trim))
         }
         else {
-          ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), this.astRewrite.getAST.createInstance(classOf[Block]))
+          val action = ASTActionFactory.generateRemoveAction(faultStatement.getJavaNode())
+          patch.addAction(action)
           logger.debug("REVERT: Remove added statement: " + faultStatement.getJavaNode().toString.trim)
         }
+        addPatch(patch)
         applied = true
       }
     }
@@ -124,14 +128,14 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
         val prevCode = changeSnippet.srcSource
         assert(prevCode != null)
 
-        if (changeSnippet.srcRange.beginLine > faultStatement.getBeginLine()) {
-          // insert after fault statement
-          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode())
-        }
-        else {
-          // insert before fault statement
-          ASTUtils.insertNode(this.astRewrite, faultStatement.getJavaNode(), prevCode.getJavaNode(), insertAfter = false)
-        }
+        val patch = new Patch(document)
+        val action = ASTActionFactory.generateInsertAction(
+          faultStatement.getJavaNode(),
+          prevCode.getJavaNode(),
+          changeSnippet.srcRange.beginLine > faultStatement.getBeginLine())
+
+        patch.addAction(action)
+        addPatch(patch)
 
         logger.debug("REVERT: Add removed statement: " + prevCode.getJavaNode().toString.trim)
         applied = true
@@ -159,7 +163,10 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
           }
 
           if (prevStmt != null) {
-            ASTUtils.replaceNode(this.astRewrite, faultStatement.getJavaNode(), prevStmt)
+            val patch = new Patch(document)
+            val action = ASTActionFactory.generateReplaceAction(faultStatement.getJavaNode(), prevStmt)
+            patch.addAction(action)
+            addPatch(patch)
             applied = true
           }
         }
@@ -169,7 +176,6 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     }
 
     if (applied) {
-      doMutating()
       true
     }
     else false
@@ -187,17 +193,19 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     val currentNode = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
     assert(currentNode != null)
 
+    val patch = new Patch(document)
+
     // Step 1: Remove the current block of code
-    ASTUtils.removeNode(astRewrite, currentNode)
+    val removeAction = ASTActionFactory.generateRemoveAction(currentNode)
 
     // Step 2: Put it again at the previous line number
-    if (prevLine < currCode.getBeginLine()) { // move down
-      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, prevCode.getJavaNode(), insertAfter = false)
-    }
-    else { // move up
-      ASTUtils.insertNode(astRewrite, currentNodeAtPrevLine, prevCode.getJavaNode())
-    }
+    val insertAction = ASTActionFactory.generateInsertAction(
+      faultStatement.getJavaNode(), prevCode.getJavaNode(),
+      prevLine >= currCode.getBeginLine())
 
+    patch.addAction(removeAction)
+    patch.addAction(insertAction)
+    addPatch(patch)
     true
   }
 
@@ -207,7 +215,11 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     assert(prevCode != null)
     assert(currCode != null)
     val currASTNodeOnDocument = ASTUtils.searchNodeByIdentifier(document.cu, currCode)
-    ASTUtils.replaceNode(this.astRewrite, currASTNodeOnDocument, prevCode.getJavaNode())
+
+    val patch = new Patch(document)
+    val action = ASTActionFactory.generateReplaceAction(currASTNodeOnDocument, prevCode.getJavaNode())
+    patch.addAction(action)
+    addPatch(patch)
     true
   }
 

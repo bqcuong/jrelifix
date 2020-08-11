@@ -12,7 +12,7 @@ import net.bqc.jrelifix.context.mutation.MutationGenerator
 import net.bqc.jrelifix.context.parser.JavaParser
 import net.bqc.jrelifix.context.validation.{BugSwarmTestCaseValidator, TestCaseValidator}
 import net.bqc.jrelifix.context.{EngineContext, ProjectData}
-import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
+import net.bqc.jrelifix.engine.{APREngine, LyFixEngine}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.{Faulty, PredefinedFaultIdentifier}
 import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
@@ -105,8 +105,8 @@ object JRelifixMain {
 
     logger.info("Running Repair Engine ...")
     val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)
-    val engine: APREngine = JRelifixEngine(topNFaults, projectData, context)
-    projectData.setEngine(engine.asInstanceOf[JRelifixEngine])
+    val engine: APREngine = LyFixEngine(topNFaults, projectData, context)
+    projectData.setEngine(engine.asInstanceOf[LyFixEngine])
     engine.repair()
     logger.info("Done Repair!")
     projectData.cleanTemp()
