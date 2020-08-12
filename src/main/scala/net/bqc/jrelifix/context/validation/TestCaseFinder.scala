@@ -3,6 +3,7 @@ package net.bqc.jrelifix.context.validation
 import java.io.File
 import java.net.{URL, URLClassLoader}
 import java.util
+import java.util.List
 import java.util.concurrent._
 
 import br.usp.each.saeg.jaguar.core.utils.FileUtils
@@ -72,7 +73,8 @@ class CustomClassLoaderThreadFactory(val classLoader: ClassLoader) extends Threa
 
 object TestCaseFinderUtils {
   def findTestClasses(testDir: File, testFilter: TestCaseFilter): Array[Class[_]] = {
-    val  testClassFiles: util.List[File] = FileUtils.findFilesEndingWith(testDir, Array[String]("Test.class", "TestCase.class", "Tests.class"))
+    val testClassFiles: util.List[File] = FileUtils.findFilesEndingWith(testDir, Array[String]("Test.class", "TestCase.class", "Tests.class"))
+    testClassFiles.addAll(findFilesStartWith(testDir, Array[String]("Test")))
     val classes: util.List[Class[_]] = convertToClasses(testClassFiles, testDir, testFilter)
     val classesArr = new Array[Class[_]](classes.size)
     for(i <- 0 until classes.size()) {
@@ -81,9 +83,26 @@ object TestCaseFinderUtils {
     classesArr
   }
 
+  def findFilesStartWith(dir: File, startsWith: Array[String]): util.List[File] = {
+    val classFiles = new util.ArrayList[File]
+    for (file <- dir.listFiles()) {
+      if (file.isDirectory) classFiles.addAll(findFilesStartWith(file, startsWith))
+      else if (checkStarsWith(file, startsWith)) classFiles.add(file)
+    }
+    classFiles
+  }
+
+  def checkStarsWith(file: File, startsWith: Array[String]): Boolean = {
+    for (sw <- startsWith) {
+      if (file.getName.toLowerCase().startsWith(sw.toLowerCase()))
+        return true
+    }
+    false
+  }
+
   def convertToClasses(classFiles: util.List[File], classesDir: File, testFilter: TestCaseFilter): util.List[Class[_]] = {
-    val classes: util.List[Class[_]] = new util.ArrayList[Class[_]]()
-    val var3: util.Iterator[java.io.File] = classFiles.iterator()
+    val classes = new util.ArrayList[Class[_]]()
+    val var3 = classFiles.iterator()
     while (var3.hasNext) {
       val file = var3.next()
       val c = {

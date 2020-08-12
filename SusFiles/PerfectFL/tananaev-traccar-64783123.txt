@@ -1,0 +1,1 @@
+org.traccar.protocol.CastelProtocolDecoder@83@1.00
