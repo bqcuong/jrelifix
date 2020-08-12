@@ -11,6 +11,7 @@ import ch.qos.logback.classic.Level
 import net.bqc.jrelifix.context.validation.{CustomClassLoaderThreadFactory, TestCaseFilter, TestCaseFinderUtils}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.JaguarFaultIdentifier
+import org.apache.log4j.Logger
 import org.junit.runner.JUnitCore
 import org.slf4j.LoggerFactory
 
@@ -21,6 +22,8 @@ case class JaguarConfig (heuristic: Heuristic, projectDir: File, sourceDir: File
 case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL])
   extends FaultLocalization with Callable[ArrayBuffer[Identifier]]  {
 
+  private val logger: Logger = Logger.getLogger(this.getClass)
+
   protected lazy val junit = new JUnitCore
 
   override def call(): ArrayBuffer[Identifier] = {
@@ -29,6 +32,7 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
     System.setOut(new PrintStream((_: Int) => {}))
 
     val classes = TestCaseFinderUtils.findTestClasses(config.testDir, TestCaseFilter(config.testsIgnored))
+    logger.debug("Number of found test cases: " + classes.length)
     execute(classes)
 
     System.setOut(original)
