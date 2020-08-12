@@ -7,6 +7,7 @@ import java.util.List
 import java.util.concurrent._
 
 import br.usp.each.saeg.jaguar.core.utils.FileUtils
+import org.apache.log4j.Logger
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -72,6 +73,8 @@ class CustomClassLoaderThreadFactory(val classLoader: ClassLoader) extends Threa
 }
 
 object TestCaseFinderUtils {
+  private val logger: Logger = Logger.getLogger(this.getClass)
+
   def findTestClasses(testDir: File, testFilter: TestCaseFilter): Array[Class[_]] = {
     val testClassFiles: util.List[File] = FileUtils.findFilesEndingWith(testDir, Array[String]("Test.class", "TestCase.class", "Tests.class"))
     testClassFiles.addAll(findFilesStartWith(testDir, Array[String]("Test")))
@@ -108,7 +111,12 @@ object TestCaseFinderUtils {
       val c = {
         Class.forName(FileUtils.getClassNameFromFile(classesDir, file), false, Thread.currentThread().getContextClassLoader)
       }
-      if (testFilter.acceptClass(c)) classes.add(c)
+      if (testFilter.acceptClass(c)) {
+        classes.add(c)
+      }
+      else {
+        logger.debug("==> Ignore test case: " + c)
+      }
     }
     classes
   }

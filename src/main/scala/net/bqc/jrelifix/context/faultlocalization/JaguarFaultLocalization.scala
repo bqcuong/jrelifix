@@ -33,6 +33,7 @@ case class JaguarLocalizationLibrary(config: JaguarConfig, classpath: Array[URL]
 
     val classes = TestCaseFinderUtils.findTestClasses(config.testDir, TestCaseFilter(config.testsIgnored))
     logger.debug("Number of found test cases: " + classes.length)
+    classes.foreach(tc => logger.debug(tc.getName))
     execute(classes)
 
     System.setOut(original)
