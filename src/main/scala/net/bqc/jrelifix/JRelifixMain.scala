@@ -15,7 +15,7 @@ import net.bqc.jrelifix.context.{EngineContext, ProjectData}
 import net.bqc.jrelifix.engine.{APREngine, JRelifixEngine}
 import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.identifier.fault.{Faulty, PredefinedFaultIdentifier}
-import net.bqc.jrelifix.utils.{ClassPathUtils, SourceUtils}
+import net.bqc.jrelifix.utils.{ClassPathUtils, FileFolderUtils, SourceUtils}
 import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer
@@ -28,88 +28,30 @@ object JRelifixMain {
     val cfg = OptParser.parseOpts(args)
     val projectData = ProjectData()
     projectData.setConfig(cfg)
-    projectData.makeTemp()
-    logger.debug("classpath: " + cfg.classpath())
-
-    logger.info("Parsing AST ...")
-    val astParser = JavaParser(projectData.config().projFolder, projectData.config().sourceFolder, projectData.config().classpath())
-    val (path2CuMap, class2PathMap) = astParser.batchParse()
-    projectData.compilationUnitMap.addAll(path2CuMap)
-    projectData.class2FilePathMap.addAll(class2PathMap)
-    logger.info("Done parsing AST!")
-
-    logger.info("Building source file contents (ASTRewriter) ...")
-    val sourcePath: Array[String] = Array[String](projectData.config().sourceFolder)
-    projectData.sourceFilesArray.addAll(SourceUtils.getSourceFiles(sourcePath))
-    projectData.sourceFileContents.putAll(SourceUtils.buildSourceDocumentMap(projectData.sourceFilesArray, projectData))
-    logger.info("Done building source file contents!")
-
-    logger.info("Initializing Compiler/TestCases Invoker ...")
-    val compiler = initializeCompiler(projectData.sourceFileContents, projectData)
-    if (!projectData.config().BugSwarmValidation) {
-      val compilable = compiler.compile() == ICompiler.Status.COMPILED
-      if (!compilable) {
-        logger.error("Please make sure your project compilable first!\n" +
-          "----------------COMPILATION LOG----------------\n" +
-          compiler.dequeueCompileError())
-        System.exit(1)
-      }
-    }
-    var testValidator: TestCaseValidator = null
-    if (projectData.config().BugSwarmValidation) {
-      if (projectData.config().BugSwarmImageTag != null) {
-        testValidator = new BugSwarmTestCaseValidator(projectData)
-      }
-      else {
-        logger.error("Please provide the BugSwarm image tag!")
-        System.exit(1)
-      }
-    }
-    else {
-      testValidator = new TestCaseValidator(projectData)
-    }
-    testValidator.loadTestsCasesFromOpts()
-//    testValidator.validateReducedTestCases()
-//    testValidator.validateAllTestCases()
-    logger.info("Done initializing!")
-
-    logger.info("Initializing Collectors...")
-    val differ = DiffCollector(projectData)
-    val changedSources = differ.collectChangedSources()
-    projectData.initChangedSourcesMap(changedSources)
-    val seedsCollector = SeedsCollector(projectData)
-    val changedSeedsCollector = ChangedSeedsCollector(projectData)
-    seedsCollector.collect()
-    changedSeedsCollector.collect()
-    projectData.mergeSeeds()
-    logger.info("Done Initializing Collectors!")
-
-    logger.info("Initializing Mutation Generator ...")
-    val mutationGenerator = new MutationGenerator(projectData)
-    logger.info("Done initializing!")
 
     logger.info("Trying to set up fault localization ...")
     val topNFaults = faultLocalization(projectData)
     logger.info("Finished fault localization!")
-    logger.info("Transforming faults to Java Nodes ...")
-    topNFaults.foreach {
-      case f@(fault: Faulty) =>
-        fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
-        f.setJavaNode(projectData.identifier2ASTNode(f))
-        if (f.isInstanceOf[PredefinedFaultIdentifier] && f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
-    }
-    logger.info("Done Transforming!")
-    logger.info("Faults after transforming to Java Nodes:")
-    topNFaults.take(projectData.config().topNFaults).foreach(logger.info(_))
-    projectData.backupFaultFileSource(topNFaults)
 
-    logger.info("Running Repair Engine ...")
-    val context = new EngineContext(astParser, differ, compiler, testValidator, mutationGenerator)
-    val engine: APREngine = JRelifixEngine(topNFaults, projectData, context)
-    projectData.setEngine(engine.asInstanceOf[JRelifixEngine])
-    engine.repair()
-    logger.info("Done Repair!")
-    projectData.cleanTemp()
+    val FL_THRESHOLD = 0.1f
+    val bug = "Bears-98"
+    val fileName = "SusFiles/NormalFL/" + bug + ".txt"
+    val fileName2 = "SusFiles/PerfectFL/" + bug + ".txt"
+//    FileFolderUtils.writeFile(fileName2, "")
+    val content: StringBuffer = new StringBuffer()
+    topNFaults.foreach {
+      case f@(fault: Faulty) => {
+        if (fault.getSuspiciousness() >= FL_THRESHOLD) {
+          val faultStr = "%s@%d@%.2f".format(fault.getClassName(), fault.getLine(), fault.getSuspiciousness())
+          println(faultStr)
+          content.append(faultStr)
+          content.append("\n")
+        }
+      }
+    }
+    FileFolderUtils.writeFile(fileName, content.toString)
+    println("Done!")
+    System.exit(0)
   }
 
   def initializeCompiler(sourceFileContents: java.util.HashMap[String, DocumentASTRewrite], projectData: ProjectData): ICompiler  = {
@@ -183,6 +125,6 @@ object JRelifixMain {
     logger.info("Considering top %d fault locations".format(projectData.config().topNFaults))
     val topNFaults = rankedList.take(projectData.config().topNFaults)
 
-    topNFaults
+    rankedList
   }
 }
