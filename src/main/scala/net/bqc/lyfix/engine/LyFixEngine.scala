@@ -150,7 +150,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
           applied = mutation.mutate(null)
         }
 
-        logger.debug("[OPERATOR] " + nextOperator + "Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
+        logger.debug("[OPERATOR] " + nextOperator + " Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
         var reducedTSValidation: (Boolean, ArrayBuffer[TestCase]) = null
         var compileStatus: ICompiler.Status = null
         if (applied) {

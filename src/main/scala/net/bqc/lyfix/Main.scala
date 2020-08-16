@@ -27,10 +27,13 @@ object Main {
   val logger: Logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
-    val bugId = "tananaev-traccar-64783123"
+//    val bugId = "tananaev-traccar-64783123"
+    val bugId = "tananaev-traccar-255051211"
+
+
     configLog4J(bugId)
-    val args = FileFolderUtils.readFile("ArgFiles/%s.txt".format(bugId)).split("\n")
-    repair(args)
+    val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(bugId)).split("\n")
+    repair(predefinedArgs)
   }
 
   def configLog4J(bugId: String): Unit = {
