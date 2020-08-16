@@ -24,7 +24,7 @@ case class MethodInvocationMutation(faultStatement: Identifier, projectData: Pro
     // collect all MI on fault stmt
     val mis = collectMIFromStmt(faultStatement.getJavaNode())
     for (mi <- mis) {
-      logger.debug(mi.getName)
+//      logger.debug(mi.getName)
     }
     false
   }

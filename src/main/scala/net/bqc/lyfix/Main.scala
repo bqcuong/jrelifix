@@ -1,6 +1,7 @@
 package net.bqc.lyfix
 
 import java.io.File
+import java.util.Properties
 
 import br.usp.each.saeg.jaguar.core.model.core.requirement.LineTestRequirement
 import net.bqc.lyfix.config.OptParser
@@ -17,7 +18,7 @@ import net.bqc.lyfix.engine.{APREngine, LyFixEngine}
 import net.bqc.lyfix.identifier.Identifier
 import net.bqc.lyfix.identifier.fault.{Faulty, JaguarFaultIdentifier, PredefinedFaultIdentifier}
 import net.bqc.lyfix.utils.{ClassPathUtils, FileFolderUtils, SourceUtils}
-import org.apache.log4j.Logger
+import org.apache.log4j.{Logger, PropertyConfigurator}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -27,9 +28,18 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     val bugId = "tananaev-traccar-64783123"
-
+    configLog4J(bugId)
     val args = FileFolderUtils.readFile("ArgFiles/%s.txt".format(bugId)).split("\n")
     repair(args)
+  }
+
+  def configLog4J(bugId: String): Unit = {
+    val configStream = this.getClass.getResourceAsStream("/log4j.properties")
+    val props = new Properties();
+    props.load(configStream);
+    configStream.close();
+    props.setProperty("log4j.appender.FILE.File", "logs/%s.log".format(bugId))
+    PropertyConfigurator.configure(props)
   }
 
   def repair(args: Array[String]): Unit = {
