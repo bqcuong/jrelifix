@@ -113,6 +113,8 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Filtered Faults:")
     stmtFaults.foreach(logger.info(_))
 
+    val patchDiffs: ArrayBuffer[String] = ArrayBuffer[String]()
+
     for(f <- stmtFaults) {
       currentFault = f
       logger.debug("[FAULT] Try: " + currentFault)
@@ -146,51 +148,52 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
           applied = mutation.mutate(null)
         }
 
-        logger.debug("[OPERATOR] Applied: " + (if (applied) "\u2713" else "\u00D7"))
+        logger.debug("[OPERATOR] Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
         var reducedTSValidation: (Boolean, ArrayBuffer[TestCase]) = null
         var compileStatus: ICompiler.Status = null
         if (applied) {
-          logger.debug("==========> AFTER MUTATING")
-          projectData.updateChangedSourceFiles()
-          compileStatus = this.context.compiler.compile()
-          logger.debug("[COMPILE] Status: " + compileStatus)
+          val patches = mutation.getPatches()
+          for (i <- 0 to patches.length)
+          for (patch <- patches) {
+            patch.applyEdits()
+            logger.debug("[PATCH] Applied patch: " + i)
 
-          if (compileStatus == ICompiler.Status.COMPILED) {
-            reducedTSValidation = this.context.testValidator.validateReducedTestCases()
-            logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
-            if (reducedTSValidation._1) {
-//              val wholeTSValidation = this.context.testValidator.validateAllTestCases()
-              val wholeTSValidation = (true, ArrayBuffer[TestCase]())
-              logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
-              if (wholeTSValidation._1) {
-                logger.debug("==========================================")
-                logger.debug("FOUND A REPAIR (See below patch):")
-                for (faultFile <- projectData.originalFaultFiles) {
-                  val changedDocument = projectData.sourceFileContents.get(faultFile)
-                  val originalSourceContent = changedDocument.document.get()
-                  val patchedSourceContent = changedDocument.modifiedDocument.get()
-                  val diff = DiffUtils.getDiff(
-                    originalSourceContent,
-                    patchedSourceContent,
-                    faultFile.replace(projectData.config().projFolder + File.separator, ""))
-                  if (!diff.trim.isEmpty) {
-                    logger.debug("------------------------------------------\n" + diff)
+            compileStatus = this.context.compiler.compile()
+            logger.debug("[COMPILE] Status: " + compileStatus)
+
+            if (compileStatus == ICompiler.Status.COMPILED) {
+              reducedTSValidation = this.context.testValidator.validateReducedTestCases()
+              logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
+              if (reducedTSValidation._1) {
+                //val wholeTSValidation = this.context.testValidator.validateAllTestCases()
+                val wholeTSValidation = (true, ArrayBuffer[TestCase]())
+                logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
+                if (wholeTSValidation._1) {
+                  logger.debug("==========================================")
+                  logger.debug("FOUND A REPAIR (See below patch):")
+                  for (faultFile <- projectData.originalFaultFiles) {
+                    val changedDocument = projectData.sourceFileContents.get(faultFile)
+                    val originalSourceContent = changedDocument.document.get()
+                    val patchedSourceContent = changedDocument.modifiedDocument.get()
+                    val diff = DiffUtils.getDiff(originalSourceContent, patchedSourceContent,
+                      faultFile.replace(projectData.config().projFolder + File.separator, ""))
+                    if (!diff.trim.isEmpty) {
+                      logger.debug("------------------------------------------\n" + diff)
+                      patchDiffs.addOne(diff)
+                    }
                   }
                 }
-                logger.debug("==========================================")
-                return
               }
             }
-          }
 
-          mutation.unmutate()
-          projectData.updateChangedSourceFiles()
+            patch.undoEdits()
+          }
         }
       }
     }
 
     logger.debug("==========================================")
-    logger.debug("NOT FOUND ANY REPAIR")
+    logger.debug("THE REPAIR PROCESS ENDED")
     logger.debug("==========================================")
   }
 

@@ -34,6 +34,8 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
 
   }
 
+  def getPatches(): ArrayBuffer[Patch] = patches
+
   def isParameterizable: Boolean
 
   /**
