@@ -1,18 +1,18 @@
-package net.bqc.jrelifix
+package net.bqc.lyfix
 
 import junit.framework.TestCase
-import net.bqc.jrelifix.Main.{faultLocalization, initializeCompiler}
-import net.bqc.jrelifix.config.{Config, OptParser}
-import net.bqc.jrelifix.context.collector.{ChangedSeedsCollector, SeedsCollector}
-import net.bqc.jrelifix.context.compiler.ICompiler
-import net.bqc.jrelifix.context.diff.DiffCollector
-import net.bqc.jrelifix.context.mutation.MutationGenerator
-import net.bqc.jrelifix.context.parser.JavaParser
-import net.bqc.jrelifix.context.validation.TestCaseValidator
-import net.bqc.jrelifix.context.{EngineContext, ProjectData}
-import net.bqc.jrelifix.identifier.Identifier
-import net.bqc.jrelifix.identifier.fault.Faulty
-import net.bqc.jrelifix.utils.SourceUtils
+import net.bqc.lyfix.Main.{faultLocalization, initializeCompiler}
+import net.bqc.lyfix.config.{Config, OptParser}
+import net.bqc.lyfix.context.collector.{ChangedSeedsCollector, SeedsCollector}
+import net.bqc.lyfix.context.compiler.ICompiler
+import net.bqc.lyfix.context.diff.DiffCollector
+import net.bqc.lyfix.context.mutation.MutationGenerator
+import net.bqc.lyfix.context.parser.JavaParser
+import net.bqc.lyfix.context.validation.TestCaseValidator
+import net.bqc.lyfix.context.{EngineContext, ProjectData}
+import net.bqc.lyfix.identifier.Identifier
+import net.bqc.lyfix.identifier.fault.Faulty
+import net.bqc.lyfix.utils.SourceUtils
 import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer

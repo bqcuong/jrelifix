@@ -1,6 +1,6 @@
-package net.bqc.jrelifix.context.mutation
+package net.bqc.lyfix.context.mutation
 
-import net.bqc.jrelifix.BaseTest
+import net.bqc.lyfix.BaseTest
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite
 
 class NegateMutationTest extends BaseTest {
