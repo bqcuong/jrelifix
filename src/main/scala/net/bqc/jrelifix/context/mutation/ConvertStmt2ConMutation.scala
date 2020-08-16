@@ -9,13 +9,14 @@ import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.ExpressionStatement
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: ProjectData)
   extends AddIfMutation(faultStatement, projectData) {
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  override def mutate(paramSeed: Identifier = null): Boolean = {
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
     val faultFile = faultStatement.getFileName()
     val seedList = Searcher
       .searchSeeds(projectData.seedsMap, faultFile, BoolMethodInvocationCondition(faultStatement))
@@ -36,8 +37,7 @@ case class ConvertStmt2ConMutation(faultStatement: Identifier, projectData: Proj
 
     // convert the method invocation (closetMI) as a condition???
     // Not necessary, a bool method invocation has been already a condition
-
-    super.mutate(closetMI)
+    super.mutate(ArrayBuffer[Identifier] { closetMI })
     true
   }
 

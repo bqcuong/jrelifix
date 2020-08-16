@@ -8,6 +8,8 @@ import net.bqc.jrelifix.search.cs.AddedSnippetCondition
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.eclipse.jdt.core.dom.{ASTNode, Block}
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
  * To delete incorrectly added statement/expression in previous version
  * @param faultStatement
@@ -16,8 +18,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
 case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
-  override def mutate(paramSeed: Identifier = null): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
     // delete only when the fault line is added in previous commit
     if (!faultStatement.isStatement()) return false
     val faultFile = faultStatement.getFileName()

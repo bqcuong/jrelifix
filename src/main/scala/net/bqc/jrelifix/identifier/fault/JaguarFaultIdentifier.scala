@@ -6,13 +6,17 @@ import org.eclipse.jdt.core.dom.ASTNode
 
 case class JaguarFaultIdentifier(lineNumber: Int,
                                  className: String,
-                                 suspiciousness: Double)
+                                 var suspiciousness: Double)
 
   extends Identifier with Faulty {
 
   var fileName: String = _
 
   def getSuspiciousness(): Double = suspiciousness
+
+  def setSuspiciousness(sus: Double): Unit = {
+    this.suspiciousness = sus
+  }
 
   override def getBeginLine(): Int = lineNumber
 

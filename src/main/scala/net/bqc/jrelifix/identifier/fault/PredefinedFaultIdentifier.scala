@@ -7,7 +7,7 @@ case class PredefinedFaultIdentifier(beginLine: Int,
                                      beginColumn: Int,
                                      endColumn: Int,
                                      className: String,
-                                     suspiciousness: Double = 1.0f)
+                                     var suspiciousness: Double = 1.0f)
 
   extends PositionBasedIdentifier(beginLine, endLine, beginColumn, endColumn) with Faulty {
 
@@ -23,5 +23,9 @@ case class PredefinedFaultIdentifier(beginLine: Int,
 
   override def toString: String = {
     super.toString + " -> " + this.javaNode.toString.trim
+  }
+
+  override def setSuspiciousness(sus: Double): Unit = {
+    this.suspiciousness = sus
   }
 }

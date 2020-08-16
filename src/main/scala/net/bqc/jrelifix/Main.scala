@@ -20,7 +20,7 @@ import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer
 
-object JRelifixMain {
+object Main {
 
   val logger: Logger = Logger.getLogger(this.getClass)
 

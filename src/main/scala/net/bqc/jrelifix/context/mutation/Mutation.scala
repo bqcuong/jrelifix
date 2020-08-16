@@ -38,9 +38,9 @@ abstract class Mutation(faultStatement: Identifier, projectData: ProjectData) {
 
   /**
    * Handle the mutating actions
-   * @param paramSeed if not null, this operator is parameterizable
+   * @param paramSeeds if not null, this operator is parameterizable
    */
-  def mutate(paramSeed: Identifier = null): Boolean
+  def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean
   def applicable(): Boolean
   def getRewriter: ASTRewrite = this.astRewrite
 }

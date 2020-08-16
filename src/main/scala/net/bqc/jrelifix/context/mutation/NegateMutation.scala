@@ -9,6 +9,7 @@ import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.ASTNode
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
@@ -16,8 +17,8 @@ case class NegateMutation(faultStatement: Identifier, projectData: ProjectData)
 
   private val logger: Logger = Logger.getLogger(this.getClass)
 
-  override def mutate(paramSeed: Identifier = null): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
     // only applicable to conditional statement
     if (!faultStatement.isConditionalStatement()) return false
     // check if faulty statement is changed

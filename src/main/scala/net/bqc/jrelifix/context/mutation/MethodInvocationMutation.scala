@@ -17,10 +17,10 @@ case class MethodInvocationMutation(faultStatement: Identifier, projectData: Pro
   /**
    * Handle the mutating actions
    *
-   * @param paramSeed if not null, this operator is parameterizable
+   * @param paramSeeds if not null, this operator is parameterizable
    */
-  override def mutate(paramSeed: Identifier): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
     // collect all MI on fault stmt
     val mis = collectMIFromStmt(faultStatement.getJavaNode())
     for (mi <- mis) {

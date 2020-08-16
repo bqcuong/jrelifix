@@ -5,6 +5,8 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.ASTUtils
 import org.eclipse.jdt.core.dom.{ASTNode, CatchClause, MethodDeclaration, TryStatement}
 
+import scala.collection.mutable.ArrayBuffer
+
 case class AddTryCatchMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
@@ -13,10 +15,10 @@ case class AddTryCatchMutation(faultStatement: Identifier, projectData: ProjectD
   /**
    * Handle the mutating actions
    *
-   * @param paramSeed if not null, this operator is parameterizable
+   * @param paramSeeds if not null, this operator is parameterizable
    */
-  override def mutate(paramSeed: Identifier): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
     val faultAST = faultStatement.getJavaNode()
 
     val parentTryStmt = tryToGetTryCatchBlock(faultAST)

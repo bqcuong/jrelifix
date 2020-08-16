@@ -20,15 +20,15 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
 
   override def isParameterizable: Boolean = true
 
-  override def mutate(paramSeed: Identifier): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
-    if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return false
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
+//    if (!DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)) return false
     if (!faultStatement.isConditionalStatement()) return false
 
     var applied = false
     val astNode = faultStatement.getJavaNode()
 
-    applied = addConditionForConditionalStatement(astNode.asInstanceOf[IfStatement], paramSeed)
+    applied = addConditionForConditionalStatement(astNode.asInstanceOf[IfStatement], paramSeeds)
 
     if (applied) {
       doMutating()
@@ -37,19 +37,23 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     else false
   }
 
-  def addConditionForConditionalStatement(faultNode: IfStatement, insertedCon: Identifier): Boolean = {
+  def addConditionForConditionalStatement(faultNode: IfStatement, insertedCons: ArrayBuffer[Identifier]): Boolean = {
     val faultFile = faultStatement.getFileName()
     val parentCon = ASTUtils.getConditionalNode(faultNode)
     val boolNodes = ASTUtils.getBoolNodes(parentCon)
     assert(boolNodes.nonEmpty)
 
     // assure the insertedCon does not exist in the parenCond
-    var chosenInsertlyCon = insertedCon
+    var filteredInsertedCon = ArrayBuffer[Identifier]()
     val parenCode = parentCon.toString
-    if (parenCode.contains(chosenInsertlyCon.getJavaNode().toString)) {
-      chosenInsertlyCon = projectData.getEngine.chooseRandomlyExpr(NotBelongSeedCondition(parenCode))
+
+    for (insertedCon <- insertedCons) {
+      if (!parenCode.contains(insertedCon.getJavaNode().toString)) {
+        filteredInsertedCon.addOne(insertedCon)
+      }
     }
-    if (chosenInsertlyCon == null) {
+
+    if (filteredInsertedCon.isEmpty) {
       logger.debug("Could not find any satisfied condition from expr seed set to insert...")
       return false
     }
@@ -69,23 +73,32 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     }
     if (changedBoolNodes.isEmpty) changedBoolNodes = boolNodes
 
-    // randomly choose on the candidate list, very fair
-    val ranIndex = projectData.randomizer.nextInt(changedBoolNodes.size)
-    val chosenCondition = changedBoolNodes(ranIndex)
-    logger.debug("The chosen condition to be combined with: " + chosenCondition)
+    for (chosenCon <- filteredInsertedCon) {
+      logger.debug("The chosen newly condition to be added: " + chosenCon.getJavaNode().toString)
+      for (changedBoolNode <- changedBoolNodes) {
+        logger.debug("The chosen condition to be combined with: " + changedBoolNode)
 
-    // choose logic operator
-    val randOp = projectData.randomizer.between(0, 2)
-    val op = if (randOp > 0) "||" else "&&"
+        // create new condition node with &&
+        val newCode1 = "(%s %s %s)".format(changedBoolNode, "&&", chosenCon.getJavaNode().toString)
+        val newNode1 = ASTUtils.createExprNodeFromString(newCode1)
+        logger.debug("Combining condition: " + newCode1)
 
-    // create new condition node
-    val newCode = "(%s %s %s)".format(chosenCondition, op, chosenInsertlyCon.getJavaNode().toString)
-    val newNode = ASTUtils.createExprNodeFromString(newCode)
-    logger.debug("Combining condition: " + newCode)
+        // create new condition node with ||
+        val newCode2 = "(%s %s %s)".format(changedBoolNode, "||", chosenCon.getJavaNode().toString)
+        val newNode2 = ASTUtils.createExprNodeFromString(newCode2)
+        logger.debug("Combining condition: " + newCode2)
 
-    // replace the chosenCondition by the new combining condition node
-    ASTUtils.replaceNode(this.astRewrite, chosenCondition, newNode)
+        val patch1 = new Patch(this.document)
+        val replaceAction1 = ASTActionFactory.generateReplaceAction(changedBoolNode, newNode1)
+        patch1.addAction(replaceAction1)
+        addPatch(patch1)
 
+        val patch2 = new Patch(this.document)
+        val replaceAction2 = ASTActionFactory.generateReplaceAction(changedBoolNode, newNode2)
+        patch2.addAction(replaceAction2)
+        addPatch(patch2)
+      }
+    }
     true
   }
 

@@ -10,6 +10,8 @@ import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{ASTNode, Block, Statement}
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
  * To revert the modified statement/expression to old ones in previous version:
  * Change actions covered:
@@ -68,8 +70,8 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     }
   }
 
-  override def mutate(paramSeed: Identifier = null): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
     var applied = false
     val faultLineNumber = faultStatement.getLine()
     val faultFile = faultStatement.getFileName()

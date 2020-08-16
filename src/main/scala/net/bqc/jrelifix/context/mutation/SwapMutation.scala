@@ -7,6 +7,8 @@ import net.bqc.jrelifix.identifier.Identifier
 import net.bqc.jrelifix.utils.{ASTUtils, DiffUtils}
 import org.eclipse.jdt.core.dom.{ASTNode, Block}
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
  * Swap changed statement with siblings
  * @param faultStatement
@@ -15,8 +17,8 @@ import org.eclipse.jdt.core.dom.{ASTNode, Block}
 case class SwapMutation(faultStatement: Identifier, projectData: ProjectData)
   extends Mutation(faultStatement, projectData) {
 
-  override def mutate(paramSeed: Identifier = null): Boolean = {
-    if (isParameterizable) assert(paramSeed != null)
+  override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
+    if (isParameterizable) assert(paramSeeds != null)
     if (!faultStatement.isSwappableStatement()) return false
 
     val isChanged = DiffUtils.isChanged(projectData.changedSourcesMap, faultStatement)

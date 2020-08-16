@@ -1,7 +1,7 @@
 package net.bqc.jrelifix
 
 import junit.framework.TestCase
-import net.bqc.jrelifix.JRelifixMain.{faultLocalization, initializeCompiler}
+import net.bqc.jrelifix.Main.{faultLocalization, initializeCompiler}
 import net.bqc.jrelifix.config.{Config, OptParser}
 import net.bqc.jrelifix.context.collector.{ChangedSeedsCollector, SeedsCollector}
 import net.bqc.jrelifix.context.compiler.ICompiler

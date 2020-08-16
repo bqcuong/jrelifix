@@ -27,8 +27,6 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
   private val tabu = mutable.HashSet[Identifier]()
   private val conExprSet: mutable.HashSet[Identifier] = mutable.HashSet[Identifier]()
   private val stmtSet: mutable.HashSet[Identifier] = mutable.HashSet[Identifier]()
-  private var currentChosenCon: Identifier = null
-  private var currentChosenStmt: Identifier = null
   private var currentFault: Identifier = null
 
   private def collectConditionExpressions(): mutable.HashSet[Identifier] = {
@@ -60,67 +58,24 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     result
   }
 
-  def chooseRandomlyExpr(condition: ISeedCondition = null): Identifier = {
-    val faultFile = currentFault.getFileName()
-    val conExprSet = this.conExprSet.filter(_.getFileName().equals(faultFile))
-    chooseRandomlySeed(conExprSet, condition)
-  }
-
-  def chooseRandomlyStmt(): Identifier = {
-    val faultFile = currentFault.getFileName()
-    val stmtSet = this.stmtSet.filter(_.getFileName().equals(faultFile))
-    chooseRandomlySeed(stmtSet)
-  }
-
-  def chooseRandomlySeed(seedSet: mutable.HashSet[Identifier], condition: ISeedCondition = null): Identifier = {
-    val filteredSet = mutable.HashSet[Identifier]()
-    if (condition != null) {
-      filteredSet.addAll(seedSet.filter(s => condition.satisfied(s.asInstanceOf[Seedy])))
-    }
-    else {
-      filteredSet.addAll(seedSet)
-    }
-
-    var chosenSeed: Identifier = null
-    if (filteredSet.isEmpty) {
-      logger.debug("Seed Set is empty!")
-      chosenSeed = null
-    }
-    else {
-      var exceed = 0
-      do {
-        val randDrop = projectData.randomizer.nextInt(filteredSet.size)
-        chosenSeed = filteredSet.drop(randDrop).head
-        exceed += 1
-      }
-      while (exceed < 1000 && tabu.contains(chosenSeed))
-      logger.debug("[OPERATOR PARAM] Chosen Parameter Seed: " + chosenSeed)
-    }
-    chosenSeed
-  }
-
-  private def filterFault(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
-    val filteredList = ArrayBuffer[Identifier]()
+  private def reRankFaults(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
     for (f <- faults) {
       val isChanged = DiffUtils.isChanged(projectData.changedSourcesMap, f, 2)
       val isStmt = f.getJavaNode().isInstanceOf[Statement]
       if (isChanged && isStmt) {
-        filteredList.addOne(f)
+        val faulty = f.asInstanceOf[Faulty]
+        faulty.setSuspiciousness(faulty.getSuspiciousness() + 1.0)
       }
     }
-    filteredList
+    faults.sortWith((i1, i2) => i1.asInstanceOf[Faulty].getSuspiciousness() > i2.asInstanceOf[Faulty].getSuspiciousness())
   }
 
-  private def filterFaultFileScope(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
-    val filteredList = ArrayBuffer[Identifier]()
-    for (f <- faults) {
-      val isChanged = projectData.changedSourcesMap.contains(f.getFileName())
-      val isStmt = f.getJavaNode().isInstanceOf[Statement]
-      if (f.asInstanceOf[Faulty].getSuspiciousness() > 0.5f && isChanged && isStmt) {
-        filteredList.addOne(f)
-      }
+  private def rankSeeds(seeds: mutable.HashSet[Identifier]): ArrayBuffer[Identifier] = {
+    val results = ArrayBuffer[Identifier]()
+    for (seed <- seeds) {
+      results.addOne(seed)
     }
-    filteredList
+    results
   }
 
   override def repair(): Unit = {
@@ -151,27 +106,22 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Primary Operators: " + PRIMARY_OPERATORS)
     logger.debug("Secondary Operators: " + SECONDARY_OPERATORS)
 
-    val P = 20
-    var iter = 0
-
     val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
 
     // only support fix on changed-faulty statements
-    val stmtFaults = filterFault(faults)
+    val stmtFaults = reRankFaults(faults)
     logger.debug("Filtered Faults:")
     stmtFaults.foreach(logger.info(_))
 
     for(f <- stmtFaults) {
       currentFault = f
       logger.debug("[FAULT] Try: " + currentFault)
-      val faultFile = currentFault.getFileName()
-      var changedCount = 0
       this.tabu.clear()
 
       val operators = projectData.randomizer.shuffle(PRIMARY_OPERATORS)
       logger.debug("[OPERATOR] Candidates: " + operators)
 
-      while(iter <= P && operators.nonEmpty) {
+      while(operators.nonEmpty) {
         val nextOperator = operators.dequeue()
         logger.debug("[OPERATOR] Try: " + nextOperator)
 
@@ -179,18 +129,18 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
         var applied: Boolean = false
         if (mutation.isParameterizable) {
           logger.debug("[OPERATOR PARAM] Picking a parameter seed for parameterizable operator %s...".format(nextOperator))
-          if (nextOperator == MutationType.ADDSTMT) currentChosenStmt = chooseRandomlyStmt()
-          else currentChosenCon = chooseRandomlyExpr()
+          var seeds: ArrayBuffer[Identifier] = null
+          if (nextOperator == MutationType.ADDSTMT) {
+            seeds = rankSeeds(stmtSet)
+          }
+          else if (nextOperator != MutationType.ADDSTMT) {
+            seeds = rankSeeds(conExprSet)
+          }
 
-          if (nextOperator == MutationType.ADDSTMT && currentChosenStmt != null) {
-            applied = mutation.mutate(currentChosenStmt)
+          if (seeds.nonEmpty) {
+            applied = mutation.mutate(seeds)
           }
-          else if (nextOperator != MutationType.ADDSTMT && currentChosenCon != null) {
-            applied = mutation.mutate(currentChosenCon)
-          }
-          else {
-            applied = false
-          }
+          else applied = false
         }
         else {
           applied = mutation.mutate(null)
@@ -235,23 +185,6 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
 
           mutation.unmutate()
           projectData.updateChangedSourceFiles()
-        }
-
-        if (applied && compileStatus == ICompiler.Status.COMPILED && !reducedTSValidation._1) {
-          changedCount += 1
-          iter += 1
-          if (mutation.isParameterizable) {
-            val newFailedTSNames: Set[String] = reducedTSValidation._2.map(_.getFullName).toSet
-            if (diffResults(reducedTSNames, newFailedTSNames)) {
-              logger.debug("[OPERATOR] Reuse: " + nextOperator)
-              operators.enqueue(nextOperator)
-            }
-          }
-        }
-        else if (!applied || (applied && compileStatus != ICompiler.Status.COMPILED)) {
-          if (currentChosenCon != null) {
-            tabu.addOne(currentChosenCon)
-          }
         }
       }
     }
