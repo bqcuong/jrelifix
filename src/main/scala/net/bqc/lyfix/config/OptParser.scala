@@ -65,6 +65,10 @@ object OptParser {
       .action((o, c) => c.copy(faultLines = o))
       .text("Faulty lines with class names, e.g., a.b.c.XYZ: ")
 
+    opt[String]("faultFile")
+      .action((o, c) => c.copy(faultFile = o))
+      .text("A file which contains faulty lines with class names, e.g., a.b.c.XYZ@123@1.00")
+
     opt[Int]("topNFaults")
       .action((o, c) => c.copy(topNFaults = o))
       .text("Top N Faults to be considered, default is 100")

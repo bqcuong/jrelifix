@@ -1,0 +1,1 @@
+org.openpnp.machine.reference.feeder.ReferenceStripFeeder@250@1.00

@@ -2,6 +2,7 @@ package net.bqc.lyfix
 
 import java.io.File
 
+import br.usp.each.saeg.jaguar.core.model.core.requirement.LineTestRequirement
 import net.bqc.lyfix.config.OptParser
 import net.bqc.lyfix.context.collector.{ChangedSeedsCollector, SeedsCollector}
 import net.bqc.lyfix.context.compiler.inmemory.JavaJDKCompiler
@@ -14,8 +15,8 @@ import net.bqc.lyfix.context.validation.{BugSwarmTestCaseValidator, TestCaseVali
 import net.bqc.lyfix.context.{EngineContext, ProjectData}
 import net.bqc.lyfix.engine.{APREngine, LyFixEngine}
 import net.bqc.lyfix.identifier.Identifier
-import net.bqc.lyfix.identifier.fault.{Faulty, PredefinedFaultIdentifier}
-import net.bqc.lyfix.utils.{ClassPathUtils, SourceUtils}
+import net.bqc.lyfix.identifier.fault.{Faulty, JaguarFaultIdentifier, PredefinedFaultIdentifier}
+import net.bqc.lyfix.utils.{ClassPathUtils, FileFolderUtils, SourceUtils}
 import org.apache.log4j.Logger
 
 import scala.collection.mutable.ArrayBuffer
@@ -25,6 +26,13 @@ object Main {
   val logger: Logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
+    val bugId = "tananaev-traccar-64783123"
+
+    val args = FileFolderUtils.readFile("ArgFiles/%s.txt".format(bugId)).split("\n")
+    repair(args)
+  }
+
+  def repair(args: Array[String]): Unit = {
     val cfg = OptParser.parseOpts(args)
     val projectData = ProjectData()
     projectData.setConfig(cfg)
@@ -136,7 +144,23 @@ object Main {
   def faultLocalization(projectData: ProjectData): ArrayBuffer[Identifier] = {
     var rankedList: ArrayBuffer[Identifier] = null
 
-    if (projectData.config().faultLines != null) { // Fault information is given manually
+    if (projectData.config().faultFile != null) {
+      logger.info("Doing localization with predefined faults in provided susp file...")
+      val faultLines = FileFolderUtils.readFile(projectData.config().faultFile).split("\n")
+      rankedList = ArrayBuffer[Identifier]()
+      for (faultLine <- faultLines) {
+        val parts: Array[String] = faultLine.split("@")
+        val className = parts(0)
+        val suspScore = parts(2).toDouble
+        val lineNumbers = parts(1).split(",")
+        for (ln <- lineNumbers) {
+          val fault = JaguarFaultIdentifier(ln.toInt, className, suspScore)
+          rankedList.addOne(fault)
+        }
+      }
+      rankedList = rankedList.sortWith((i1, i2) => i1.asInstanceOf[Faulty].getSuspiciousness() > i2.asInstanceOf[Faulty].getSuspiciousness())
+    }
+    else if (projectData.config().faultLines != null) { // Fault information is given manually
       // Note: fault lines are not provided with suspiciousness score
       // but with exact location of fault components (startLine, endLine, startColumn, endColumn)
       // because the given fault lines are the absolute correct ones, the repair engine needs only focus on these lines

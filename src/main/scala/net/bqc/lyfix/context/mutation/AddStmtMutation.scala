@@ -22,6 +22,7 @@ case class AddStmtMutation(faultStatement: Identifier, projectData: ProjectData)
       val patch = new Patch(document)
       val insertAction = ASTActionFactory.generateInsertAction(faultyASTNode, paramASTNode)
       patch.addAction(insertAction)
+      patch.addUsingSeed(seed)
       addPatch(patch)
     }
     true

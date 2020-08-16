@@ -26,7 +26,8 @@ case class Config(
                    isDataFlow: Boolean = false,
                    locHeuristic: String = "Ochiai",
                    faultLines: String = null,
-                   topNFaults: Int = 100,
+                   faultFile: String = null,
+                   topNFaults: Int = 1000,
 
                    javaHome: String = null,
                    testDriver: String = null,

@@ -73,7 +73,9 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
   private def rankSeeds(seeds: mutable.HashSet[Identifier]): ArrayBuffer[Identifier] = {
     val results = ArrayBuffer[Identifier]()
     for (seed <- seeds) {
-      results.addOne(seed)
+      if (!tabu.contains(seed)) {
+        results.addOne(seed)
+      }
     }
     results
   }
@@ -148,15 +150,15 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
           applied = mutation.mutate(null)
         }
 
-        logger.debug("[OPERATOR] Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
+        logger.debug("[OPERATOR] " + nextOperator + "Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
         var reducedTSValidation: (Boolean, ArrayBuffer[TestCase]) = null
         var compileStatus: ICompiler.Status = null
         if (applied) {
           val patches = mutation.getPatches()
-          for (i <- 0 to patches.length)
-          for (patch <- patches) {
+          for (i <- patches.indices) {
+            val patch = patches(i)
             patch.applyEdits()
-            logger.debug("[PATCH] Applied patch: " + i)
+            logger.debug("[PATCH][" + nextOperator + "] Applied patch: " + i)
 
             compileStatus = this.context.compiler.compile()
             logger.debug("[COMPILE] Status: " + compileStatus)
@@ -184,6 +186,9 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
                   }
                 }
               }
+            }
+            else { // not compiled
+              tabu.addAll(patch.getUsingSeeds())
             }
 
             patch.undoEdits()

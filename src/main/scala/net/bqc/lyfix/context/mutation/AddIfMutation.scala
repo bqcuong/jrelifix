@@ -51,6 +51,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
         val replaceAction = ASTActionFactory.generateReplaceAction(replacedCon, chosenInsertlyCon.getJavaNode())
         val patch = new Patch(document)
         patch.addAction(replaceAction)
+        patch.addUsingSeed(chosenInsertlyCon)
         addPatch(patch)
       }
     }
@@ -69,6 +70,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
       val replaceAction = ASTActionFactory.generateReplaceAction(wrappedNode, newIfNode)
       val patch = new Patch(document)
       patch.addAction(replaceAction)
+      patch.addUsingSeed(chosenCon)
       addPatch(patch)
     }
     true
@@ -123,6 +125,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
         ASTUtils.insertNode(this.astRewrite, faultNode, ifNode)
         val insertAction = ASTActionFactory.generateInsertAction(faultNode, ifNode)
         patch.addAction(insertAction)
+        patch.addUsingSeed(chosenCon)
 
         // replace original declaration with new declaration
         var declStr = "%s ".format(variableCodes(0).declType.toString)

@@ -1,6 +1,7 @@
 package net.bqc.lyfix.context.mutation
 
 import net.bqc.lyfix.context.compiler.DocumentASTRewrite
+import net.bqc.lyfix.identifier.Identifier
 import net.bqc.lyfix.utils.ASTUtils
 import org.eclipse.jdt.core.dom.{ASTNode, Block, CatchClause, TryStatement}
 import org.eclipse.jdt.core.dom.rewrite.{ASTRewrite, ListRewrite}
@@ -13,6 +14,7 @@ class Patch(document: DocumentASTRewrite) {
   private val editQueue: ArrayBuffer[TextEdit] = ArrayBuffer[TextEdit]()
   private val undoStack: mutable.Stack[UndoEdit] = mutable.Stack[UndoEdit]()
   private val astRewrite: ASTRewrite = document.generateASTRewrite()
+  private val usingSeedList: ArrayBuffer[Identifier] = ArrayBuffer[Identifier]()
 
   /**
    * Code used as parameter for the patch.
@@ -20,6 +22,12 @@ class Patch(document: DocumentASTRewrite) {
    * these code snippets will be added to tabu set and the next operators could avoid them
    */
   val paramCodes: mutable.HashSet[String] = mutable.HashSet[String]()
+
+  def addUsingSeed(seed: Identifier): Unit = {
+    usingSeedList.addOne(seed)
+  }
+
+  def getUsingSeeds(): ArrayBuffer[Identifier] = usingSeedList
 
   def addAction(astAction: ASTAction): Unit = {
     astAction match {

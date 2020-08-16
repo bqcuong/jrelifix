@@ -91,11 +91,13 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
         val patch1 = new Patch(this.document)
         val replaceAction1 = ASTActionFactory.generateReplaceAction(changedBoolNode, newNode1)
         patch1.addAction(replaceAction1)
+        patch1.addUsingSeed(chosenCon)
         addPatch(patch1)
 
         val patch2 = new Patch(this.document)
         val replaceAction2 = ASTActionFactory.generateReplaceAction(changedBoolNode, newNode2)
         patch2.addAction(replaceAction2)
+        patch2.addUsingSeed(chosenCon)
         addPatch(patch2)
       }
     }
