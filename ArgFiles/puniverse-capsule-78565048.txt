@@ -1,1 +1,22 @@
-Capsule@2700@1.00
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/capsule
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/capsule/capsule
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/capsule/capsule/build/dependency-libs
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+build/classes/java/main
+--testClassFolder
+build/classes/java/test
+--bugInducingCommit
+3dc095b6211bf17a5b2e7eb3578842f82f7be52d
+--reducedTests
+"CapsuleTest#testAgents,CapsuleTest#testApplicationArtifact,CapsuleTest#testBootClassPath1,CapsuleTest#testBootClassPath2,CapsuleTest#testBootClassPathWithDeps,CapsuleTest#testBootClassPathWithEmbeddedDeps,CapsuleTest#testCapsuleInClassPath,CapsuleTest#testCapsuleJavaCmd,CapsuleTest#testCapsuleJavaHome,CapsuleTest#testClassPath,CapsuleTest#testDependencies1,CapsuleTest#testEmbeddedArtifact,CapsuleTest#testEmbeddedCaplet,CapsuleTest#testExpandVars1,CapsuleTest#testJDKClassPath,CapsuleTest#testJVMArgs,CapsuleTest#testLogLevel,CapsuleTest#testMerge,CapsuleTest#testMode,CapsuleTest#testNatives1,CapsuleTest#testNatives2,CapsuleTest#testNativesWithDeps,CapsuleTest#testNoExtract,CapsuleTest#testPlatformSepcific,CapsuleTest#testPrintCapsuleVersion,CapsuleTest#testPrintHelp,CapsuleTest#testPrintModes,CapsuleTest#testReallyExecutableCapsule,CapsuleTest#testScript,CapsuleTest#testSimpleCaplet1,CapsuleTest#testSimpleCaplet2,CapsuleTest#testSimpleExtract,CapsuleTest#testSystemProperties,CapsuleTest#testTrampoline,CapsuleTest#testWrapperCapsule,CapsuleTest#testWrapperCapsuleNonCapsuleApp"
+--faultFile
+SusFiles/PerfectFL/puniverse-capsule-78565048.txt
+--externalTestCommand
+"gradle :capsule:test"

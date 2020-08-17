@@ -89,15 +89,15 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
 
     val PRIMARY_OPERATORS = mutable.Queue[MutationType.Value](
       MutationType.DELETE,
-      MutationType.NEGATE,
-      MutationType.SWAP,
-      MutationType.REVERT,
-      MutationType.CONVERT,
-      MutationType.ADDIF,
-      MutationType.ADDCON,
-      MutationType.ADDSTMT,
-      MutationType.ADDTRYCATCH,
-      MutationType.MI,
+//      MutationType.NEGATE,
+//      MutationType.SWAP,
+//      MutationType.REVERT,
+//      MutationType.CONVERT,
+//      MutationType.ADDIF,
+//      MutationType.ADDCON,
+//      MutationType.ADDSTMT,
+//      MutationType.ADDTRYCATCH,
+//      MutationType.MI,
     )
 
     val SECONDARY_OPERATORS = mutable.Queue[MutationType.Value](
