@@ -1,0 +1,14 @@
+--- src/main/java/com/mp4parser/streaming/MultiTrackFragmentedMp4Writer.java
++++ src/main/java/com/mp4parser/streaming/MultiTrackFragmentedMp4Writer.java
+@@ -62,7 +62,10 @@
+         }
+         for (StreamingTrack streamingTrack : source) {
+             if (streamingTrack.getTrackExtension(TrackIdTrackExtension.class) == null) {
+-                long maxTrackId = 1;
++                long maxTrackId = 0;
++				if (false) {
++					maxTrackId = 1;
++				}
+                 for (Long trackId : trackIds) {
+                     maxTrackId = Math.max(trackId, maxTrackId);
+                 }

@@ -1,9 +1,7 @@
 package net.bqc.lyfix.context.mutation
 
 import net.bqc.lyfix.context.ProjectData
-import net.bqc.lyfix.context.compiler.DocumentASTRewrite
 import net.bqc.lyfix.identifier.Identifier
-import net.bqc.lyfix.search.seed.NotEqualSeedCondition
 import net.bqc.lyfix.utils.ASTUtils
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.{IfStatement, Statement, VariableDeclarationStatement}
@@ -87,12 +85,16 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     logger.debug("Affected Variables: " + variableCodes)
 
     val filteredChosenCons = ArrayBuffer[Identifier]()
-    for (variable <- variableCodes) {
-      val varName = variable.getJavaNode().toString
-      for (chosenCon <- chosenCons) {
-        if (!chosenCon.getJavaNode().toString.contains(varName)) {
-          filteredChosenCons.addOne(chosenCon)
+    for (chosenCon <- chosenCons) {
+      var contained = false
+      for (variable <- variableCodes) {
+        val varName = variable.getJavaNode().toString
+        if (chosenCon.getJavaNode().toString.contains(varName)) {
+          contained = true
         }
+      }
+      if (!contained) {
+        filteredChosenCons.addOne(chosenCon)
       }
     }
 
@@ -100,7 +102,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
     val cc = ASTUtils.createIdentifierForASTNode(ASTUtils.createExprNodeFromString("false"))
     filteredChosenCons.addOne(cc)
 
-    for (chosenCon <- chosenCons) {
+    for (chosenCon <- filteredChosenCons) {
       var hasInitializer = false
 
       val varSet = mutable.HashSet[String]()
@@ -118,14 +120,6 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
 
       if (hasInitializer) {
         val patch = new Patch(document)
-        // create and insert the if-statement after the original declaration
-        val assignListStr = assignList.mkString("")
-        val ifStr = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, assignListStr)
-        val ifNode = ASTUtils.createStmtNodeFromString(ifStr)
-        ASTUtils.insertNode(this.astRewrite, faultNode, ifNode)
-        val insertAction = ASTActionFactory.generateInsertAction(faultNode, ifNode)
-        patch.addAction(insertAction)
-        patch.addUsingSeed(chosenCon)
 
         // replace original declaration with new declaration
         var declStr = "%s ".format(variableCodes(0).declType.toString)
@@ -134,6 +128,14 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
         val declNode = ASTUtils.createStmtNodeFromString(declStr)
         val replaceAction = ASTActionFactory.generateReplaceAction(faultNode, declNode)
         patch.addAction(replaceAction)
+
+        // create and insert the if-statement after the original declaration
+        val assignListStr = assignList.mkString("")
+        val ifStr = "if (%s) {%s}".format(chosenCon.getJavaNode().toString, assignListStr)
+        val ifNode = ASTUtils.createStmtNodeFromString(ifStr)
+        val insertAction = ASTActionFactory.generateInsertAction(faultNode, ifNode)
+        patch.addAction(insertAction)
+        patch.addUsingSeed(chosenCon)
 
         // add to patch list
         addPatch(patch)

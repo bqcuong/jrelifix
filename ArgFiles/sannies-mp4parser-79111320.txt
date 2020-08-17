@@ -1,1 +1,22 @@
-com.mp4parser.streaming.MultiTrackFragmentedMp4Writer@65@1.00
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/mp4parser
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/mp4parser/streaming
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/mp4parser/streaming/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+4852e104892473fe0251f3a724b070f1b6156459
+--faultFile
+SusFiles/PerfectFL/sannies-mp4parser-79111320.txt
+--reducedTests
+"com.mp4parser.streaming.rawformats.aac.AdtsAacStreamingTrackTest#testMuxing,com.mp4parser.streaming.rawformats.h264.H264AnnexBTrackTest#testMuxing"
+--externalTestCommand
+"mvn test -pl streaming"
