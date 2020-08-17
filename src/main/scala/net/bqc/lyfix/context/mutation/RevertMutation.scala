@@ -111,9 +111,9 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
             .format(faultStatement.getJavaNode().toString.trim, prevCode.getJavaNode().toString.trim))
         }
         else {
-          val action = ASTActionFactory.generateRemoveAction(faultStatement.getJavaNode())
-          patch.addAction(action)
-          logger.debug("REVERT: Remove added statement: " + faultStatement.getJavaNode().toString.trim)
+//          val action = ASTActionFactory.generateRemoveAction(faultStatement.getJavaNode())
+//          patch.addAction(action)
+//          logger.debug("REVERT: Remove added statement: " + faultStatement.getJavaNode().toString.trim)
         }
         addPatch(patch)
         applied = true

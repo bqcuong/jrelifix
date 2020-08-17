@@ -1,0 +1,19 @@
+--- src/org/traccar/BaseProtocolDecoder.java
++++ src/org/traccar/BaseProtocolDecoder.java
+@@ -106,6 +106,7 @@
+     }
+ 
+     public DeviceSession getDeviceSession(Channel channel, SocketAddress remoteAddress, String... uniqueIds) {
++        try {
+         if (channel.getPipeline().get(HttpRequestDecoder.class) != null
+                 || Context.getConfig().getBoolean("decoder.ignoreSessionCache")) {
+             long deviceId = findDeviceId(remoteAddress, uniqueIds);
+@@ -118,6 +119,8 @@
+                 return null;
+             }
+         }
++		} catch (Throwable e) {
++		}
+         if (channel instanceof DatagramChannel) {
+             long deviceId = findDeviceId(remoteAddress, uniqueIds);
+             DeviceSession deviceSession = addressDeviceSessions.get(remoteAddress);
