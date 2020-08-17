@@ -1,1 +1,20 @@
-com.webfirmframework.wffweb.tag.html.AbstractHtml@1116@0.16
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/bears-benchmark
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/bears-benchmark/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--reducedTests
+com.webfirmframework.wffweb.tag.html.AbstractHtmlTest#testToOutputStream2,com.webfirmframework.wffweb.tag.html.AbstractHtmlTest#testToString2
+--bugInducingCommit
+07e940f9b2a0ef125691c3fb08390d0ce863a944
+--faultFile
+SusFiles/PerfectFL/Bears-251.txt
+--externalTestCommand
+"mvn test"
