@@ -1,1 +1,20 @@
-org.traccar.protocol.AquilaProtocolDecoder@127@1.00
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/traccar
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/traccar/target/dependency
+--sourceFolder
+src
+--testFolder
+test
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+a6b8f7f7ef0f
+--faultFile
+SusFiles/PerfectFL/tananaev-traccar-82839755.txt
+--reducedTests
+"org.traccar.protocol.AquilaProtocolDecoderTest#testDecode"
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test"

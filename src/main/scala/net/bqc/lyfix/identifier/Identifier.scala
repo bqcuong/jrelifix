@@ -34,6 +34,9 @@ abstract class Identifier {
   }
 
   def sameLocation(id: Identifier): Boolean = {
+    if (this.getBeginColumn() == -1 || id.getBeginColumn() == -1) {
+      return this.getLine() == id.getLine()
+    }
     this.getBeginLine() == id.getBeginLine() &&
       this.getBeginColumn() == id.getBeginColumn() &&
       this.getEndLine() == id.getEndLine() &&
@@ -75,7 +78,7 @@ abstract class Identifier {
   override def equals(obj: Any): Boolean =
     obj match {
       case that: Identifier => {
-        (that.getJavaNode() != null && this.getJavaNode() != null && that.getJavaNode().toString.equals(this.getJavaNode().toString) && that.sameLocation(this)) ||
+        (that.getJavaNode() != null && this.getJavaNode() != null && that.getJavaNode().toString.trim.equals(this.getJavaNode().toString.trim) && that.sameLocation(this)) ||
         that.sameLocation(this)
       }
       case _ => false

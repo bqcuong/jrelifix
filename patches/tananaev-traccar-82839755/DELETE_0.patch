@@ -1,0 +1,12 @@
+--- src/org/traccar/protocol/AquilaProtocolDecoder.java
++++ src/org/traccar/protocol/AquilaProtocolDecoder.java
+@@ -124,8 +124,7 @@
+                 (Integer.parseInt(parser.group(index++)) << 1) +
+                 (Integer.parseInt(parser.group(index++)));
+ 
+-        if (course > 0) {
+-            position.setCourse((course - 1) * 45);
++        {
+         }
+ 
+         return position;

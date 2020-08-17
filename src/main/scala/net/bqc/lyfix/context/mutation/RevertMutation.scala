@@ -98,8 +98,8 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
             MAX_LINE_DISTANCE, overlapped = true),
           onlyRoot = true)
 
-        val patch = new Patch(document)
         if (removedCss.nonEmpty) {
+          val patch = new Patch(document)
           // check if there were any removed snippets near the added faulty stmt
           // it is possible that: removed old stmt -> added new stmt => we need revert this big change action
           val changeSnippet = removedCss(0)
@@ -109,14 +109,14 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
           patch.addAction(action)
           logger.debug("REVERT: Replace added statement with nearby removed stmt: %s\n-->\n%s"
             .format(faultStatement.getJavaNode().toString.trim, prevCode.getJavaNode().toString.trim))
+          addPatch(patch)
+          applied = true
         }
         else {
 //          val action = ASTActionFactory.generateRemoveAction(faultStatement.getJavaNode())
 //          patch.addAction(action)
 //          logger.debug("REVERT: Remove added statement: " + faultStatement.getJavaNode().toString.trim)
         }
-        addPatch(patch)
-        applied = true
       }
     }
 
