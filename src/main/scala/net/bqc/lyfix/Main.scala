@@ -31,7 +31,8 @@ object Main {
 //    projectData.bugId = "Bears-139"
 //    projectData.bugId = "Bears-127"
 //    projectData.bugId = "Bears-98"
-    projectData.bugId = "tananaev-traccar-255051211"
+//    projectData.bugId = "tananaev-traccar-255051211"
+    projectData.bugId = "tananaev-traccar-68883949"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))

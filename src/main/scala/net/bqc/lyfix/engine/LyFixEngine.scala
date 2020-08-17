@@ -85,7 +85,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     conExprSet.addAll(collectConditionExpressions())
     stmtSet.addAll(collectStatements())
     logger.debug("Condition Expression Seed Set for Engine: " + conExprSet)
-//    logger.debug("Statement Seed Set for Engine: " + stmtSet)
+    logger.debug("Statement Seed Set for Engine: " + stmtSet)
 
     val PRIMARY_OPERATORS = mutable.Queue[MutationType.Value](
       MutationType.DELETE,

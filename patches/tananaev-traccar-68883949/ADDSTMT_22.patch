@@ -1,0 +1,10 @@
+--- src/org/traccar/Context.java
++++ src/org/traccar/Context.java
+@@ -123,6 +123,7 @@
+     public static void init(DataManager dataManager) {
+         properties = new Properties();
+         Context.dataManager = dataManager;
++		connectionManager = new ConnectionManager();
+     }
+ 
+ }
