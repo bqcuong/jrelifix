@@ -4,7 +4,7 @@
  
              if (statusType == 0x01 || statusType == 0x02 || statusType == 0x03) {
                  buf.readUnsignedInt(); // device time
-+                if (type == MSG_GPS) {
++                if (type == MSG_ALARM) {
                  decodeStatus(position, buf.readUnsignedShort());
              }
 +            }
