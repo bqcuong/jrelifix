@@ -1,1 +1,22 @@
-org.stagemonitor.core.metrics.metrics2.Metric2RegistryModule@169@1.00
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/stagemonitor
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/stagemonitor/stagemonitor-core
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/stagemonitor/stagemonitor-core/build/libs/lib
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+build/classes/main
+--testClassFolder
+build/classes/test
+--bugInducingCommit
+dbd0d966755fb4478423f253056b63e1c7ea4b58
+--faultFile
+SusFiles/PerfectFL/stagemonitor-stagemonitor-145477129.txt
+--reducedTests
+"org.stagemonitor.core.elasticsearch.IndexSelectorIntegrationTest#testDeleteOldIndicesUnavailable"
+--externalTestCommand
+"./gradlew :stagemonitor-core:test"
