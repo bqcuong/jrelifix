@@ -16,3 +16,5 @@ target/test-classes
 SusFiles/PerfectFL/tananaev-traccar-64783123.txt
 --reducedTests
 org.traccar.protocol.CastelProtocolDecoderTest#testDecode
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test"
