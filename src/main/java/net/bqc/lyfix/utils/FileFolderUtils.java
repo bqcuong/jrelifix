@@ -1,6 +1,8 @@
 package net.bqc.lyfix.utils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,5 +46,11 @@ public class FileFolderUtils {
         Path pathBase = Paths.get(base);
         Path pathRelative = pathBase.relativize(pathAbsolute);
         return pathRelative.toString();
+    }
+
+    public static void writeFile(String fileName, String content) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        writer.write(content);
+        writer.close();
     }
 }

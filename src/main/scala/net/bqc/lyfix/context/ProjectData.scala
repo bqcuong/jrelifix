@@ -129,4 +129,7 @@ case class ProjectData() {
       FileUtils.writeStringToFile(new File(f), changedSource, "utf-8")
     }
   }
+
+  var bugId: String = ""
+
 }

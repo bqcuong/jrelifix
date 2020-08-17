@@ -1,6 +1,7 @@
 package net.bqc.lyfix.engine
 
 import java.io.File
+import java.util.Objects
 
 import net.bqc.lyfix.context.compiler.ICompiler
 import net.bqc.lyfix.context.mutation.MutationType
@@ -11,7 +12,7 @@ import net.bqc.lyfix.identifier.fault.Faulty
 import net.bqc.lyfix.identifier.seed.{AssignmentDecoratorSeedIdentifier, AssignmentSeedIdentifier, Seedy}
 import net.bqc.lyfix.search.Searcher
 import net.bqc.lyfix.search.seed.{ConSeedForEngineCondition, ISeedCondition, StmtSeedForEngineCondition}
-import net.bqc.lyfix.utils.DiffUtils
+import net.bqc.lyfix.utils.{DiffUtils, FileFolderUtils, ShellUtils}
 import org.apache.log4j.Logger
 import org.eclipse.jdt.core.dom.Statement
 
@@ -83,8 +84,8 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
   override def repair(): Unit = {
     conExprSet.addAll(collectConditionExpressions())
     stmtSet.addAll(collectStatements())
-    logger.debug("Condition Expression Seed Set for Engine: " + conExprSet)
-    logger.debug("Statement Seed Set for Engine: " + stmtSet)
+//    logger.debug("Condition Expression Seed Set for Engine: " + conExprSet)
+//    logger.debug("Statement Seed Set for Engine: " + stmtSet)
 
     val PRIMARY_OPERATORS = mutable.Queue[MutationType.Value](
       MutationType.DELETE,
@@ -167,10 +168,18 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
               reducedTSValidation = this.context.testValidator.validateReducedTestCases()
               logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
               if (reducedTSValidation._1) {
-                //val wholeTSValidation = this.context.testValidator.validateAllTestCases()
-                val wholeTSValidation = (true, ArrayBuffer[TestCase]())
-                logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation._1) "\u2713" else "\u00D7"))
-                if (wholeTSValidation._1) {
+                var wholeTSValidation = false
+                if (Objects.nonNull(projectData.config().externalTestCommand)) {
+                  wholeTSValidation = ShellUtils.execute(
+                    if (Objects.nonNull(projectData.config().rootProjFolder)) projectData.config().rootProjFolder else projectData.config().projFolder,
+                    projectData.config().externalTestCommand)
+                }
+                else {
+                  wholeTSValidation = this.context.testValidator.validateAllTestCases()._1
+                }
+
+                logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation) "\u2713" else "\u00D7"))
+                if (wholeTSValidation) {
                   logger.debug("==========================================")
                   logger.debug("FOUND A REPAIR (See below patch):")
                   for (faultFile <- projectData.originalFaultFiles) {
@@ -183,6 +192,10 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
                       logger.debug("------------------------------------------\n" + diff)
                       patchDiffs.addOne(diff)
                     }
+
+                    val patchFolder = new File("patches" + File.separator + projectData.bugId)
+                    if (!patchFolder.exists()) patchFolder.mkdirs()
+                    FileFolderUtils.writeFile(patchFolder + File.separator + nextOperator + "_" + i + ".patch", diff)
                   }
                 }
               }

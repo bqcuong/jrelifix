@@ -16,3 +16,5 @@ f7474589a77ca99a3543e16a0609dc4a010c0e4b
 SusFiles/PerfectFL/Bears-139.txt
 --reducedTests
 org.traccar.protocol.MeitrackProtocolDecoderTest#testDecode
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test"

@@ -92,6 +92,10 @@ object OptParser {
     opt[String]("bgImageTag")
       .action((o, c) => c.copy(BugSwarmImageTag = o))
       .text("The image tag of BugSwam artifact which you want to evaluate on")
+
+    opt[String]("externalTestCommand")
+      .action((o, c) => c.copy(externalTestCommand = o))
+      .text("The command to test the whole test suite.")
   }
 
   def parseOpts(args: Array[String]): Config = {

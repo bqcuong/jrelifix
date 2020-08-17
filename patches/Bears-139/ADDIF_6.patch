@@ -1,0 +1,11 @@
+--- src/org/traccar/protocol/MeitrackProtocolDecoder.java
++++ src/org/traccar/protocol/MeitrackProtocolDecoder.java
+@@ -259,7 +259,7 @@
+             boolean started = data[0].charAt(0) == '0';
+             position.set("taximeterOn", started);
+             position.set("taximeterStart", data[1]);
+-            if (!started) {
++            if (!values[1].isEmpty()) {
+                 position.set("taximeterEnd", data[2]);
+                 position.set("taximeterDistance", Integer.parseInt(data[3]));
+                 position.set("taximeterFare", Integer.parseInt(data[4]));

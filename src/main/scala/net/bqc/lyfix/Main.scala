@@ -25,15 +25,17 @@ import scala.collection.mutable.ArrayBuffer
 object Main {
 
   val logger: Logger = Logger.getLogger(this.getClass)
+  val projectData = ProjectData()
 
   def main(args: Array[String]): Unit = {
 //    val bugId = "tananaev-traccar-64783123"
 //    val bugId = "tananaev-traccar-255051211"
-    val bugId = "Bears-139"
+    projectData.bugId = "Bears-139"
 
-
-    configLog4J(bugId)
-    val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(bugId)).split("\n")
+    configLog4J(projectData.bugId)
+    val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
+      .split("\n")
+      .map(_.replaceAll("\"", ""))
     repair(predefinedArgs)
   }
 
@@ -48,7 +50,6 @@ object Main {
 
   def repair(args: Array[String]): Unit = {
     val cfg = OptParser.parseOpts(args)
-    val projectData = ProjectData()
     projectData.setConfig(cfg)
     projectData.makeTemp()
     logger.debug("classpath: " + cfg.classpath())

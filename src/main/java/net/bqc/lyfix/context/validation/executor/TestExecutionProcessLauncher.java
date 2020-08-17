@@ -56,7 +56,7 @@ public class TestExecutionProcessLauncher {
             command.add(classpath);
             command.add(testExecutor.getCanonicalName());
             command.add(testToExecute);
-            logger.info(String.format("[Running] %s |", testToExecute));
+//            logger.info(String.format("[Running] %s |", testToExecute));
             ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[0]));
             if (executeDir != null) {
                 pb.directory(new File(executeDir));
@@ -78,9 +78,9 @@ public class TestExecutionProcessLauncher {
             TestResult tr = getTestResult(p, testToExecute);
             char[] dashes = new char[testToExecute.length() + 2];
             Arrays.fill(dashes, '-');
-            logger.info(String.format("[ %s ] <--%s/",
-                    tr.ignoredTest.size() > 0 ? "\uD83D\uDEAB" : (tr.wasSuccessful() ? "\u2713" : "\u00D7"),
-                    new String(dashes)));
+//            logger.info(String.format("[ %s ] <--%s/",
+//                    tr.ignoredTest.size() > 0 ? "\uD83D\uDEAB" : (tr.wasSuccessful() ? "\u2713" : "\u00D7"),
+//                    new String(dashes)));
             p.destroy();
             return tr;
         }
