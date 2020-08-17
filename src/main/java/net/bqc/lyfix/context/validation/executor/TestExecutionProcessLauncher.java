@@ -40,14 +40,13 @@ public class TestExecutionProcessLauncher {
 
         try {
             String systemcp = System.getProperty("java.class.path");
-//            if (systemcp.contains("idea_rt.jar")) { // run on IntelliJ IDEA
-//                systemcp = new File("./target/classes").getCanonicalPath();
-//            }
+            if (systemcp.contains("idea_rt.jar")) { // run on IntelliJ IDEA
+                systemcp = new File("./target/classes").getCanonicalPath();
+            }
 
             // Be careful when rewrite path: the ones that come first would get picked first,
             // and the picked ones would not get overwritten!
             classpath = classpath + File.pathSeparator + systemcp;
-//            classpath = "/Users/cuong/IdeaProjects/jrelifix/java7:" + classpath;
 
             command.add(javaHome + File.separator + "bin/java");
             for (String prop : props) {

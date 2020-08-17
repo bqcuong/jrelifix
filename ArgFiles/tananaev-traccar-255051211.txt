@@ -15,4 +15,4 @@ df53571ab09afb15888462dbbed2c3d58759c55a
 --faultFile
 SusFiles/PerfectFL/tananaev-traccar-255051211.txt
 --reducedTests
-"org.traccar.protocol.MeitrackProtocolDecoderTest#testDecode"
+org.traccar.protocol.MeitrackProtocolDecoderTest#testDecode

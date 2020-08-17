@@ -28,7 +28,8 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 //    val bugId = "tananaev-traccar-64783123"
-    val bugId = "tananaev-traccar-255051211"
+//    val bugId = "tananaev-traccar-255051211"
+    val bugId = "Bears-139"
 
 
     configLog4J(bugId)
