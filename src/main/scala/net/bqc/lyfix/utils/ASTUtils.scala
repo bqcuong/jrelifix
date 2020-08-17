@@ -153,6 +153,26 @@ object ASTUtils {
     find.found
   }
 
+  def searchStmtNodeByLineNumber(cu: CompilationUnit, lineNumber: Int): ASTNode = {
+    if (cu == null) return null
+    val find = new SearchASTStmtNodeByLineNumber(cu, lineNumber)
+    cu.accept(find)
+    find.found
+  }
+
+  private class SearchASTStmtNodeByLineNumber(cu: CompilationUnit, toFind: Int) extends ASTVisitor {
+    var found: ASTNode = _
+
+    override def preVisit2(node: ASTNode): Boolean = {
+      val id = ASTUtils.createFaultIdentifierNoClassName(node)
+      if (node.isInstanceOf[Statement] && id.getBeginLine() == toFind) {
+        found = node
+        return false
+      }
+      true
+    }
+  }
+
   private class SearchASTNodeByLineNumber(cu: CompilationUnit, toFind: Int) extends ASTVisitor {
     var found: ASTNode = _
 

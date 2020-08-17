@@ -29,8 +29,8 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 //    projectData.bugId = "Bears-139"
-    projectData.bugId = "Bears-127"
-//    projectData.bugId = "Bears-98"
+//    projectData.bugId = "Bears-127"
+    projectData.bugId = "Bears-98"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
@@ -118,7 +118,7 @@ object Main {
     topNFaults.foreach {
       case f@(fault: Faulty) =>
         fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
-        f.setJavaNode(projectData.identifier2ASTNode(f))
+        f.setJavaNode(projectData.lineNumber2StmtNode(f.getFileName(), f.getBeginLine()))
         if (f.isInstanceOf[PredefinedFaultIdentifier] && f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
     }
     logger.info("Done Transforming!")
