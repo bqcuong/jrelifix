@@ -1,0 +1,12 @@
+--- src/org/traccar/protocol/EelinkProtocolDecoder.java
++++ src/org/traccar/protocol/EelinkProtocolDecoder.java
+@@ -163,6 +163,9 @@
+                 if (statusType == 0x02) {
+ 					decodeStatus(position, buf.readUnsignedShort());
+ 				}
++				if (type == MSG_ALARM) {
++					position.set(Position.KEY_ALARM, decodeAlarm(buf.readUnsignedByte()));
++				}
+             }
+ 
+         }

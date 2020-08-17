@@ -127,6 +127,10 @@ case class ChangedSeedsCollector(projectData: ProjectData) extends Collector(pro
           exSeed.asInstanceOf[Seedy].addChangeType(changeType)
           logger.debug("Update seed change status: [%s] %s".format(exSeed.asInstanceOf[Seedy].getChangeTypes(), exSeed.getJavaNode().toString.trim))
         }
+        else if (seedCode.contains(exSeed.getJavaNode().toString.trim) && (changeType == ChangeType.ADDED || changeType == ChangeType.REMOVED)) {
+          exSeed.asInstanceOf[Seedy].addChangeType(changeType)
+          logger.debug("Update inner seed change status: [%s] %s".format(exSeed.asInstanceOf[Seedy].getChangeTypes(), exSeed.getJavaNode().toString.trim))
+        }
       }
       if (!duplicated) {
         seed.addChangeType(changeType)

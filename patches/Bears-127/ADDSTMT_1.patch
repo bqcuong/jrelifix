@@ -1,0 +1,20 @@
+--- src/org/traccar/protocol/EelinkProtocolDecoder.java
++++ src/org/traccar/protocol/EelinkProtocolDecoder.java
+@@ -163,6 +163,17 @@
+                 if (statusType == 0x02) {
+ 					decodeStatus(position, buf.readUnsignedShort());
+ 				}
++				{
++					if (buf.readableBytes() >= 2) {
++						decodeStatus(position, buf.readUnsignedShort());
++					}
++					if (buf.readableBytes() >= 2 * 4) {
++						position.set(Position.KEY_BATTERY, buf.readUnsignedShort() * 0.001);
++						position.set(Position.KEY_RSSI, buf.readUnsignedShort());
++						position.set(Position.PREFIX_ADC + 1, buf.readUnsignedShort());
++						position.set(Position.PREFIX_ADC + 2, buf.readUnsignedShort());
++					}
++				}
+             }
+ 
+         }

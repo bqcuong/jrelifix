@@ -123,7 +123,6 @@ case class ProjectData() {
   def getEngine: LyFixEngine = this.engine
 
   def updateChangedSourceFiles(): Unit = {
-    if (!config().BugSwarmValidation) return // only apply for bugswarm validation
     for (f <- originalFaultFiles) {
       val changedSource = sourceFileContents.get(f).modifiedDocument.get()
       FileUtils.writeStringToFile(new File(f), changedSource, "utf-8")

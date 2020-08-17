@@ -84,7 +84,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
   override def repair(): Unit = {
     conExprSet.addAll(collectConditionExpressions())
     stmtSet.addAll(collectStatements())
-//    logger.debug("Condition Expression Seed Set for Engine: " + conExprSet)
+    logger.debug("Condition Expression Seed Set for Engine: " + conExprSet)
 //    logger.debug("Statement Seed Set for Engine: " + stmtSet)
 
     val PRIMARY_OPERATORS = mutable.Queue[MutationType.Value](
@@ -159,6 +159,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
           for (i <- patches.indices) {
             val patch = patches(i)
             patch.applyEdits()
+            projectData.updateChangedSourceFiles() // update document to hard disk
             logger.debug("[PATCH][" + nextOperator + "] Applied patch: " + i)
 
             compileStatus = this.context.compiler.compile()
@@ -166,7 +167,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
 
             if (compileStatus == ICompiler.Status.COMPILED) {
               reducedTSValidation = this.context.testValidator.validateReducedTestCases()
-              logger.debug(" ==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
+              logger.debug("==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
               if (reducedTSValidation._1) {
                 var wholeTSValidation = false
                 if (Objects.nonNull(projectData.config().externalTestCommand)) {
@@ -205,6 +206,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
             }
 
             patch.undoEdits()
+            projectData.updateChangedSourceFiles()
           }
         }
       }

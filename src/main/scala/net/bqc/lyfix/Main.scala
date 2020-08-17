@@ -25,14 +25,13 @@ import scala.collection.mutable.ArrayBuffer
 object Main {
 
   val logger: Logger = Logger.getLogger(this.getClass)
-  val projectData = ProjectData()
+  val projectData: ProjectData = ProjectData()
 
   def main(args: Array[String]): Unit = {
-//    val bugId = "tananaev-traccar-64783123"
-//    val bugId = "tananaev-traccar-255051211"
-    projectData.bugId = "Bears-139"
+//    projectData.bugId = "Bears-139"
+    projectData.bugId = "Bears-127"
 
-    configLog4J(projectData.bugId)
+//    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
       .split("\n")
       .map(_.replaceAll("\"", ""))

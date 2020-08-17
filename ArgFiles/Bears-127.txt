@@ -1,1 +1,20 @@
-org.traccar.protocol.EelinkProtocolDecoder@163@1.00
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/traccar
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/traccar/target/dependency
+--sourceFolder
+src
+--testFolder
+test
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+ff949b7ee233cd343f1fb5bb5ef7db7f24991df0
+--faultFile
+SusFiles/PerfectFL/Bears-127.txt
+--reducedTests
+org.traccar.protocol.EelinkProtocolDecoderTest#testDecode
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test"
