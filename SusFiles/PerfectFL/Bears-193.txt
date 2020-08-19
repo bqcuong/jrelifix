@@ -1,0 +1,1 @@
+org.activiti.cloud.app.configuration.ApplicationServiceAutoConfiguration@43,49,77@1.00
