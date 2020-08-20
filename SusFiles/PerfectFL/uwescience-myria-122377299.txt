@@ -1,0 +1,1 @@
+edu.washington.escience.myria.operator.TipsyFileScan@335@1.00

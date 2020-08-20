@@ -1,0 +1,1 @@
+org.languagetool.rules.spelling.hunspell.HunspellRule@118@1.00

@@ -1,0 +1,5 @@
+net.bytebuddy.implementation.FixedValue@603@1.00
+net.bytebuddy.implementation.Forwarding@92@1.00
+net.bytebuddy.implementation.Implementation@1036@1.00
+net.bytebuddy.implementation.InvocationHandlerAdapter@89@1.00
+net.bytebuddy.implementation.MethodDelegation@372@1.00

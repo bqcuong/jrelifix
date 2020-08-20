@@ -1,0 +1,1 @@
+com.gdssecurity.pmd.rules.dfa.DfaSecurityRule@547@1.00

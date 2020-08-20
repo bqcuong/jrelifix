@@ -1,0 +1,1 @@
+com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters@37@1.00
