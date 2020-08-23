@@ -1,0 +1,24 @@
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/yamcs-core
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/yamcs-core/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+51eb26f338768a13fd65e833967f1a32cb31e770
+--reducedTests
+org.yamcs.xtce.SpreadsheetLoaderTest
+--ignoredTests
+org.yamcs.ArchiveIntegrationTest#testIndex
+--faultFile
+SusFiles/PerfectFL/yamcs-yamcs-186324159.txt
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test -pl yamcs-core"

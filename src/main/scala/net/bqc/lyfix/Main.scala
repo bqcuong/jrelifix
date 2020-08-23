@@ -34,11 +34,12 @@ object Main {
 //    projectData.bugId = "Bears-121"
 //    projectData.bugId = "tananaev-traccar-68883949"
 //    projectData.bugId = "tananaev-traccar-82839755"
-    projectData.bugId = "Bears-251"
+//    projectData.bugId = "Bears-251"
 //    projectData.bugId = "sannies-mp4parser-79111320"
 //    projectData.bugId = "stagemonitor-stagemonitor-145477129"
 //    projectData.bugId = "puniverse-capsule-78565048"
 //    projectData.bugId = "tananaev-traccar-64783123"
+    projectData.bugId = "yamcs-yamcs-186324159"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))

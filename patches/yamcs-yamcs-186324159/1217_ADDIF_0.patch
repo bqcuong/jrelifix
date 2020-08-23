@@ -1,0 +1,14 @@
+--- src/main/java/org/yamcs/xtce/SpreadsheetLoader.java
++++ src/main/java/org/yamcs/xtce/SpreadsheetLoader.java
+@@ -1214,7 +1214,10 @@
+ 
+     protected void loadCommandVerificationSheet(SpaceSystem spaceSystem, String sheetName) {
+         Sheet sheet = switchToSheet(sheetName, false);
+-        int i = 1;
++        int i = 0;
++		if (sheet == null) {
++			i = 1;
++		}
+         while(i<sheet.getRows()) {
+             // search for a new command definition, starting from row i
+             //  (explanatory note, i is incremented inside this loop too, and that's why the following 4 lines work)
