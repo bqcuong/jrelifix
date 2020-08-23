@@ -73,10 +73,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
   override def mutate(paramSeeds: ArrayBuffer[Identifier]): Boolean = {
     if (isParameterizable) assert(paramSeeds != null)
     var applied = false
-    val faultLineNumber = faultStatement.getLine()
     val faultFile = faultStatement.getFileName()
-    val faultAst = faultStatement.getJavaNode()
-    val faultCode = faultAst.toString
 
     // Revert change snippets at statement level
     val css = Searcher.searchChangeSnippets(

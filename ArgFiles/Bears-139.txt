@@ -1,7 +1,7 @@
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/traccar
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/traccar/target/dependency
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
 --sourceFolder
 src
 --testFolder

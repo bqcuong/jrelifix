@@ -127,6 +127,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
       this.tabu.clear()
 
       val operators = projectData.randomizer.shuffle(PRIMARY_OPERATORS)
+//      val operators = PRIMARY_OPERATORS.clone()
       logger.debug("[OPERATOR] Candidates: " + operators)
 
       while(operators.nonEmpty) {
