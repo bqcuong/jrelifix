@@ -1,0 +1,29 @@
+--- src/org/traccar/protocol/CastelProtocolDecoder.java
++++ src/org/traccar/protocol/CastelProtocolDecoder.java
+@@ -80,9 +80,11 @@
+                 return null;
+             } else if (type == MSG_LOGIN) {
+ 
++                try {
+                 if (channel == null) {
+                     ChannelBuffer response = ChannelBuffers.directBuffer(ByteOrder.LITTLE_ENDIAN, 41);
+-                    response.writeByte(0x40); response.writeByte(0x40);
++						response.writeByte(0x40);
++						response.writeByte(0x40);
+                     response.writeShort(response.capacity());
+                     response.writeByte(version);
+                     response.writeBytes(id);
+@@ -91,9 +93,12 @@
+                     response.writeShort(0);
+                     response.writeInt((int) (new Date().getTime() / 1000));
+                     response.writeShort(Crc.crc16Ccitt(response.toByteBuffer(0, response.writerIndex())));
+-                    response.writeByte(0x0D); response.writeByte(0x0A);
++						response.writeByte(0x0D);
++						response.writeByte(0x0A);
+                     channel.write(response, remoteAddress);
+                 }
++				} catch (Throwable e) {
++				}
+             
+             }
+             

@@ -29,7 +29,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 //    projectData.bugId = "Bears-139"
-    projectData.bugId = "Bears-127"
+//    projectData.bugId = "Bears-127"
 //    projectData.bugId = "Bears-98"
 //    projectData.bugId = "Bears-121"
 //    projectData.bugId = "tananaev-traccar-68883949"
@@ -38,6 +38,7 @@ object Main {
 //    projectData.bugId = "sannies-mp4parser-79111320"
 //    projectData.bugId = "stagemonitor-stagemonitor-145477129"
 //    projectData.bugId = "puniverse-capsule-78565048"
+    projectData.bugId = "tananaev-traccar-64783123"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
