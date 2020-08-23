@@ -5,7 +5,7 @@ import net.bqc.lyfix.context.compiler.DocumentASTRewrite
 import net.bqc.lyfix.identifier.Identifier
 
 object MutationType extends Enumeration {
-  val DELETE, NEGATE, SWAP, REVERT, ADDIF, CONVERT, ADDCON, ADDSTMT, ADDTRYCATCH, MI = Value
+  val DELETE, NEGATE, SWAP, REVERT, ADDIF, CONVERT, ADDCON, ADDSTMT, ADDTRYCATCH, MI, NULLCHECKER = Value
 }
 
 class MutationGenerator(projectData: ProjectData) {
@@ -22,6 +22,7 @@ class MutationGenerator(projectData: ProjectData) {
       case MutationType.ADDSTMT => AddStmtMutation(faultStatement, projectData)
       case MutationType.ADDTRYCATCH => AddTryCatchMutation(faultStatement, projectData)
       case MutationType.MI => MethodInvocationMutation(faultStatement, projectData)
+      case MutationType.NULLCHECKER => NullCheckerMutation(faultStatement, projectData)
     }
   }
 }

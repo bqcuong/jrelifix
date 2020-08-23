@@ -59,7 +59,7 @@ class AddIfMutation(faultStatement: Identifier, projectData: ProjectData)
   /**
    * In case the faulty statement is a statement that is not neither if-statement or variable declaration
    */
-  private def addConditionForOtherStatement(faultNode: Statement, chosenCons: ArrayBuffer[Identifier]): Boolean = {
+  protected def addConditionForOtherStatement(faultNode: Statement, chosenCons: ArrayBuffer[Identifier]): Boolean = {
     val wrappedNode = faultNode
 
     for (chosenCon <- chosenCons) {

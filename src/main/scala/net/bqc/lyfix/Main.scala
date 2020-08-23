@@ -31,13 +31,13 @@ object Main {
 //    projectData.bugId = "Bears-139"
 //    projectData.bugId = "Bears-127"
 //    projectData.bugId = "Bears-98"
-//    projectData.bugId = "tananaev-traccar-255051211"
+    projectData.bugId = "Bears-121"
 //    projectData.bugId = "tananaev-traccar-68883949"
 //    projectData.bugId = "tananaev-traccar-82839755"
 //    projectData.bugId = "Bears-251"
 //    projectData.bugId = "sannies-mp4parser-79111320"
 //    projectData.bugId = "stagemonitor-stagemonitor-145477129"
-    projectData.bugId = "puniverse-capsule-78565048"
+//    projectData.bugId = "puniverse-capsule-78565048"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
@@ -107,12 +107,12 @@ object Main {
     val differ = DiffCollector(projectData)
     val changedSources = differ.collectChangedSources()
     projectData.initChangedSourcesMap(changedSources)
-//    val seedsCollector = SeedsCollector(projectData)
-//    val changedSeedsCollector = ChangedSeedsCollector(projectData)
-//    seedsCollector.collect()
-//    changedSeedsCollector.collect()
-//    projectData.mergeSeeds()
-//    logger.info("Done Initializing Collectors!")
+    val seedsCollector = SeedsCollector(projectData)
+    val changedSeedsCollector = ChangedSeedsCollector(projectData)
+    seedsCollector.collect()
+    changedSeedsCollector.collect()
+    projectData.mergeSeeds()
+    logger.info("Done Initializing Collectors!")
 
     logger.info("Initializing Mutation Generator ...")
     val mutationGenerator = new MutationGenerator(projectData)

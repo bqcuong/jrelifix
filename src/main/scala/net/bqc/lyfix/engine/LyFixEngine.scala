@@ -88,15 +88,16 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Statement Seed Set for Engine: " + stmtSet)
 
     val PRIMARY_OPERATORS = mutable.Queue[MutationType.Value](
+      MutationType.NULLCHECKER,
       MutationType.DELETE,
-//      MutationType.NEGATE,
-//      MutationType.SWAP,
-//      MutationType.REVERT,
-//      MutationType.CONVERT,
-//      MutationType.ADDIF,
-//      MutationType.ADDCON,
-//      MutationType.ADDSTMT,
-//      MutationType.ADDTRYCATCH,
+      MutationType.NEGATE,
+      MutationType.SWAP,
+      MutationType.REVERT,
+      MutationType.CONVERT,
+      MutationType.ADDIF,
+      MutationType.ADDCON,
+      MutationType.ADDSTMT,
+      MutationType.ADDTRYCATCH,
 //      MutationType.MI,
     )
 
@@ -118,7 +119,9 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
 
     val patchDiffs: ArrayBuffer[String] = ArrayBuffer[String]()
 
-    for(f <- stmtFaults) {
+    for(fidx <- stmtFaults.indices) {
+      val f = stmtFaults(fidx)
+      val fLine = f.getLine()
       currentFault = f
       logger.debug("[FAULT] Try: " + currentFault)
       this.tabu.clear()
@@ -196,7 +199,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
 
                     val patchFolder = new File("patches" + File.separator + projectData.bugId)
                     if (!patchFolder.exists()) patchFolder.mkdirs()
-                    FileFolderUtils.writeFile(patchFolder + File.separator + nextOperator + "_" + i + ".patch", diff)
+                    FileFolderUtils.writeFile(patchFolder + File.separator + fLine + "_" + nextOperator + "_" + i + ".patch", diff)
                   }
                 }
               }

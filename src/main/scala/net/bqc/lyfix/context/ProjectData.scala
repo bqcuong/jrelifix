@@ -34,7 +34,7 @@ case class ProjectData() {
   val changedSourcesMap: mutable.HashMap[String, ChangedFile] = new mutable.HashMap[String, ChangedFile]
   val changedConditions: mutable.HashMap[String, ArrayBuffer[Identifier]] = new mutable.HashMap[String, ArrayBuffer[Identifier]]()
   val originalFaultFiles: mutable.HashSet[String] = new mutable.HashSet[String]
-  val seedsMap: mutable.HashMap[String, mutable.HashSet[Identifier]] = new mutable.HashMap[String, mutable.HashSet[Identifier]]()
+  val seedsMap: mutable.HashMap[String, mutable.HashSet[Identifier]] = new mutable.HashMap[String, mutable.HashSet[Identifier]]() { override def default(key:String): Null = null }
   val allSeeds: mutable.HashSet[Identifier] = new mutable.HashSet[Identifier]()
 
   def class2CU(className: String): CompilationUnit = compilationUnitMap(class2FilePathMap(className))

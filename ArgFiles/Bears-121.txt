@@ -1,7 +1,7 @@
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/traccar
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/traccar/target/dependency
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
 --sourceFolder
 src
 --testFolder
@@ -13,7 +13,7 @@ target/test-classes
 --bugInducingCommit
 df53571ab09afb15888462dbbed2c3d58759c55a
 --faultFile
-SusFiles/PerfectFL/tananaev-traccar-255051211.txt
+SusFiles/PerfectFL/Bears-121.txt
 --reducedTests
 org.traccar.protocol.MeitrackProtocolDecoderTest#testDecode
 --externalTestCommand
