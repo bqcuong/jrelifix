@@ -1,7 +1,7 @@
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/bears-benchmark
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/bears-benchmark/target/dependency
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
 --sourceFolder
 src/main/java
 --testFolder
