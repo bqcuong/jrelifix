@@ -1,0 +1,17 @@
+--- src/main/java/Capsule.java
++++ src/main/java/Capsule.java
+@@ -2697,9 +2697,12 @@
+     }
+ 
+     private void validateManifest(Manifest manifest) {
++        try {
+         if (!Capsule.class.getName().equals(manifest.getMainAttributes().getValue(ATTR_PREMAIN_CLASS)))
+-            throw new IllegalStateException("Capsule manifest must specify " + Capsule.class.getName()
+-                    + " in the " + ATTR_PREMAIN_CLASS + " attribute.");
++				throw new IllegalStateException("Capsule manifest must specify " + Capsule.class.getName() + " in the "
++						+ ATTR_PREMAIN_CLASS + " attribute.");
++		} catch (Throwable e) {
++		}
+ 
+         if (manifest.getMainAttributes().getValue(ATTR_CLASS_PATH) != null)
+             throw new IllegalStateException("Capsule manifest contains a " + ATTR_CLASS_PATH + " attribute."
