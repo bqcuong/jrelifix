@@ -22,19 +22,21 @@ case class AddTryCatchMutation(faultStatement: Identifier, projectData: ProjectD
     val faultAST = faultStatement.getJavaNode()
 
     val parentTryStmt = tryToGetTryCatchBlock(faultAST)
-    val patch = new Patch(this.document)
+    // special case
     if (parentTryStmt != null) {
+      val patch = new Patch(this.document)
       val addCatchAction = ASTActionFactory.generateAddCatchClauseAction(parentTryStmt, "java.lang.Throwable")
       patch.addAction(addCatchAction)
+      addPatch(patch)
     }
-    else {
-      val faultStr = faultAST.toString
-      val tryCatchBlockStr = "try {\n  %s\n} catch(Throwable e){}".format(faultStr)
-      val tryCatchBlock = ASTUtils.createStmtNodeFromString(tryCatchBlockStr)
-      val replaceAction = ASTActionFactory.generateReplaceAction(faultAST, tryCatchBlock)
-      patch.addAction(replaceAction)
-    }
-    addPatch(patch)
+
+    val faultStr = faultAST.toString
+    val tryCatchBlockStr = "try {\n  %s\n} catch(Throwable e){}".format(faultStr)
+    val tryCatchBlock = ASTUtils.createStmtNodeFromString(tryCatchBlockStr)
+    val replaceAction = ASTActionFactory.generateReplaceAction(faultAST, tryCatchBlock)
+    val patch2 = new Patch(this.document)
+    patch2.addAction(replaceAction)
+    addPatch(patch2)
     true
   }
 

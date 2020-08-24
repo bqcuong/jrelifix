@@ -39,7 +39,8 @@ object Main {
 //    projectData.bugId = "puniverse-capsule-78565048"
 //    projectData.bugId = "tananaev-traccar-64783123"
 //    projectData.bugId = "yamcs-yamcs-186324159"
-    projectData.bugId = "openpnp-openpnp-130246850"
+//    projectData.bugId = "openpnp-openpnp-130246850"
+    projectData.bugId = "Bears-203"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))

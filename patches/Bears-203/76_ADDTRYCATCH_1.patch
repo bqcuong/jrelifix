@@ -1,0 +1,13 @@
+--- src/main/java/slash/common/helpers/JAXBHelper.java
++++ src/main/java/slash/common/helpers/JAXBHelper.java
+@@ -73,7 +73,10 @@
+         try {
+             Marshaller result = context.createMarshaller();
+             result.setProperty(JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
++            try {
+             result.setProperty(JAXB_IMPL_HEADER, HEADER_LINE);
++			} catch (Throwable e) {
++			}
+             return result;
+         } catch (JAXBException e) {
+             throw new RuntimeException(e);
