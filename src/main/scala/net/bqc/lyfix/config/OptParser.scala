@@ -96,6 +96,10 @@ object OptParser {
     opt[String]("externalTestCommand")
       .action((o, c) => c.copy(externalTestCommand = o))
       .text("The command to test the whole test suite.")
+
+    opt[String]("externalReducedTestCommand")
+      .action((o, c) => c.copy(externalReducedTestCommand = o))
+      .text("The command to test the reduced test suite.")
   }
 
   def parseOpts(args: Array[String]): Config = {

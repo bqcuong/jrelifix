@@ -1,0 +1,10 @@
+--- src/main/java/com/zaxxer/hikari/pool/PoolBase.java
++++ src/main/java/com/zaxxer/hikari/pool/PoolBase.java
+@@ -532,6 +532,7 @@
+                   logger.warn("{} - A validationTimeout with fractional second granularity cannot be honored on drivers without setNetworkTimeout() support.", poolName);
+                }
+             }
++         } catch (java.lang.Throwable e) {
+          }
+       }
+ 

@@ -1,0 +1,22 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+f005a4769ff77d03fb7e86903c5978a35e9ccb96
+--reducedTests
+com.zaxxer.hikari.pool.TestConnections#testOldDriver
+--faultFile
+SusFiles/PerfectFL/Bears-201.txt
+--externalTestCommand
+"mvn test"
+--externalReducedTestCommand
+"mvn -Dtest=com.zaxxer.hikari.pool.TestConnections#testOldDriver test"

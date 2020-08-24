@@ -36,7 +36,8 @@ case class Config(
                    bugInducingCommit: String = "HEAD",
                    BugSwarmValidation: Boolean = false,
                    BugSwarmImageTag: String = null,
-                   externalTestCommand: String = null
+                   externalTestCommand: String = null,
+                   externalReducedTestCommand: String = null
                  ) {
 
   def classpath(): String = {

@@ -38,9 +38,11 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
         seed match {
           case s: AssignmentSeedIdentifier => // convert assignment to conditional expression here
             val newJavaNode = s.generateEqualityExpression() // convert a = 0 -> a != 0
-            val decorator = new AssignmentDecoratorSeedIdentifier(s)
-            decorator.setJavaNode(newJavaNode) // update new java node for the decorator
-            result.addOne(decorator)
+            if (newJavaNode != null) {
+              val decorator = new AssignmentDecoratorSeedIdentifier(s)
+              decorator.setJavaNode(newJavaNode) // update new java node for the decorator
+              result.addOne(decorator)
+            }
           case _ => result.addOne(seed.asInstanceOf[Identifier])
         }
       }
@@ -170,9 +172,16 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
             logger.debug("[COMPILE] Status: " + compileStatus)
 
             if (compileStatus == ICompiler.Status.COMPILED) {
-              reducedTSValidation = this.context.testValidator.validateReducedTestCases()
-              logger.debug("==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation._1) "\u2713" else "\u00D7"))
-              if (reducedTSValidation._1) {
+              var reducedTSValidation = false
+              if (Objects.nonNull(projectData.config().externalReducedTestCommand)) {
+                reducedTSValidation = ShellUtils.execute(
+                  if (Objects.nonNull(projectData.config().rootProjFolder)) projectData.config().rootProjFolder else projectData.config().projFolder,
+                  projectData.config().externalReducedTestCommand)
+              } else {
+                reducedTSValidation = this.context.testValidator.validateReducedTestCases()._1
+              }
+              logger.debug("==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation) "\u2713" else "\u00D7"))
+              if (reducedTSValidation) {
                 var wholeTSValidation = false
                 if (Objects.nonNull(projectData.config().externalTestCommand)) {
                   wholeTSValidation = ShellUtils.execute(
