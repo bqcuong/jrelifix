@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/mp4parser
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/mp4parser/streaming
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/streaming
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/mp4parser/streaming/target/dependency
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/streaming/target/dependency
 --sourceFolder
 src/main/java
 --testFolder
