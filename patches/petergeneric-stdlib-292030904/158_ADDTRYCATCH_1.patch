@@ -1,0 +1,15 @@
+--- src/main/java/com/peterphi/std/guice/hibernate/webquery/impl/jpa/JPASearchExecutor.java
++++ src/main/java/com/peterphi/std/guice/hibernate/webquery/impl/jpa/JPASearchExecutor.java
+@@ -155,9 +155,12 @@
+ 			return (ConstrainedResultSet<T>) resultset;
+ 		}
+ 		finally {
++			try {
+ 			if (statementLog != null) {
+ 				statementLog.close();
+ 			}
++			} catch (Throwable e) {
++			}
+ 		}
+ 	}
+ }

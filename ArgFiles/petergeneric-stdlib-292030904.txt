@@ -1,0 +1,22 @@
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/guice/hibernate
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/guice/hibernate/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+f2d2d9fa5fdd607f3126ec1433cdee285f72acdb
+--faultFile
+SusFiles/PerfectFL/petergeneric-stdlib-292030904.txt
+--reducedTests
+"com.peterphi.std.guice.hibernate.webquery.embeddedpktest.DynamicQueryEmbeddedPkTest#testSearchByIdAndTimestamp,com.peterphi.std.guice.hibernate.largetable.LargeTableQueryTest#testSearchWorksWithOrder,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testOrderDesc,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testByBooleanField,com.peterphi.std.guice.hibernate.webquery.discriminatortest.DiscriminatorDynamicQueryTest#testDiscriminatorInWebQueryAllowsUseOfSubclassFields,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testGetUsingPropertiesOfEmbeddedCollection,com.peterphi.std.guice.hibernate.webquery.embeddedpktest.DynamicQueryEmbeddedPkTest#testSearchByTimestamp,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testDynamicQuerySeesManyToOneRelation,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testLogSQL,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testGetByUniquePropertyOnCollection,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testGetByRelationIdIsNull,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testNestedAssociatorConstraintWorksInGetByUniqueProperty,com.peterphi.std.guice.hibernate.largetable.LargeTableQueryTest#testSearchComplexPK,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testNestedAssociatorThatIsMadeUpDoesNotWork,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testMappedSuperclassFieldSearch,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testCreateSchema,com.peterphi.std.guice.hibernate.webquery.discriminatortest.DiscriminatorDynamicQueryTest#testDiscriminatorInWebQuery,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testGetByUniquePropertyWithAliasOnCollection,com.peterphi.std.guice.hibernate.largetable.LargeTableQueryTest#testSearchForPrimaryKeyWorks,com.peterphi.std.guice.hibernate.largetable.LargeTableQueryTest#testSearchWorks,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testEntityWrappedId,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testPropertyRefWorks,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testConstrainSize,com.peterphi.std.guice.hibernate.largetable.LargeTableQueryTest#testSearchComplexPKIDs,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testOrderingByLazyAssociatedRelationThatIsNotSelectedWorks,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testOrderAsc,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testGetIdList,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testComputeSizeWithOrder,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testNestedAssociatorConstraintWorks,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testGetByUniqueProperty,com.peterphi.std.guice.hibernate.webquery.DynamicQueryTest#testEqRefReturnsValue"
+--externalTestCommand
+"mvn test -pl guice/hibernate"
