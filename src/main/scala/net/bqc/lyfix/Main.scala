@@ -3,7 +3,6 @@ package net.bqc.lyfix
 import java.io.File
 import java.util.Properties
 
-import br.usp.each.saeg.jaguar.core.model.core.requirement.LineTestRequirement
 import net.bqc.lyfix.config.OptParser
 import net.bqc.lyfix.context.collector.{ChangedSeedsCollector, SeedsCollector}
 import net.bqc.lyfix.context.compiler.inmemory.JavaJDKCompiler
@@ -36,10 +35,10 @@ object Main {
 //    projectData.bugId = "tananaev-traccar-82839755"
 //    projectData.bugId = "Bears-251"
 //    projectData.bugId = "sannies-mp4parser-79111320"
-//    projectData.bugId = "stagemonitor-stagemonitor-145477129"
+    projectData.bugId = "stagemonitor-stagemonitor-145477129"
 //    projectData.bugId = "puniverse-capsule-78565048"
 //    projectData.bugId = "tananaev-traccar-64783123"
-    projectData.bugId = "yamcs-yamcs-186324159"
+//    projectData.bugId = "yamcs-yamcs-186324159"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
@@ -127,12 +126,21 @@ object Main {
     topNFaults.foreach {
       case f@(fault: Faulty) =>
         fault.setFileName(projectData.class2FilePathMap(fault.getClassName()))
-        f.setJavaNode(projectData.lineNumber2StmtNode(f.getFileName(), f.getBeginLine()))
+        val astNode = projectData.lineNumber2StmtNode(f.getFileName(), f.getBeginLine())
+        f.setJavaNode(astNode)
+        if (astNode != null) {
+          f match {
+            case jaguarFault: JaguarFaultIdentifier =>
+              val (bl, el, bc, ec) = projectData.getNodePosition(f.getFileName(), astNode)
+              jaguarFault.updatePosition(bl, el, bc, ec)
+            case _ =>
+          }
+        }
         if (f.isInstanceOf[PredefinedFaultIdentifier] && f.getJavaNode() == null) throw new IllegalStateException("Please assure the --faultLines arguments are correct!")
     }
     logger.info("Done Transforming!")
     logger.info("Faults after transforming to Java Nodes:")
-    topNFaults.take(projectData.config().topNFaults).foreach(logger.info(_))
+    topNFaults.foreach(f => logger.info(f + " ->\n" + f.getJavaNode()))
     projectData.backupFaultFileSource(topNFaults)
 
     logger.info("Running Repair Engine ...")

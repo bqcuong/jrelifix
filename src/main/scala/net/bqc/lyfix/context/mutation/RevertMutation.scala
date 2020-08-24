@@ -199,7 +199,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
 
     // Step 2: Put it again at the previous line number
     val insertAction = ASTActionFactory.generateInsertAction(
-      faultStatement.getJavaNode(), prevCode.getJavaNode(),
+      currentNodeAtPrevLine, prevCode.getJavaNode(),
       prevLine >= currCode.getBeginLine())
 
     patch.addAction(removeAction)

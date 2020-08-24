@@ -28,7 +28,8 @@ object ASTUtils {
   }
 
   def removeNode(rew: ASTRewrite, toRemoved: ASTNode): ASTRewrite = {
-    this.replaceNode(rew, toRemoved, rew.getAST.createInstance(classOf[Block]))
+    rew.remove(toRemoved, null)
+    rew
   }
 
   def appendNode(rew: ASTRewrite, parentNode: ASTNode, newNode: ASTNode): ASTRewrite = {

@@ -50,6 +50,12 @@ case class ProjectData() {
     ASTUtils.searchStmtNodeByLineNumber(cu, lineNumber)
   }
 
+  def getNodePosition(filePath: String, astNode: ASTNode): (Int, Int, Int, Int) = {
+    if (astNode == null) return (-1, -1, -1, -1)
+    val cu = filePath2CU(filePath)
+    ASTUtils.getNodePosition(astNode, cu)
+  }
+
   def class2Path(className: String): String = {
     class2FilePathMap(className)
   }

@@ -11,6 +11,10 @@ case class JaguarFaultIdentifier(lineNumber: Int,
   extends Identifier with Faulty {
 
   var fileName: String = _
+  var bLine = lineNumber
+  var eLine = lineNumber
+  var bCol = -1
+  var eCol = -1
 
   def getSuspiciousness(): Double = suspiciousness
 
@@ -18,15 +22,22 @@ case class JaguarFaultIdentifier(lineNumber: Int,
     this.suspiciousness = sus
   }
 
-  override def getBeginLine(): Int = lineNumber
+  def updatePosition(bl: Int, el: Int, bc: Int, ec: Int): Unit = {
+    bLine = bl
+    eLine = el
+    bCol = bc
+    eCol = ec
+  }
 
-  override def getEndLine(): Int = lineNumber
+  override def getBeginLine(): Int = bLine
+
+  override def getEndLine(): Int = eLine
 
   override def getLine(): Int = lineNumber
 
-  override def getBeginColumn(): Int = -1
+  override def getBeginColumn(): Int = bCol
 
-  override def getEndColumn(): Int = -1
+  override def getEndColumn(): Int = eCol
 
   override def getFileName(): String = fileName
 

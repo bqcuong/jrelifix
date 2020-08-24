@@ -65,12 +65,16 @@ class Patch(document: DocumentASTRewrite) {
   }
 
   def applyEdits(): Unit = {
-    for (edit <- editQueue) {
-      // Apply edits to the document object
-      val undo = edit.apply(this.document.modifiedDocument, TextEdit.CREATE_UNDO)
-      // Store undo for un-mutating purpose
+    if (editQueue.nonEmpty) {
+      val undo = editQueue.last.apply(this.document.modifiedDocument, TextEdit.CREATE_UNDO)
       undoStack.push(undo)
     }
+//    for (edit <- editQueue) {
+//      // Apply edits to the document object
+//      val undo = edit.apply(this.document.modifiedDocument, TextEdit.CREATE_UNDO)
+//      // Store undo for un-mutating purpose
+//      undoStack.push(undo)
+//    }
   }
 
   def undoEdits(): Unit = {
