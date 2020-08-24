@@ -1,0 +1,13 @@
+--- src/main/java/org/openpnp/machine/reference/feeder/ReferenceStripFeeder.java
++++ src/main/java/org/openpnp/machine/reference/feeder/ReferenceStripFeeder.java
+@@ -247,7 +247,10 @@
+         if (holeLocations.isEmpty()) {
+             return null;
+         }
++        try {
+         MainFrame.cameraPanel.getCameraView(camera).showFilteredImage(image, 500);
++		} catch (Throwable e) {
++		}
+         return holeLocations.get(0);
+     }
+ 
