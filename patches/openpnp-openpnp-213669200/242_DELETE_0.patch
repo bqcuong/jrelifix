@@ -1,0 +1,9 @@
+--- src/main/java/org/openpnp/util/OpenCvUtils.java
++++ src/main/java/org/openpnp/util/OpenCvUtils.java
+@@ -239,6 +239,5 @@
+     }
+ 
+     public static void saveDebugImage(Class implementationClass, String function, String identifier, Mat mat) {
+-        saveDebugImage(implementationClass, function, identifier, OpenCvUtils.toBufferedImage(mat));
+     }
+ }
