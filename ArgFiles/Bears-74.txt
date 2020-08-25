@@ -1,0 +1,22 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+6433c2c6641e4e3eb172d04cb39ac5373b38ed74
+--faultFile
+SusFiles/PerfectFL/Bears-74.txt
+--reducedTests
+spoon.test.reference.TypeReferenceTest#testUnknownSuperClassWithSameNameInNoClasspath
+--ignoredTests
+spoon.MavenLauncherTest
+--externalTestCommand
+"mvn test"

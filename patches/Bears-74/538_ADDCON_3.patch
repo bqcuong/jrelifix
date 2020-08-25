@@ -1,0 +1,11 @@
+--- src/main/java/spoon/support/compiler/jdt/ReferenceBuilder.java
++++ src/main/java/spoon/support/compiler/jdt/ReferenceBuilder.java
+@@ -535,7 +535,7 @@
+ 		if (res == null) {
+ 			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+ 		}
+-		if (inner.getPackage() == null) {
++		if ((inner.getPackage() == null || index >= 0)) {
+ 			PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
+ 			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
+ 			inner.setPackage(packageReference);
