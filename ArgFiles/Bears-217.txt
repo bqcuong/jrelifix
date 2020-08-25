@@ -1,0 +1,22 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+b594bf8362ff5e6f2a5b65a00a60c3ae9d8a2eb1
+--faultFile
+SusFiles/PerfectFL/Bears-217.txt
+--reducedTests
+spoon.test.signature.SignatureTest#testNullSignatureInUnboundVariable
+--ignoredTests
+spoon.MavenLauncherTest
+--externalTestCommand
+"mvn test"

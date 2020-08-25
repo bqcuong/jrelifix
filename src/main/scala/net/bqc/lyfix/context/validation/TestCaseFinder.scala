@@ -44,7 +44,7 @@ case class TestCaseFinder(classpath: Array[URL], testFolder: String, testFilter:
     try {
       executor
         .submit(TestCaseFinder(this.classpath, this.testFolder, this.testFilter))
-        .get(5, TimeUnit.MINUTES)
+        .get(10, TimeUnit.MINUTES)
     }
     catch {
       case _: TimeoutException => {

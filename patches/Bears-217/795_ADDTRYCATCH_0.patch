@@ -1,0 +1,17 @@
+--- src/main/java/spoon/support/compiler/jdt/JDTTreeBuilder.java
++++ src/main/java/spoon/support/compiler/jdt/JDTTreeBuilder.java
+@@ -792,8 +792,12 @@
+ 		CtPackageDeclaration packageDeclaration = context.compilationUnitSpoon.getPackageDeclaration();
+ 		if (packageDeclaration != null) {
+ 			ImportReference packageRef = compilationUnitDeclaration.currentPackage;
+-			packageDeclaration.setPosition(factory.Core().createCompoundSourcePosition(
+-					context.compilationUnitSpoon, packageRef.sourceStart(), packageRef.sourceEnd(), packageRef.declarationSourceStart, packageRef.declarationEnd, context.compilationUnitSpoon.getLineSeparatorPositions()));
++			try {
++				packageDeclaration.setPosition(factory.Core().createCompoundSourcePosition(context.compilationUnitSpoon,
++						packageRef.sourceStart(), packageRef.sourceEnd(), packageRef.declarationSourceStart,
++						packageRef.declarationEnd, context.compilationUnitSpoon.getLineSeparatorPositions()));
++			} catch (Throwable e) {
++			}
+ 		}
+ 		return true;
+ 	}
