@@ -1,0 +1,22 @@
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/modules/swagger-codegen
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/modules/swagger-codegen/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+8a7940f199a03b7fabfa7ee6f54f34dee6134b47
+--faultFile
+SusFiles/PerfectFL/Bears-186.txt
+--reducedTests
+io.swagger.codegen.languages.JavaJAXRSSpecServerCodegenTest#verify_that_interfaceOnly_is_removed_from_additional_properties_if_false
+--externalTestCommand
+"mvn test -pl modules/swagger-codegen"
