@@ -126,6 +126,19 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
       true
     }
 
+    // field declaration
+    override def visit(node: FieldDeclaration): Boolean = {
+      val frags = node.fragments()
+      for(i <- 0 until frags.size()) {
+        val frag = frags.get(i)
+        frag match {
+          case f: VariableDeclarationFragment =>
+            vlist.addOne(f.getName)
+        }
+      }
+      false
+    }
+
     // local variable declaration
     override def visit(node: VariableDeclarationStatement): Boolean = {
       val declType = node.getType.toString

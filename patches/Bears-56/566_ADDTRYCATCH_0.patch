@@ -1,0 +1,15 @@
+--- src/main/java/spoon/reflect/visitor/ImportScannerImpl.java
++++ src/main/java/spoon/reflect/visitor/ImportScannerImpl.java
+@@ -563,9 +563,12 @@
+ 	 * @return true if the ref should be imported.
+ 	 */
+ 	protected boolean isTypeInCollision(CtReference ref, boolean fqnMode) {
++		try {
+ 		if (targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
+ 			return true;
+ 		}
++		} catch (Throwable e) {
++		}
+ 
+ 		try {
+ 			CtElement parent;

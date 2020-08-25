@@ -1,0 +1,11 @@
+--- src/main/java/spoon/reflect/visitor/ImportScannerImpl.java
++++ src/main/java/spoon/reflect/visitor/ImportScannerImpl.java
+@@ -563,7 +563,7 @@
+ 	 * @return true if the ref should be imported.
+ 	 */
+ 	protected boolean isTypeInCollision(CtReference ref, boolean fqnMode) {
+-		if (targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
++		if (this.methodImports.containsKey(ref.getSimpleName())) {
+ 			return true;
+ 		}
+ 
