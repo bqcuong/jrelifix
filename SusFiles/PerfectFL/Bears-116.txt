@@ -1,1 +1,2 @@
-org.traccar.protocol.SanavProtocolDecoder@41,72@1.00
+org.traccar.protocol.SanavProtocolDecoder@41@1.00
+org.traccar.protocol.SanavProtocolDecoder@72@1.00
