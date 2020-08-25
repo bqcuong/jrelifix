@@ -90,15 +90,15 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Statement Seed Set for Engine: " + stmtSet)
 
     val PRIMARY_OPERATORS = mutable.Queue[MutationType.Value](
-//      MutationType.NULLCHECKER,
+      MutationType.NULLCHECKER,
       MutationType.DELETE,
-//      MutationType.NEGATE,
-//      MutationType.SWAP,
-//      MutationType.REVERT,
-//      MutationType.CONVERT,
+      MutationType.NEGATE,
+      MutationType.SWAP,
+      MutationType.REVERT,
+      MutationType.CONVERT,
       MutationType.ADDIF,
-//      MutationType.ADDCON,
-//      MutationType.ADDSTMT,
+      MutationType.ADDCON,
+      MutationType.ADDSTMT,
       MutationType.ADDTRYCATCH,
 //      MutationType.MI,
     )
