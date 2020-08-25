@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+1fd55c5ef7e08eee2bf6ac40d91bf0c6508111e0
+--faultFile
+SusFiles/PerfectFL/Bears-188.txt
+--reducedTests
+hu.oe.nik.szfmv.visualization.DashboardTest#allRequiredValuesReceivedOnUpdate
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test"
