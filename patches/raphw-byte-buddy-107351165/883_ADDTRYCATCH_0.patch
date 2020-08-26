@@ -1,0 +1,15 @@
+--- src/main/java/net/bytebuddy/dynamic/scaffold/InstrumentedType.java
++++ src/main/java/net/bytebuddy/dynamic/scaffold/InstrumentedType.java
+@@ -880,7 +880,11 @@
+                 } else if (methodDescription.isConstructor()) {
+                     TypeDescription declaringType = getDeclaringType();
+                     if (!methodDescription.getDeclaringType().equals(declaringType == null ? this : declaringType)) {
+-                        throw new IllegalStateException("Constructor " + methodDescription + " defines an illegal receiver " + receiverType);
++                        try {
++							throw new IllegalStateException("Constructor " + methodDescription
++									+ " defines an illegal receiver " + receiverType);
++						} catch (Throwable e) {
++						}
+                     }
+                 } else if (!equals(receiverType)) {
+                     throw new IllegalStateException("Method " + methodDescription + " defines an illegal receiver " + receiverType);
