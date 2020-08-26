@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+51a02d02e8c801959ba6701b63e03170b055acfe
+--faultFile
+SusFiles/PerfectFL/Bears-13.txt
+--reducedTests
+com.fasterxml.jackson.databind.deser.ReadOrWriteOnlyTest#testReadOnly1345
+--externalTestCommand
+"mvn test"

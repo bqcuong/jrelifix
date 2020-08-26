@@ -1,1 +1,3 @@
 com.fasterxml.jackson.databind.deser.BeanDeserializerFactory@444@1.00
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory@534@1.00
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory@551@1.00
