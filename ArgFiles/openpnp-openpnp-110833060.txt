@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+0143f8ebe02d584081b720a2e65d38878ad54f2f
+--reducedTests
+SampleJobTest#testSampleJob
+--faultFile
+SusFiles/PerfectFL/openpnp-openpnp-110833060.txt
+--externalTestCommand
+"mvn test"

@@ -1,0 +1,2 @@
+org.openpnp.machine.reference.ReferenceCamera@82@1.00
+org.openpnp.machine.reference.ReferenceCamera@217@1.00

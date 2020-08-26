@@ -61,8 +61,9 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     result
   }
 
-  private def reRankFaults(faults: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
-    for (f <- faults) {
+  private def reRankFaults(faultyLocations: ArrayBuffer[Identifier]): ArrayBuffer[Identifier] = {
+    val stmtFaults = faultyLocations.filter(_.getJavaNode() != null)
+    for (f <- stmtFaults) {
       val isChanged = DiffUtils.isChanged(projectData.changedSourcesMap, f, 2)
       val isStmt = f.getJavaNode().isInstanceOf[Statement]
       if (isChanged && isStmt) {
@@ -70,7 +71,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
         faulty.setSuspiciousness(faulty.getSuspiciousness() + 1.0)
       }
     }
-    faults.sortWith((i1, i2) => i1.asInstanceOf[Faulty].getSuspiciousness() > i2.asInstanceOf[Faulty].getSuspiciousness())
+    stmtFaults.sortWith((i1, i2) => i1.asInstanceOf[Faulty].getSuspiciousness() > i2.asInstanceOf[Faulty].getSuspiciousness())
   }
 
   private def rankSeeds(seeds: mutable.HashSet[Identifier]): ArrayBuffer[Identifier] = {

@@ -1,0 +1,11 @@
+--- src/main/java/org/openpnp/machine/reference/ReferenceCamera.java
++++ src/main/java/org/openpnp/machine/reference/ReferenceCamera.java
+@@ -214,7 +214,7 @@
+     }
+ 	
+ 	private Mat undistort(Mat mat) {
+-	    if (!calibration.isEnabled()) {
++	    if (offsetY == 0) {
+ 	        return mat;
+ 	    }
+         Mat dst = new Mat();
