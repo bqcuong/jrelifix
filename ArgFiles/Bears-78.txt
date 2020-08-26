@@ -1,0 +1,22 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+f6d989a024b44cb7e4c79109ca1a98aaa39b1134
+--faultFile
+SusFiles/PerfectFL/Bears-78.txt
+--reducedTests
+spoon.test.prettyprinter.DefaultPrettyPrinterTest#testIssue1501
+--ignoredTests
+spoon.MavenLauncherTest
+--externalTestCommand
+"mvn test"

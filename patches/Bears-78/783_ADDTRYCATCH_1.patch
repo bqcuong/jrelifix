@@ -1,0 +1,24 @@
+--- src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java
++++ src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java
+@@ -780,20 +780,7 @@
+ 				boolean isImportedField = importsContext.isImported(f.getVariable());
+ 
+ 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
+-					if (target.isImplicit()) {
+-						/*
+-						 * target is implicit, check whether there is no conflict with an local variable, catch variable or parameter
+-						 * in case of conflict make it explicit, otherwise the field access is shadowed by that variable.
+-						 * Search for potential variable declaration until we found a class which declares or inherits this field
+-						 */
+-						final CtField<?> field = f.getVariable().getFieldDeclaration();
+-						final String fieldName = field.getSimpleName();
+-						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
+-						if (var != field) {
+-							//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
+-							target.setImplicit(false);
+-						}
+-					}
++					try {if (target.isImplicit()){final CtField<?> field=f.getVariable().getFieldDeclaration();final String fieldName=field.getSimpleName();CtVariable<?> var=f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();if (var != field){target.setImplicit(false);}}} catch (Throwable e){}
+ 					printer.snapshotLength();
+ 					scan(target);
+ 					if (printer.hasNewContent()) {
