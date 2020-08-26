@@ -1,1 +1,2 @@
-net.bytebuddy.dynamic.scaffold.InstrumentedType@883,885@1.00
+net.bytebuddy.dynamic.scaffold.InstrumentedType@883@1.00
+net.bytebuddy.dynamic.scaffold.InstrumentedType@885@1.00

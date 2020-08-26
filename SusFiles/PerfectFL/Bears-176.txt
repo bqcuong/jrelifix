@@ -1,1 +1,2 @@
-zipkin2.Span@469,487@1.00
+zipkin2.Span@469@1.00
+zipkin2.Span@487@1.00
