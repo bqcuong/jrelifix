@@ -1,0 +1,11 @@
+--- src/main/java/com/fasterxml/jackson/databind/util/StdDateFormat.java
++++ src/main/java/com/fasterxml/jackson/databind/util/StdDateFormat.java
+@@ -528,6 +528,8 @@
+                     //    (because we know `Z` identifier is used)
+                     df = _formatISO8601_z = _cloneFormat(DATE_FORMAT_ISO8601_Z, formatStr,
+                             DEFAULT_TIMEZONE, _locale, _lenient);
++					df = _formatISO8601_z = _cloneFormat(DATE_FORMAT_ISO8601_Z, formatStr, _timezone, _locale,
++							_lenient);
+                 }
+             }
+         }

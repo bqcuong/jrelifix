@@ -56,6 +56,8 @@ object Main {
     projectData.bugId = "Bears-220"
     projectData.bugId = "languagetool-org-languagetool-393031702"
     projectData.bugId = "openpnp-openpnp-110833060"
+    projectData.bugId = "Bears-5"
+    projectData.bugId = "Bears-23"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
