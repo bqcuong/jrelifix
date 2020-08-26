@@ -48,13 +48,23 @@ case class NullCheckerMutation(faultStatement: Identifier, projectData: ProjectD
       for (vSeed <- variableSet) {
         val vSeedName = vSeed.getJavaNode().toString.trim
         if (conExprStr.contains(vSeedName)) {
-          val newConExprStr = "%s != null && %s".format(vSeedName, conExprStr)
-          val newConExpr = ASTUtils.createExprNodeFromString(newConExprStr)
-          val patch = new Patch(this.document)
-          val replaceAction = ASTActionFactory.generateReplaceAction(conExpr, newConExpr)
-          patch.addAction(replaceAction)
-          patch.addUsingSeed(vSeed)
-          addPatch(patch)
+          // patch 1
+          val newConExprStr1 = "%s != null && %s".format(vSeedName, conExprStr)
+          val newConExpr1 = ASTUtils.createExprNodeFromString(newConExprStr1)
+          val patch1 = new Patch(this.document)
+          val replaceAction1 = ASTActionFactory.generateReplaceAction(conExpr, newConExpr1)
+          patch1.addAction(replaceAction1)
+          patch1.addUsingSeed(vSeed)
+          addPatch(patch1)
+
+          // patch 2
+          val newConExprStr2 = "%s == null || %s".format(vSeedName, conExprStr)
+          val newConExpr2 = ASTUtils.createExprNodeFromString(newConExprStr2)
+          val patch2 = new Patch(this.document)
+          val replaceAction2 = ASTActionFactory.generateReplaceAction(conExpr, newConExpr2)
+          patch2.addAction(replaceAction2)
+          patch2.addUsingSeed(vSeed)
+          addPatch(patch2)
         }
       }
     }
