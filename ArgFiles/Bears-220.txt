@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+fecfd8d8c081016027275a29f7248def78f83d66
+--faultFile
+SusFiles/PerfectFL/Bears-220.txt
+--reducedTests
+com.github.underscore.lodash.StringTest#toXmlFromJson21,com.github.underscore.lodash.StringTest#toXmlFromJson20
+--externalTestCommand
+"mvn -Dcheckstyle.skip=true test"

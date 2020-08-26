@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+04d5638b5a3e0f2ad88b53126ee55ce4c366918d
+--faultFile
+SusFiles/PerfectFL/Bears-194.txt
+--reducedTests
+com.gdssecurity.pmd.SanitizersTest#testSanitizerParseInt
+--externalTestCommand
+"mvn test"
