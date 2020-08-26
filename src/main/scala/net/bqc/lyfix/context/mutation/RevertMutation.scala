@@ -2,7 +2,7 @@ package net.bqc.lyfix.context.mutation
 
 import net.bqc.lyfix.context.ProjectData
 import net.bqc.lyfix.context.compiler.DocumentASTRewrite
-import net.bqc.lyfix.context.diff.{ChangeSnippet, ChangeType}
+import net.bqc.lyfix.context.diff.{ChangeSnippet, ChangeType, ChangedFile}
 import net.bqc.lyfix.identifier.Identifier
 import net.bqc.lyfix.search.cs.{ChildSnippetCondition, CurrentOutsideSnippetCondition, IChangeSnippetCondition, RemovedOutsideSnippetCondition, RemovedOutsideStmtSnippetCondition}
 import net.bqc.lyfix.search.Searcher
@@ -74,10 +74,11 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     if (isParameterizable) assert(paramSeeds != null)
     var applied = false
     val faultFile = faultStatement.getFileName()
-
+    val changedFile: ChangedFile = projectData.changedSourcesMap.getOrElse(faultFile, null)
+    if (changedFile == null) return false
     // Revert change snippets at statement level
     val css = Searcher.searchChangeSnippets(
-      projectData.changedSourcesMap(faultFile),
+      changedFile,
       CurrentOutsideSnippetCondition(faultStatement.toSourceRange()),
       onlyRoot = true)
 
@@ -90,7 +91,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
         applied = revertMovedStatement(changeSnippet)
       }
       else if (changeSnippet.changeType == ChangeType.ADDED) {
-        val removedCss = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile),
+        val removedCss = Searcher.searchChangeSnippets(changedFile,
           RemovedOutsideSnippetCondition(faultStatement.toSourceRange(), changeSnippet.mappingParentId,
             MAX_LINE_DISTANCE, overlapped = true),
           onlyRoot = true)
@@ -120,7 +121,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
     if (!applied) { // only removed stmt
       val condition = RemovedOutsideStmtSnippetCondition(
         faultStatement.toSourceRange(), null, MAX_LINE_DISTANCE, overlapped = false)
-      val css = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), condition, onlyRoot = true)
+      val css = Searcher.searchChangeSnippets(changedFile, condition, onlyRoot = true)
 
       if (css.nonEmpty) {
         val changeSnippet = css(0)
@@ -144,7 +145,7 @@ case class RevertMutation(faultStatement: Identifier, projectData: ProjectData)
 
     // Revert change snippets at expression level
     if (!applied) {
-      val insideCSs = Searcher.searchChangeSnippets2(projectData.changedSourcesMap(faultFile), ChildSnippetCondition(faultStatement))
+      val insideCSs = Searcher.searchChangeSnippets2(changedFile, ChildSnippetCondition(faultStatement))
       // revert all or partial the inside changes?? -> Try to revert whole stmt at first
       if (insideCSs.nonEmpty) {
         val armCss = insideCSs.filter(

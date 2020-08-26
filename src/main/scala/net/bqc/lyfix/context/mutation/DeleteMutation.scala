@@ -2,6 +2,7 @@ package net.bqc.lyfix.context.mutation
 
 import net.bqc.lyfix.context.ProjectData
 import net.bqc.lyfix.context.compiler.DocumentASTRewrite
+import net.bqc.lyfix.context.diff.ChangedFile
 import net.bqc.lyfix.identifier.Identifier
 import net.bqc.lyfix.search.Searcher
 import net.bqc.lyfix.search.cs.AddedSnippetCondition
@@ -23,7 +24,9 @@ case class DeleteMutation(faultStatement: Identifier, projectData: ProjectData)
     // delete only when the fault line is added in previous commit
     if (!faultStatement.isStatement()) return false
     val faultFile = faultStatement.getFileName()
-    val cs = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), AddedSnippetCondition(faultStatement))
+    val changedFile: ChangedFile = projectData.changedSourcesMap.getOrElse(faultFile, null)
+    if (changedFile == null) return false
+    val cs = Searcher.searchChangeSnippets(changedFile, AddedSnippetCondition(faultStatement))
     if (cs.nonEmpty) {
       // Modify source code on ASTRewrite
       val patch = new Patch(this.document)

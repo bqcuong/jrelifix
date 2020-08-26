@@ -2,6 +2,7 @@ package net.bqc.lyfix.context.mutation
 
 import net.bqc.lyfix.context.ProjectData
 import net.bqc.lyfix.context.compiler.DocumentASTRewrite
+import net.bqc.lyfix.context.diff.ChangedFile
 import net.bqc.lyfix.identifier.Identifier
 import net.bqc.lyfix.search.seed.NotBelongSeedCondition
 import net.bqc.lyfix.search.Searcher
@@ -66,8 +67,11 @@ case class AddCon2ConStmtMutation(faultStatement: Identifier, projectData: Proje
     changedBoolNodes = boolNodes.foldLeft(ArrayBuffer[ASTNode]()) {
       (res, node) => {
         val code = ASTUtils.createIdentifierForASTNode(node, faultFile)
-        val css = Searcher.searchChangeSnippets(projectData.changedSourcesMap(faultFile), InsideSnippetCondition(code.toSourceRange()))
-        if (css.nonEmpty) res.addOne(node)
+        val changedFile: ChangedFile = projectData.changedSourcesMap.getOrElse(faultFile, null)
+        if (changedFile != null) {
+          val css = Searcher.searchChangeSnippets(changedFile, InsideSnippetCondition(code.toSourceRange()))
+          if (css.nonEmpty) res.addOne(node)
+        }
         res
       }
     }
