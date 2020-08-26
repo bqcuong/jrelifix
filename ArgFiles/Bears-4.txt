@@ -1,0 +1,20 @@
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+ee1c51a66a76a5d60790e429e343284a3ea9293d
+--faultFile
+SusFiles/PerfectFL/Bears-4.txt
+--reducedTests
+com.fasterxml.jackson.databind.creators.InnerClassCreatorTest#testIssue1501
+--externalTestCommand
+"mvn test"
