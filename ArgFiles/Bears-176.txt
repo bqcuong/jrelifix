@@ -1,0 +1,22 @@
+--rootProjectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+--projectFolder
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/zipkin2
+--depClasspath
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/zipkin2/target/dependency
+--sourceFolder
+src/main/java
+--testFolder
+src/test/java
+--sourceClassFolder
+target/classes
+--testClassFolder
+target/test-classes
+--bugInducingCommit
+5b6efdc70a83fca6e9b09bf8df5a3a861caebf9e
+--faultFile
+SusFiles/PerfectFL/Bears-176.txt
+--reducedTests
+zipkin2.SpanTest#canUsePrimitiveOverloads
+--externalTestCommand
+"mvn test -pl zipkin2"
