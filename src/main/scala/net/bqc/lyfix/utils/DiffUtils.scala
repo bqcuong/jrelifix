@@ -97,8 +97,8 @@ object DiffUtils {
    * @return
    */
   def getDiff(prev: String, curr: String, filePathLabel: String): String = {
-    val original: File = File.createTempFile("jrelifix_", ".java")
-    val current: File = File.createTempFile("jrelifix_", ".java")
+    val original: File = File.createTempFile("lyfix_", ".java")
+    val current: File = File.createTempFile("lyfix_", ".java")
     FileUtils.write(original, prev, Charset.forName("utf-8"))
     FileUtils.write(current, curr, Charset.forName("utf-8"))
     try {
