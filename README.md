@@ -71,7 +71,7 @@ $ cd BugsDataset
 $ ./reproduce_bug.sh
 $ cd .. 
 ```
-Run **LyFix** repair process with the command:
+2. Run **LyFix** repair process with the command:
 ```bash
 $ ./run.sh
 ```
