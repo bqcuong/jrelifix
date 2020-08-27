@@ -17,9 +17,10 @@ git submodule init
 git submodule update
 ```
 ### Build
-Please make sure your machine is satisfied with below requirements:
-- Java JDK 8 installed
-- Maven 3.6.0 installed
+Requirements:
+- **Operating System:** Linux and MacOS (Windows will be supported soon)
+- **Java Runtime:** Oracle JDK 1.8
+- **Build Tool:** Maven 3.6.0+
 
 Then, just simply run:
 ```bash
@@ -73,5 +74,15 @@ $ cd ..
 ```
 2. Run **LyFix** repair process with the command:
 ```bash
-$ ./run.sh
+$ ./run.sh \
+    --projectFolder BugsDataset \
+    --depClasspath BugsDataset/target/dependency \
+    --sourceFolder src/main/java \
+    --testFolder src/test/java \
+    --sourceClassFolder target/classes \
+    --testClassFolder target/test-classes \
+    --bugInducingCommit 314b6b56bec4af56dba667d66a25c1613f4bc800 \
+    --reducedTests "org.apache.commons.lang3.reflect.MethodUtilsTest#testGetMethodsWithAnnotationSearchSupersButNotIgnoreAccess,org.apache.commons.lang3.reflect.MethodUtilsTest#testGetMethodsWithAnnotationSearchSupersAndIgnoreAccess" \
+    --faultFile SusFiles/PerfectFL/apache-commons-lang-224267191.txt \
+    --externalTestCommand "mvn test"
 ```
