@@ -20,7 +20,7 @@ public class ShellUtils {
         for (int i = 1; i < parts.length; i++) {
             options.add(parts[i]);
         }
-        return execute(executionDir, command, options.toArray(new String[0]), DEFAULT_TIMEOUT, true);
+        return execute(executionDir, command, options.toArray(new String[0]), DEFAULT_TIMEOUT, false);
     }
 
     public static boolean execute(String executionDir, String command, String[] options, int timeout, boolean redirectOutput) {
