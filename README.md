@@ -5,8 +5,8 @@ User first provides the current version of the program, the bug-inducing commit 
 Next, specific repair operators are used to generate patches for buggy locations (given by [Jaguar](https://github.com/saeg/jaguar)).
 **LyFix** is supported by the [Google Summer of Code 2020](https://summerofcode.withgoogle.com/projects/#5961790384504832) program.
 
-### Installation
-#### Clone
+## Installation
+### Clone
 First, clone the source code of LyFix:
 ```
 git clone https://github.com/bqcuong/lyfix
@@ -16,7 +16,7 @@ You are also supposed to obtain the source code of **Bugs Dataset** (a git submo
 git submodule init
 git submodule update
 ```
-#### Build
+### Build
 Please make sure your machine is satisfied with below requirements:
 - Java JDK 8 installed
 - Maven 3.6.0 installed
