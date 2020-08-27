@@ -1,0 +1,3 @@
+[submodule "BugsDataset"]
+	path = BugsDataset
+	url = https://github.com/bqcuong/regression-bugs
