@@ -113,8 +113,6 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("Primary Operators: " + PRIMARY_OPERATORS)
     logger.debug("Secondary Operators: " + SECONDARY_OPERATORS)
 
-    val reducedTSNames: Set[String] = this.context.testValidator.predefinedTests.map(_.getFullName).toSet
-
     // only support fix on changed-faulty statements
     val stmtFaults = reRankFaults(faults)
     logger.debug("Filtered Faults:")
@@ -178,7 +176,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
               } else {
                 reducedTSValidation = this.context.testValidator.validateReducedTestCases()._1
               }
-              logger.debug("==> [VALIDATION] REDUCED TS: " + (if (reducedTSValidation) "\u2713" else "\u00D7"))
+              logger.debug("[VALIDATION] REDUCED TS: " + (if (reducedTSValidation) "\u2713" else "\u00D7"))
               if (reducedTSValidation) {
                 var wholeTSValidation = false
                 if (Objects.nonNull(projectData.config().externalTestCommand)) {
@@ -190,7 +188,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
                   wholeTSValidation = this.context.testValidator.validateAllTestCases()._1
                 }
 
-                logger.debug("==> [VALIDATION] WHOLE TS: " + (if (wholeTSValidation) "\u2713" else "\u00D7"))
+                logger.debug("[VALIDATION] WHOLE TS: " + (if (wholeTSValidation) "\u2713" else "\u00D7"))
                 if (wholeTSValidation) {
                   logger.debug("==========================================")
                   logger.debug("FOUND A REPAIR (See below patch):")
@@ -226,9 +224,9 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
     logger.debug("==========================================")
     logger.debug("THE REPAIR PROCESS ENDED")
     logger.debug("==========================================")
-  }
-
-  private def diffResults(initialTS: Set[String], newTS: Set[String]): Boolean = {
-    !initialTS.equals(newTS)
+    logger.debug("GENERATED PATCHES:")
+    for (patchDiff <- patchDiffs) {
+      logger.debug("------------------------------------------\n" + patchDiff)
+    }
   }
 }
