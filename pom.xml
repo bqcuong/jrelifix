@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.bqc</groupId>
-    <artifactId>jrelifix</artifactId>
+    <artifactId>lyfix</artifactId>
     <version>0.1</version>
 
     <properties>
