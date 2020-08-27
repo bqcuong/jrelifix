@@ -6,12 +6,8 @@ Next, specific repair operators are used to generate patches for buggy locations
 **LyFix** is supported by the [Google Summer of Code 2020](https://summerofcode.withgoogle.com/projects/#5961790384504832) program.
 
 ## Requirements
-For running tool:
 - **Operating System:** Linux and MacOS (Windows will be supported soon)
 - **Java Runtime:** Oracle JDK 1.8
-
-For building tool:
-- Requirements as for running tool
 - **Build Tool:** Maven 3.6.0+
 
 ## Installation
@@ -22,9 +18,11 @@ git clone https://github.com/bqcuong/lyfix
 ```
 You are also supposed to obtain the source code of **Bugs Dataset** (a git submodule) if you want to run the example in Usage section:
 ```
+cd lyfix
 git submodule init
-git submodule update
+git submodule update --progress
 ```
+
 ### Build
 If you intend to use the pre-built version (the bundle file named `target/lyfix-0.1-jar-with-dependencies.jar`), please skip this step.
 
@@ -72,14 +70,19 @@ Usage: ./run.sh [options]
 
 ### Example
 *This section demonstrates how to make **LyFix** try to fix the bug `apache-commons-lang-224267191` of the [BugSwarm](bugswarm.org) benchmark*.
-
-1. Compile the tests source code and collect dependency libraries of the bug program:
+1. Go into the bug repository then check it out to the correct branch:
 ```bash
 $ cd BugsDataset
+$ git checkout apache-commons-lang-224267191
+```
+
+2. Compile the tests source code and collect dependency libraries of the bug program then go out:
+```bash
 $ ./reproduce_bug.sh
 $ cd .. 
 ```
-2. Run **LyFix** repair process with the command:
+
+3. Run **LyFix** repair process with the command:
 ```bash
 $ ./run.sh \
     --projectFolder BugsDataset \
@@ -90,6 +93,7 @@ $ ./run.sh \
     --testClassFolder target/test-classes \
     --bugInducingCommit 314b6b56bec4af56dba667d66a25c1613f4bc800 \
     --reducedTests "org.apache.commons.lang3.reflect.MethodUtilsTest#testGetMethodsWithAnnotationSearchSupersButNotIgnoreAccess,org.apache.commons.lang3.reflect.MethodUtilsTest#testGetMethodsWithAnnotationSearchSupersAndIgnoreAccess" \
+    --ignoredTests org.apache.commons.lang3.builder.ToStringBuilderTest#testReflectionHierarchyArrayList \
     --faultFile SusFiles/PerfectFL/apache-commons-lang-224267191.txt \
     --externalTestCommand "mvn test"
 ```
