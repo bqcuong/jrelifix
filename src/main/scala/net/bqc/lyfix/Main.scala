@@ -27,66 +27,14 @@ object Main {
   val projectData: ProjectData = ProjectData()
 
   def main(args: Array[String]): Unit = {
-    projectData.bugId = "Bears-139"
-    projectData.bugId = "Bears-127"
-    projectData.bugId = "Bears-98"
-    projectData.bugId = "Bears-121"
-    projectData.bugId = "tananaev-traccar-68883949"
-    projectData.bugId = "tananaev-traccar-82839755"
-    projectData.bugId = "Bears-251"
-    projectData.bugId = "sannies-mp4parser-79111320"
-    projectData.bugId = "stagemonitor-stagemonitor-145477129"
-    projectData.bugId = "puniverse-capsule-78565048"
-    projectData.bugId = "tananaev-traccar-64783123"
-    projectData.bugId = "yamcs-yamcs-186324159"
-    projectData.bugId = "openpnp-openpnp-130246850"
-    projectData.bugId = "Bears-203"
-    projectData.bugId = "Bears-201"
-    projectData.bugId = "apache-commons-lang-224267191"
-    projectData.bugId = "openpnp-openpnp-213669200"
-    projectData.bugId = "petergeneric-stdlib-292030904"
-    projectData.bugId = "Bears-102"
-    projectData.bugId = "Bears-188"
-    projectData.bugId = "Bears-217"
-    projectData.bugId = "Bears-56"
-    projectData.bugId = "Bears-74"
-    projectData.bugId = "Bears-186"
-    projectData.bugId = "Bears-78"
-    projectData.bugId = "Bears-194"
-    projectData.bugId = "Bears-220"
-    projectData.bugId = "languagetool-org-languagetool-393031702"
-    projectData.bugId = "openpnp-openpnp-110833060"
-    projectData.bugId = "Bears-5"
-    projectData.bugId = "Bears-23"
-    projectData.bugId = "Bears-4"
-    projectData.bugId = "Bears-21"
-    projectData.bugId = "Bears-3"
-    projectData.bugId = "Bears-25"
-    projectData.bugId = "Bears-13"
-    projectData.bugId = "mybatis-mybatis-3-117115623"
-    projectData.bugId = "Bears-176"
-    projectData.bugId = "raphw-byte-buddy-171322757"
-    projectData.bugId = "raphw-byte-buddy-107351165"
-    projectData.bugId = "owlcs-owlapi-93793148"
+    var cfg = OptParser.parseOpts(args)
+    if (cfg.configFile != null) {
+      val predefinedArgs = FileFolderUtils.readFile(cfg.configFile)
+        .split("\n")
+        .map(_.replaceAll("\"", ""))
+      cfg = OptParser.parseOpts(predefinedArgs)
+    }
 
-//    configLog4J(projectData.bugId)
-    val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
-      .split("\n")
-      .map(_.replaceAll("\"", ""))
-    repair(predefinedArgs)
-  }
-
-  def configLog4J(bugId: String): Unit = {
-    val configStream = this.getClass.getResourceAsStream("/log4j.properties")
-    val props = new Properties();
-    props.load(configStream);
-    configStream.close();
-    props.setProperty("log4j.appender.FILE.File", "logs/%s.log".format(bugId))
-    PropertyConfigurator.configure(props)
-  }
-
-  def repair(args: Array[String]): Unit = {
-    val cfg = OptParser.parseOpts(args)
     projectData.setConfig(cfg)
     projectData.makeTemp()
     logger.debug("classpath: " + cfg.classpath())

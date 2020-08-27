@@ -13,11 +13,11 @@ object OptParser {
 
     opt[String]( "depClasspath")
       .action((cp, c) => c.copy(depClasspath = cp))
-      .text("Dependencies Classpath (external libs,...). Accept both folder and jar path. Format: /libs1/:/lib2/common.jar:...")
+      .text("Dependencies Classpath (external libs,...). Accept both folder and jar path. e.g., /libs1/:/lib2/common.jar:...")
 
     opt[String]( "javaHome")
       .action((cp, c) => c.copy(javaHome = cp))
-      .text("Java Home Folder")
+      .text("Specify the path to Java home used to execute test cases")
 
     opt[String]( "testDriver")
       .action((cp, c) => c.copy(testDriver = cp.toLowerCase()))
@@ -25,30 +25,31 @@ object OptParser {
 
     opt[String]( "sourceFolder")
       .action((source, c) => c.copy(sourceFolder = source))
-      .text("Folder of source code, e.g., blah/src")
+      .text("Folder of source code, e.g., src/main/java")
 
     opt[String]( "sourceClassFolder")
       .action((source, c) => c.copy(sourceClassFolder = source))
-      .text("Folder of classes of compiled source code, e.g., blah/target/classes")
+      .text("Folder of classes of compiled source code, e.g., target/classes")
 
     opt[Seq[String]]("reducedTests")
       .action((p, c) => c.copy(reducedTests = p))
+      .text("List of reduced test cases to be executed first, e.g., a.b.c.TestD#methodM")
 
     opt[String]( "testFolder")
       .action((t, c) => c.copy(testFolder = t))
-      .text("Folder of tests, e.g., blah/tests")
+      .text("Folder of tests, e.g., src/main/test")
 
     opt[String]( "testClassFolder")
       .action((t, c) => c.copy(testClassFolder = t))
-      .text("Folder of classes of tests, e.g., blah/target/test-classes")
+      .text("Folder of classes of tests, e.g., target/test-classes")
 
     opt[String]( "projectFolder")
       .action((t, c) => c.copy(projFolder = t))
-      .text("Folder of project, if there are multiple modules, please fill in the path to the module, e.g., jrelifix/core")
+      .text("Folder of project, if there are multiple modules, please fill the absolute path to the module")
 
     opt[String]( "rootProjectFolder")
       .action((t, c) => c.copy(rootProjFolder = t))
-      .text("Root folder of project in case there are more than one module in a project, e.g., jrelifix")
+      .text("Root folder of the project if your project has multiple modules, which contains the .git folder")
 
     opt[Int]("testTimeout")
       .action((t, c) => c.copy(testTimeout = t))
@@ -63,11 +64,11 @@ object OptParser {
 
     opt[String]("faultLines")
       .action((o, c) => c.copy(faultLines = o))
-      .text("Faulty lines with class names, e.g., a.b.c.XYZ: ")
+      .text("Faulty lines with class names, begin line, end line, begin column, end column \"e.g., a.b.c.XYZ:10 10 1 9\"")
 
     opt[String]("faultFile")
       .action((o, c) => c.copy(faultFile = o))
-      .text("A file which contains faulty lines with class names, e.g., a.b.c.XYZ@123@1.00")
+      .text("The path to the file which contains faulty lines with class names, content inside: e.g., a.b.c.XYZ@123@1.00")
 
     opt[Int]("topNFaults")
       .action((o, c) => c.copy(topNFaults = o))
@@ -77,13 +78,9 @@ object OptParser {
       .action((o, c) => c.copy(isDataFlow = o))
       .text("Option for Jaguar fault localization tool")
 
-    opt[Int]("iterationPeriod")
-      .action((o, c) => c.copy(iterationPeriod = o))
-      .text("Number of max iterations for considering each fault location")
-
     opt[String]("bugInducingCommit")
       .action((o, c) => c.copy(bugInducingCommit = o))
-      .text("The hash of bug inducing commit. If not being set, it'll be the current commit.")
+      .text("The hash of the bug-inducing commit. If not being set, it'll be the current commit.")
 
     opt[Boolean]("bgValidation")
       .action((o, c) => c.copy(BugSwarmValidation = o))
@@ -95,11 +92,15 @@ object OptParser {
 
     opt[String]("externalTestCommand")
       .action((o, c) => c.copy(externalTestCommand = o))
-      .text("The command to test the whole test suite.")
+      .text("The external command to test the whole test suite. e.g., \"mvn test -Dtest=a.b.c.ClassD\"")
 
     opt[String]("externalReducedTestCommand")
       .action((o, c) => c.copy(externalReducedTestCommand = o))
-      .text("The command to test the reduced test suite.")
+      .text("The external command to test the reduced test suite. e.g., \"mvn test\"")
+
+    opt[String]("configFile")
+      .action((o, c) => c.copy(configFile = o))
+      .text("The path to config file which contains all run options. If providing this, none of the others is needed")
   }
 
   def parseOpts(args: Array[String]): Config = {

@@ -32,12 +32,12 @@ case class Config(
                    javaHome: String = null,
                    testDriver: String = null,
 
-                   iterationPeriod: Int = 1, // Specific for JRelifix Engine
                    bugInducingCommit: String = "HEAD",
                    BugSwarmValidation: Boolean = false,
                    BugSwarmImageTag: String = null,
                    externalTestCommand: String = null,
-                   externalReducedTestCommand: String = null
+                   externalReducedTestCommand: String = null,
+                   configFile: String = null,
                  ) {
 
   def classpath(): String = {
