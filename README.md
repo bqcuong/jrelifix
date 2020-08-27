@@ -5,6 +5,15 @@ User first provides the current version of the program, the bug-inducing commit 
 Next, specific repair operators are used to generate patches for buggy locations (given by [Jaguar](https://github.com/saeg/jaguar)).
 **LyFix** is supported by the [Google Summer of Code 2020](https://summerofcode.withgoogle.com/projects/#5961790384504832) program.
 
+## Requirements
+For running tool:
+- **Operating System:** Linux and MacOS (Windows will be supported soon)
+- **Java Runtime:** Oracle JDK 1.8
+
+For building tool:
+- Requirements as for running tool
+- **Build Tool:** Maven 3.6.0+
+
 ## Installation
 ### Clone
 First, clone the source code of LyFix:
@@ -17,15 +26,13 @@ git submodule init
 git submodule update
 ```
 ### Build
-Requirements:
-- **Operating System:** Linux and MacOS (Windows will be supported soon)
-- **Java Runtime:** Oracle JDK 1.8
-- **Build Tool:** Maven 3.6.0+
+If you intend to use the pre-built version (the bundle file named `target/lyfix-0.1-jar-with-dependencies.jar`), please skip this step.
 
-Then, just simply run:
+Otherwise, please just simply run the below command to trigger the build process:
 ```bash
 $ mvn clean package
-```
+``` 
+
 ## Usage
 The below text is the instructions to run **LyFix**.
 ```
