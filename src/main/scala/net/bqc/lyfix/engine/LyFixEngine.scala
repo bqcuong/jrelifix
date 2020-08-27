@@ -110,12 +110,12 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
       MutationType.ADDIF,
       MutationType.ADDCON)
 
-    logger.debug("Primary Operators: " + PRIMARY_OPERATORS)
-    logger.debug("Secondary Operators: " + SECONDARY_OPERATORS)
+    logger.info("Primary Operators: " + PRIMARY_OPERATORS)
+    logger.info("Secondary Operators: " + SECONDARY_OPERATORS)
 
     // only support fix on changed-faulty statements
     val stmtFaults = reRankFaults(faults)
-    logger.debug("Filtered Faults:")
+    logger.info("Filtered Faults:")
     stmtFaults.foreach(logger.info(_))
 
     val patchDiffs: ArrayBuffer[String] = ArrayBuffer[String]()
@@ -124,20 +124,20 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
       val f = stmtFaults(fidx)
       val fLine = f.getLine()
       currentFault = f
-      logger.debug("[FAULT] Try: " + currentFault)
+      logger.info("[FAULT] Try: " + currentFault)
       this.tabu.clear()
 
       val operators = projectData.randomizer.shuffle(PRIMARY_OPERATORS)
 //      val operators = PRIMARY_OPERATORS.clone()
-      logger.debug("[OPERATOR] Candidates: " + operators)
+      logger.info("[OPERATOR] Candidates: " + operators)
 
       while(operators.nonEmpty) {
         val nextOperator = operators.dequeue()
-        logger.debug("[OPERATOR] Try: " + nextOperator)
+        logger.info("[OPERATOR] Try: " + nextOperator)
 
         val mutation = this.context.mutationGenerator.getMutation(currentFault, nextOperator)
         if (mutation.isParameterizable) {
-          logger.debug("[OPERATOR PARAM] Picking a parameter seed for parameterizable operator %s...".format(nextOperator))
+          logger.info("[OPERATOR PARAM] Picking a parameter seed for parameterizable operator %s...".format(nextOperator))
           var seeds: ArrayBuffer[Identifier] = null
           if (nextOperator == MutationType.ADDSTMT) {
             seeds = rankSeeds(stmtSet)
@@ -154,7 +154,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
           mutation.mutate(null)
         }
         var applied = mutation.getPatches().nonEmpty
-        logger.debug("[OPERATOR] " + nextOperator + " Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
+        logger.info("[OPERATOR] " + nextOperator + " Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
         var compileStatus: ICompiler.Status = null
         if (applied) {
           val patches = mutation.getPatches()
@@ -162,10 +162,10 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
             val patch = patches(i)
             patch.applyEdits()
             projectData.updateChangedSourceFiles() // update document to hard disk
-            logger.debug("[PATCH][" + nextOperator + "] Applied patch: " + i)
+            logger.info("[PATCH][" + nextOperator + "] Applied patch: " + i)
 
             compileStatus = this.context.compiler.compile()
-            logger.debug("[COMPILE] Status: " + compileStatus)
+            logger.info("[COMPILE] Status: " + compileStatus)
 
             if (compileStatus == ICompiler.Status.COMPILED) {
               var reducedTSValidation = false
@@ -176,7 +176,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
               } else {
                 reducedTSValidation = this.context.testValidator.validateReducedTestCases()._1
               }
-              logger.debug("[VALIDATION] REDUCED TS: " + (if (reducedTSValidation) "\u2713" else "\u00D7"))
+              logger.info("[VALIDATION] REDUCED TS: " + (if (reducedTSValidation) "\u2713" else "\u00D7"))
               if (reducedTSValidation) {
                 var wholeTSValidation = false
                 if (Objects.nonNull(projectData.config().externalTestCommand)) {
@@ -188,10 +188,10 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
                   wholeTSValidation = this.context.testValidator.validateAllTestCases()._1
                 }
 
-                logger.debug("[VALIDATION] WHOLE TS: " + (if (wholeTSValidation) "\u2713" else "\u00D7"))
+                logger.info("[VALIDATION] WHOLE TS: " + (if (wholeTSValidation) "\u2713" else "\u00D7"))
                 if (wholeTSValidation) {
-                  logger.debug("==========================================")
-                  logger.debug("FOUND A REPAIR (See below patch):")
+                  logger.info("==========================================")
+                  logger.info("FOUND A REPAIR (See below patch):")
                   for (faultFile <- projectData.originalFaultFiles) {
                     val changedDocument = projectData.sourceFileContents.get(faultFile)
                     val originalSourceContent = changedDocument.document.get()
@@ -199,7 +199,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
                     val diff = DiffUtils.getDiff(originalSourceContent, patchedSourceContent,
                       faultFile.replace(projectData.config().projFolder + File.separator, ""))
                     if (!diff.trim.isEmpty) {
-                      logger.debug("------------------------------------------\n" + diff)
+                      logger.info("------------------------------------------\n" + diff)
                       patchDiffs.addOne(diff)
                     }
 
@@ -221,12 +221,12 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
       }
     }
 
-    logger.debug("==========================================")
-    logger.debug("THE REPAIR PROCESS ENDED")
-    logger.debug("==========================================")
-    logger.debug("GENERATED PATCHES:")
+    logger.info("==========================================")
+    logger.info("THE REPAIR PROCESS ENDED")
+    logger.info("==========================================")
+    logger.info("GENERATED PATCHES:")
     for (patchDiff <- patchDiffs) {
-      logger.debug("------------------------------------------\n" + patchDiff)
+      logger.info("------------------------------------------\n" + patchDiff)
     }
   }
 }
