@@ -101,7 +101,7 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
       MutationType.ADDCON,
       MutationType.ADDSTMT,
       MutationType.ADDTRYCATCH,
-//      MutationType.MI,
+      MutationType.MI,
     )
 
     val SECONDARY_OPERATORS = mutable.Queue[MutationType.Value](
@@ -138,7 +138,6 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
         logger.debug("[OPERATOR] Try: " + nextOperator)
 
         val mutation = this.context.mutationGenerator.getMutation(currentFault, nextOperator)
-        var applied: Boolean = false
         if (mutation.isParameterizable) {
           logger.debug("[OPERATOR PARAM] Picking a parameter seed for parameterizable operator %s...".format(nextOperator))
           var seeds: ArrayBuffer[Identifier] = null
@@ -150,14 +149,13 @@ case class LyFixEngine(override val faults: ArrayBuffer[Identifier],
           }
 
           if (seeds.nonEmpty) {
-            applied = mutation.mutate(seeds)
+            mutation.mutate(seeds)
           }
-          else applied = false
         }
         else {
-          applied = mutation.mutate(null)
+          mutation.mutate(null)
         }
-
+        var applied = mutation.getPatches().nonEmpty
         logger.debug("[OPERATOR] " + nextOperator + " Able to generate patches? " + (if (applied) "\u2713" else "\u00D7"))
         var compileStatus: ICompiler.Status = null
         if (applied) {

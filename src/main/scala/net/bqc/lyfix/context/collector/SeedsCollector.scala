@@ -48,12 +48,24 @@ case class SeedsCollector(projectData: ProjectData) extends Collector(projectDat
           case p: VariableDeclarationFragment => // local variable
             initializer = p.getInitializer
             declType = p.getParent
+            declType match {
+              case dt: VariableDeclarationStatement =>
+                declType = dt.getType
+              case dt: FieldDeclaration =>
+                declType = dt.getType
+              case _ =>
+            }
         }
 
         val (bl, el, bc, ec) = getNodePosition(v, cu)
         val variableCode = new VariableSeedIdentifier(bl, el, bc, ec, f, declType, initializer)
         variableCode.setJavaNode(searchNodeByIdentifier(cu, variableCode))
         projectData.seedsMap(f).addOne(variableCode)
+
+        val binding = v.asInstanceOf[SimpleName].resolveBinding()
+        if (binding != null) {
+          projectData.bindingMap.put(binding.getKey, variableCode)
+        }
       }
 
       for(m <- seedsVisitor.mlist) {

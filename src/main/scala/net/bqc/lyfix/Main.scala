@@ -67,6 +67,7 @@ object Main {
     projectData.bugId = "Bears-176"
     projectData.bugId = "raphw-byte-buddy-171322757"
     projectData.bugId = "raphw-byte-buddy-107351165"
+    projectData.bugId = "owlcs-owlapi-93793148"
 
 //    configLog4J(projectData.bugId)
     val predefinedArgs = FileFolderUtils.readFile("ArgFiles/%s.txt".format(projectData.bugId))
