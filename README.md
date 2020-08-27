@@ -63,7 +63,7 @@ Usage: ./run.sh [options]
 ```
 
 ### Example
-*This section demonstrate how to run **LyFix** to fix the bug `apache-commons-lang-224267191` of the [BugSwarm](bugswarm.org) benchmark*.
+*This section demonstrates how to make **LyFix** try to fix the bug `apache-commons-lang-224267191` of the [BugSwarm](bugswarm.org) benchmark*.
 
 1. Compile the tests source code and collect dependency libraries of the bug program:
 ```bash
