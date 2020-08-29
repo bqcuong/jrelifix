@@ -7,9 +7,9 @@ src/main/java
 --testFolder
 src/test/java
 --sourceClassFolder
-target/classes
+build/main
 --testClassFolder
-target/test-classes
+build/test
 --bugInducingCommit
 465292573436a3c7cd4cb90bd8cecf458aeab4ee
 --faultFile
