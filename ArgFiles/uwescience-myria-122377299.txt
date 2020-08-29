@@ -15,6 +15,6 @@ target/test-classes
 --faultFile
 SusFiles/PerfectFL/uwescience-myria-122377299.txt
 --reducedTests
-edu.washington.escience.myria.operator.TipsyFileScanTest.testRelativeFileUrl
+edu.washington.escience.myria.operator.TipsyFileScanTest#testRelativeFileUrl
 --externalTestCommand
 "./gradlew check"
