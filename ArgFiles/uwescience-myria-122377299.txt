@@ -1,7 +1,7 @@
 --projectFolder
 /Users/cuong/IdeaProjects/apr-repo/regression-bugs
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/target/dependency
+/Users/cuong/IdeaProjects/apr-repo/regression-bugs/build/libs
 --sourceFolder
 src/main/java
 --testFolder
