@@ -3,9 +3,9 @@
 --depClasspath
 /Users/cuong/IdeaProjects/apr-repo/regression-bugs/build/libs
 --sourceFolder
-src/main/java
+src
 --testFolder
-src/test/java
+test
 --sourceClassFolder
 build/main
 --testClassFolder
