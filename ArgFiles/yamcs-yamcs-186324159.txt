@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/yamcs-core
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/yamcs-core
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/yamcs-core/target/dependency
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/yamcs-core/target/dependency
 --sourceFolder
 src/main/java
 --testFolder

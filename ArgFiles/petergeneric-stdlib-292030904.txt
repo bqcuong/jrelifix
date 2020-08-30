@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/guice/hibernate
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/guice/hibernate
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/guice/hibernate/target/dependency
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/guice/hibernate/target/dependency
 --sourceFolder
 src/main/java
 --testFolder

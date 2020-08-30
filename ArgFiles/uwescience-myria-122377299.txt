@@ -1,7 +1,7 @@
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/build/libs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/build/libs
 --sourceFolder
 src
 --testFolder

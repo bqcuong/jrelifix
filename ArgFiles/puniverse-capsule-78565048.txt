@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/capsule
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/capsule
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/capsule/build/dependency-libs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/capsule/build/dependency-libs
 --sourceFolder
 src/main/java
 --testFolder

@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/stagemonitor-core
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/stagemonitor-core
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/stagemonitor-core/build/libs/lib
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/stagemonitor-core/build/libs/lib
 --sourceFolder
 src/main/java
 --testFolder

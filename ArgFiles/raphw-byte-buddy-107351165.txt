@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/byte-buddy-dep
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/byte-buddy-dep
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/byte-buddy-dep/target/dependency
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/byte-buddy-dep/target/dependency
 --sourceFolder
 src/main/java
 --testFolder

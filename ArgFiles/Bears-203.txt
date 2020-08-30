@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/common
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/common
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/common/target/dependency:/Users/cuong/IdeaProjects/apr-repo/regression-bugs/navigation-formats/target/dependency:/Users/cuong/IdeaProjects/apr-repo/regression-bugs/navigation-formats/target/classes
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/common/target/dependency:/Users/cuong/IdeaProjects/jrelifix/BugsDataset/navigation-formats/target/dependency:/Users/cuong/IdeaProjects/jrelifix/BugsDataset/navigation-formats/target/classes
 --sourceFolder
 src/main/java
 --testFolder

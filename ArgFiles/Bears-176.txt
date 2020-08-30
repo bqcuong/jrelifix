@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/zipkin2
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/zipkin2
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/zipkin2/target/dependency
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/zipkin2/target/dependency
 --sourceFolder
 src/main/java
 --testFolder

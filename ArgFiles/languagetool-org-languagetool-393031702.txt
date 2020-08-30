@@ -1,9 +1,9 @@
 --rootProjectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/languagetool-core
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/languagetool-core
 --depClasspath
-/Users/cuong/IdeaProjects/apr-repo/regression-bugs/languagetool-core/target/dependency:/Users/cuong/IdeaProjects/apr-repo/regression-bugs/languagetool-language-modules/fr/target/dependency:/Users/cuong/IdeaProjects/apr-repo/regression-bugs/languagetool-language-modules/fr/target/classes
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/languagetool-core/target/dependency:/Users/cuong/IdeaProjects/jrelifix/BugsDataset/languagetool-language-modules/fr/target/dependency:/Users/cuong/IdeaProjects/jrelifix/BugsDataset/languagetool-language-modules/fr/target/classes
 --sourceFolder
 src/main/java
 --testFolder
