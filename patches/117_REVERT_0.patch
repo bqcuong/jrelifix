@@ -1,0 +1,11 @@
+--- src/main/java/dk/alexandra/fresco/framework/util/StrictBitVector.java
++++ src/main/java/dk/alexandra/fresco/framework/util/StrictBitVector.java
+@@ -114,7 +114,7 @@
+    */
+   @Override
+   public byte[] toByteArray() {
+-    return bits;
++    return bits.clone();
+   }
+ 
+   /**

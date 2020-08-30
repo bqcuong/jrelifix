@@ -2,6 +2,8 @@
 /Users/cuong/IdeaProjects/jrelifix/BugsDataset
 --projectFolder
 /Users/cuong/IdeaProjects/jrelifix/BugsDataset/core
+--projectTestFolder
+/Users/cuong/IdeaProjects/jrelifix/BugsDataset/suite/spdz
 --depClasspath
 /Users/cuong/IdeaProjects/jrelifix/BugsDataset/core/target/dependency:/Users/cuong/IdeaProjects/jrelifix/BugsDataset/suite/spdz/target/dependency:/Users/cuong/IdeaProjects/jrelifix/BugsDataset/suite/spdz/target/classes
 --sourceFolder
@@ -18,3 +20,5 @@ target/classes
 SusFiles/PerfectFL/Bears-144.txt
 --reducedTests
 dk.alexandra.fresco.suite.spdz.storage.TestParallelMascots#testFirstTriples,dk.alexandra.fresco.suite.spdz.storage.TestParallelMascots#testConstructor
+--ignoredTests
+dk.alexandra.fresco.suite.spdz.TestFakeTripGen#testMain

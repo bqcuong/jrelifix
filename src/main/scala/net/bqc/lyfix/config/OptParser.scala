@@ -47,6 +47,10 @@ object OptParser {
       .action((t, c) => c.copy(projFolder = t))
       .text("Folder of project, if there are multiple modules, please fill the absolute path to the module")
 
+    opt[String]( "projectTestFolder")
+      .action((t, c) => c.copy(projectTestFolder = t))
+      .text("Folder of the project which contains tests")
+
     opt[String]( "rootProjectFolder")
       .action((t, c) => c.copy(rootProjFolder = t))
       .text("Root folder of the project if your project has multiple modules, which contains the .git folder")
@@ -108,6 +112,7 @@ object OptParser {
       case Some(config) =>
         if (config.rootProjFolder != null) config.rootProjFolder = new File(config.rootProjFolder).getCanonicalPath
         config.projFolder = new File(config.projFolder).getCanonicalPath
+        if (config.projectTestFolder == null) config.projectTestFolder = config.projFolder
         config.sourceFolder = new File(config.projFolder + File.separator + config.sourceFolder).getCanonicalPath
         config.testFolder = new File(config.projFolder + File.separator + config.testFolder).getCanonicalPath
         config.sourceClassFolder = new File(config.projFolder + File.separator + config.sourceClassFolder).getCanonicalPath

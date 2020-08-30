@@ -60,7 +60,7 @@ class TestCaseValidator(projectData: ProjectData) {
   }
 
   def validateAllTestCases() : (Boolean, ArrayBuffer[TestCase]) = {
-    val projectFolder = projectData.config().projFolder
+    val projectFolder = projectData.config().projectTestFolder
     val classpath = projectData.config().classpath()
     val (negAllPassed, negFailed) = validateTestCases(predefinedTests, projectFolder, classpath)
     val (posAllPassed, posFailed) = validateTestCases(remainingTests, projectFolder, classpath)
@@ -68,7 +68,7 @@ class TestCaseValidator(projectData: ProjectData) {
   }
 
   def validateReducedTestCases() : (Boolean, ArrayBuffer[TestCase]) = {
-    val projectFolder = projectData.config().projFolder
+    val projectFolder = projectData.config().projectTestFolder
     val classpath = projectData.config().classpath()
     validateTestCases(predefinedTests, projectFolder, classpath)
   }
