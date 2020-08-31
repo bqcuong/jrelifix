@@ -18,5 +18,3 @@ target/test-classes
 SusFiles/PerfectFL/Bears-186.txt
 --reducedTests
 io.swagger.codegen.languages.JavaJAXRSSpecServerCodegenTest#verify_that_interfaceOnly_is_removed_from_additional_properties_if_false
---externalTestCommand
-"mvn test -pl modules/swagger-codegen"
