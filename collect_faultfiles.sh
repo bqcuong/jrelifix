@@ -3,7 +3,10 @@
 DATA_PATH="/Users/cuong/IdeaProjects/jrelifix/BugsDataset"
 
 for bugid in `ls patches`; do
-  git --git-dir $DATA_PATH/.git checkout $bugid
+  current_path=`pwd`
+  cd $DATA_PATH
+  git checkout $bugid
+  cd $current_path
   path="./patches/$bugid"
   for file in `ls $path`; do
     line=`head -n1 $path/$file`
