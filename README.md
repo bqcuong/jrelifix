@@ -12,15 +12,15 @@ Next, specific repair operators are used to generate patches for buggy locations
 
 ## Installation
 ### Clone
-First, clone the source code of LyFix:
+First, clone the source code of **LyFix**:
 ```
-git clone https://github.com/bqcuong/lyfix
+$ git clone https://github.com/bqcuong/lyfix
 ```
 You are also supposed to obtain the source code of **Bugs Dataset** (a git submodule) if you want to run the example in Usage section:
 ```
-cd lyfix
-git submodule init
-git submodule update --progress
+$ cd lyfix
+$ git submodule init
+$ git submodule update --progress
 ```
 
 ### Build
